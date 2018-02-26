@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ExpressionToCodeLib" Version="2.7.0" />
+    <PackageReference Include="IncrementalMeanVarianceAccumulator" Version="1.0.0" />
+  </ItemGroup>
+
+</Project>
