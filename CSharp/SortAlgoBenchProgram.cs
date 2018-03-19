@@ -12,21 +12,27 @@ namespace SortAlgoBench
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
             Randomize(uint64SourceData);
-            BenchSort(arr => UInt64OrderingAlgorithms.BottomUpMergeSort2(arr));
-            BenchSort(arr => UInt64OrderingAlgorithms.BottomUpMergeSort(arr));
-            BenchSort(arr => UInt64OrderingAlgorithms.TopDownMergeSort(arr));
-            BenchSort(arr => UInt64OrderingAlgorithms.QuickSort(arr));
-            BenchSort(arr => Array.Sort(arr));
-            BenchSort(arr => UInt64OrderingAlgorithms.AltTopDownMergeSort(arr));
+            BenchSort((arr, len) => UInt64OrderingAlgorithms.BottomUpMergeSort(arr, len));
+            BenchSort((arr, len) => UInt64OrderingAlgorithms.BottomUpMergeSort2(arr, len));
+            BenchSort((arr, len) => UInt64OrderingAlgorithms.TopDownMergeSort(arr, len));
+            return;
+            BenchSort((arr, len) => UInt64OrderingAlgorithms.QuickSort(arr, len));
+            BenchSort((arr, len) => Array.Sort(arr, 0, len));
+            BenchSort((arr, len) => UInt64OrderingAlgorithms.AltTopDownMergeSort(arr, len));
         }
 
-        const int ArrSize = 1 << 24;
-        static readonly ulong[] uint64Array = new ulong[ArrSize];
-        static readonly ulong[] uint64SourceData = new ulong[ArrSize * 5];
-        static readonly Random random = new Random(42);
+        const int MaxArrSize = 1 << 17;
+        static readonly ulong[] uint64Array = new ulong[MaxArrSize];
+        static readonly ulong[] uint64SourceData = new ulong[MaxArrSize * 5];
+        static Random random = new Random(42);
 
-        static void RefreshData()
-            => Array.Copy(uint64SourceData, random.Next(ArrSize << 2), uint64Array, 0, ArrSize);
+        static int RefreshData()
+        {
+            var len = random.Next(uint64Array.Length + 1);
+            var offset = random.Next(uint64SourceData.Length - len + 1);
+            Array.Copy(uint64SourceData, offset, uint64Array, 0, len);
+            return len;
+        }
 
         static string MSE(MeanVarianceAccumulator acc)
             => MSE(acc.Mean, StdErr(acc));
@@ -49,30 +55,41 @@ namespace SortAlgoBench
                 arr[j] = ((ulong)(uint)r.Next() << 32) + (uint)r.Next();
         }
 
-        static void BenchSort(Expression<Action<ulong[]>> expr)
+        static void BenchSort(Expression<Action<ulong[], int>> expr)
         {
             var action = expr.Compile();
             var txt = ExpressionToCode.ToCode(expr.Body);
-            action(uint64Array); //warmup
+            action(uint64Array, uint64Array.Length); //warmup
             var justsort = MeanVarianceAccumulator.Empty;
-            for (var i = 0; i < 30; i++) {
-                RefreshData();
-                ulong checkSum = 0;
-                foreach (var l in uint64Array)
-                    checkSum = checkSum ^ l;
-                var sw = Stopwatch.StartNew();
-                action(uint64Array);
-                justsort = justsort.Add(sw.Elapsed.TotalMilliseconds);
-                foreach (var l in uint64Array)
-                    checkSum = checkSum ^ l;
-                if(checkSum != 0)
-                    Console.WriteLine(txt +" has differing elements before and after sort");
-                for (var j = 1; j < uint64Array.Length; j++) {
-                    if(uint64Array[j-1] >uint64Array[j]) {
-                        Console.WriteLine(txt +" did not sort.");
-                        break;
+            for (var i = 0; i < 20; i++) {
+                random = new Random(42);
+                var sw = new Stopwatch();
+                for (var k = 0; k < 20; k++) {
+                    var len = RefreshData();
+                    ulong checkSum = 0;
+                    for (var j = 0; j < len; j++) {
+                        var l = uint64Array[j];
+                        checkSum = checkSum ^ l;
                     }
+
+                    sw.Start();
+                    action(uint64Array, len);
+                    sw.Stop();
+                    for (var j = 0; j < len; j++) {
+                        var l = uint64Array[j];
+                        checkSum = checkSum ^ l;
+                    }
+
+                    if (checkSum != 0)
+                        Console.WriteLine(txt + " has differing elements before and after sort");
+                    for (var j = 1; j < len; j++)
+                        if (uint64Array[j - 1] > uint64Array[j]) {
+                            Console.WriteLine(txt + " did not sort.");
+                            break;
+                        }
                 }
+
+                justsort = justsort.Add(sw.Elapsed.TotalMilliseconds);
             }
 
             Console.WriteLine($"{txt}: {MSE(justsort)} (ms)");
@@ -123,22 +140,26 @@ namespace SortAlgoBench
             return outputValues;
         }
 
-        public static void TopDownMergeSort(T[] array)
-            => TopDownMergeSort(array, GetCachedAccumulator(array.Length), array.Length);
+        public static void TopDownMergeSort(T[] array, int endIdx)
+            => TopDownMergeSort(array, GetCachedAccumulator(endIdx), 0, endIdx);
 
-        public static T[] TopDownMergeSort_Copy(T[] array)
-            => CopyingTopDownMergeSort(array, new T[array.Length], array.Length);
+        public static T[] TopDownMergeSort_Copy(T[] array, int endIdx)
+            => CopyingTopDownMergeSort(array, new T[endIdx], endIdx);
 
-        public static void AltTopDownMergeSort(T[] array)
-            => AltTopDownMergeSort(array, GetCachedAccumulator(array.Length), array.Length);
+        public static void AltTopDownMergeSort(T[] array, int endIdx)
+            => AltTopDownMergeSort(array, GetCachedAccumulator(endIdx), endIdx);
 
-        public static void BottomUpMergeSort(T[] array)
-            => BottomUpMergeSort(array, GetCachedAccumulator(array.Length), array.Length);
-        public static void BottomUpMergeSort2(T[] array)
-            => BottomUpMergeSort2(array, GetCachedAccumulator(array.Length), array.Length);
+        public static void BottomUpMergeSort(T[] array, int endIdx)
+            => BottomUpMergeSort(array, GetCachedAccumulator(endIdx), endIdx);
+
+        public static void BottomUpMergeSort2(T[] array, int endIdx)
+            => BottomUpMergeSort2(array, GetCachedAccumulator(endIdx), endIdx);
 
         public static void QuickSort(T[] array)
             => QuickSort(array, 0, array.Length);
+
+        public static void QuickSort(T[] array, int endIdx)
+            => QuickSort(array, 0, endIdx);
 
         public static void QuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive(array, firstIdx, endIdx - 1); }
 
@@ -215,25 +236,25 @@ namespace SortAlgoBench
             }
         }
 
-        const int InsertionSortBatchSize = 48;
+        const int InsertionSortBatchSize = 32;
 
         static void AltTopDownMergeSort(T[] items, T[] scratch, int n)
         {
             CopyArray(items, 0, n, scratch);
-            TopDownSplitMerge_Either(items, 0, n, scratch);
+            AltTopDownSplitMerge(items, 0, n, scratch);
         }
 
-        static void TopDownSplitMerge_Either(T[] items, int iBegin, int iEnd, T[] scratch)
+        static void AltTopDownSplitMerge(T[] items, int firstIdx, int endIdx, T[] scratch)
         {
-            if (iEnd - iBegin < InsertionSortBatchSize) {
-                InsertionSort_InPlace(items, iBegin, iEnd);
+            if (endIdx - firstIdx < InsertionSortBatchSize) {
+                InsertionSort_InPlace(items, firstIdx, endIdx);
                 return;
             }
 
-            int iMiddle = (iEnd + iBegin) / 2;
-            TopDownSplitMerge_Either(scratch, iBegin, iMiddle, items);
-            TopDownSplitMerge_Either(scratch, iMiddle, iEnd, items);
-            Merge(scratch, iBegin, iMiddle, iEnd, items);
+            int middleIdx = (endIdx + firstIdx) / 2;
+            AltTopDownSplitMerge(scratch, firstIdx, middleIdx, items);
+            AltTopDownSplitMerge(scratch, middleIdx, endIdx, items);
+            Merge(scratch, firstIdx, middleIdx, endIdx, items);
         }
 
         static T[] CopyingTopDownMergeSort(T[] items, T[] scratch, int n)
@@ -243,64 +264,64 @@ namespace SortAlgoBench
             return retval;
         }
 
-        static void CopyingTopDownSplitMerge(T[] src, T[] items, T[] scratch, int iBegin, int iEnd)
+        static void CopyingTopDownSplitMerge(T[] src, T[] items, T[] scratch, int firstIdx, int endIdx)
         {
-            if (iEnd - iBegin < InsertionSortBatchSize) {
-                //CopyArray(src, iBegin, iEnd, items);
-                //InsertionSort_InPlace(items, iBegin, iEnd);
-                InsertionSort_Copy(src, iBegin, iEnd, items);
+            if (endIdx - firstIdx < InsertionSortBatchSize) {
+                //CopyArray(src, firstIdx, endIdx, items);
+                //InsertionSort_InPlace(items, firstIdx, endIdx);
+                InsertionSort_Copy(src, firstIdx, endIdx, items);
                 return;
             }
 
-            int iMiddle = (iEnd + iBegin) / 2;
-            CopyingTopDownSplitMerge(src, scratch, items, iBegin, iMiddle);
-            CopyingTopDownSplitMerge(src, scratch, items, iMiddle, iEnd);
-            Merge(scratch, iBegin, iMiddle, iEnd, items);
+            int middleIdx = (endIdx + firstIdx) / 2;
+            CopyingTopDownSplitMerge(src, scratch, items, firstIdx, middleIdx);
+            CopyingTopDownSplitMerge(src, scratch, items, middleIdx, endIdx);
+            Merge(scratch, firstIdx, middleIdx, endIdx, items);
         }
 
-        static void TopDownMergeSort(T[] items, T[] scratch, int n) { TopDownSplitMerge_toItems(items, 0, n, scratch); }
+        static void TopDownMergeSort(T[] items, T[] scratch, int firstIdx, int endIdx) { TopDownSplitMerge_toItems(items, firstIdx, endIdx, scratch); }
 
-        static void TopDownSplitMerge_toItems(T[] items, int iBegin, int iEnd, T[] scratch)
+        static void TopDownSplitMerge_toItems(T[] items, int firstIdx, int endIdx, T[] scratch)
         {
-            if (iEnd - iBegin < InsertionSortBatchSize) {
-                InsertionSort_InPlace(items, iBegin, iEnd);
+            if (endIdx - firstIdx < InsertionSortBatchSize) {
+                InsertionSort_InPlace(items, firstIdx, endIdx);
                 return;
             }
 
-            int iMiddle = (iEnd + iBegin) / 2;
-            TopDownSplitMerge_toScratch(items, iBegin, iMiddle, scratch);
-            TopDownSplitMerge_toScratch(items, iMiddle, iEnd, scratch);
-            Merge(scratch, iBegin, iMiddle, iEnd, items);
+            int middleIdx = (endIdx + firstIdx) / 2;
+            TopDownSplitMerge_toScratch(items, firstIdx, middleIdx, scratch);
+            TopDownSplitMerge_toScratch(items, middleIdx, endIdx, scratch);
+            Merge(scratch, firstIdx, middleIdx, endIdx, items);
         }
 
-        static void TopDownSplitMerge_toScratch(T[] items, int iBegin, int iEnd, T[] scratch)
+        static void TopDownSplitMerge_toScratch(T[] items, int firstIdx, int endIdx, T[] scratch)
         {
-            if (iEnd - iBegin < InsertionSortBatchSize) {
-                InsertionSort_Copy(items, iBegin, iEnd, scratch);
+            if (endIdx - firstIdx < InsertionSortBatchSize) {
+                InsertionSort_Copy(items, firstIdx, endIdx, scratch);
                 return;
             }
 
-            int iMiddle = (iEnd + iBegin) / 2;
-            TopDownSplitMerge_toItems(items, iBegin, iMiddle, scratch);
-            TopDownSplitMerge_toItems(items, iMiddle, iEnd, scratch);
-            Merge(items, iBegin, iMiddle, iEnd, scratch);
+            int middleIdx = (endIdx + firstIdx) / 2;
+            TopDownSplitMerge_toItems(items, firstIdx, middleIdx, scratch);
+            TopDownSplitMerge_toItems(items, middleIdx, endIdx, scratch);
+            Merge(items, firstIdx, middleIdx, endIdx, scratch);
         }
 
-        static void Merge(T[] source, int iBegin, int iMiddle, int iEnd, T[] target)
+        static void Merge(T[] source, int firstIdx, int middleIdx, int endIdx, T[] target)
         {
-            int i = iBegin, j = iMiddle, k = iBegin;
+            int i = firstIdx, j = middleIdx, k = firstIdx;
             while (true)
                 if (!Ordering.LessThan(source[j], source[i])) {
                     target[k++] = source[i++];
-                    if (i == iMiddle) {
-                        while (j < iEnd)
+                    if (i == middleIdx) {
+                        while (j < endIdx)
                             target[k++] = source[j++];
                         return;
                     }
                 } else {
                     target[k++] = source[j++];
-                    if (j == iEnd) {
-                        while (i < iMiddle)
+                    if (j == endIdx) {
+                        while (i < middleIdx)
                             target[k++] = source[i++];
                         return;
                     }
@@ -339,9 +360,8 @@ namespace SortAlgoBench
                 B = tmp;
             }
 
-            if (target != A) {
+            if (target != A)
                 CopyArray(A, 0, n, target);
-            }
         }
 
         public static void BottomUpMergeSort2(T[] a, T[] b, int n)
@@ -403,9 +423,9 @@ namespace SortAlgoBench
             return i;
         }
 
-        public static void CopyArray(T[] source, int iBegin, int iEnd, T[] target)
+        public static void CopyArray(T[] source, int firstIdx, int endIdx, T[] target)
         {
-            for (int k = iBegin; k < iEnd; k++)
+            for (int k = firstIdx; k < endIdx; k++)
                 target[k] = source[k];
         }
     }
