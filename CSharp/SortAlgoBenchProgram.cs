@@ -63,10 +63,10 @@ namespace SortAlgoBench
             var txt = ExpressionToCode.GetNameIn(expr.Body);
             action(uint64Array, uint64Array.Length); //warmup
             var justsort = MeanVarianceAccumulator.Empty;
-            for (var i = 0; i < 20; i++) {
+            for (var i = 0; i < 25; i++) {
                 random = new Random(42);
                 var sw = new Stopwatch();
-                for (var k = 0; k < 20; k++) {
+                for (var k = 0; k < 25; k++) {
                     var len = RefreshData();
                     ulong checkSum = 0;
                     for (var j = 0; j < len; j++) {
