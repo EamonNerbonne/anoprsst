@@ -23,7 +23,7 @@ namespace SortAlgoBench
             BenchSort((arr, len) => UInt64OrderingAlgorithms.AltTopDownMergeSort(arr, len));
         }
 
-        const int MaxArrSize = 1 << 17;
+        const int MaxArrSize = 1 << 18;
         static readonly ulong[] uint64Array = new ulong[MaxArrSize];
         static readonly ulong[] uint64SourceData = new ulong[MaxArrSize * 5];
         static Random random = new Random(42);
