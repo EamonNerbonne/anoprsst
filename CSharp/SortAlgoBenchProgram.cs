@@ -165,7 +165,7 @@ namespace SortAlgoBench
         static void QuickSort_Inclusive(T[] array, int firstIdx, int lastIdx)
         {
             while (true)
-                if (lastIdx - firstIdx < InsertionSortBatchSize - 1) {
+                if (lastIdx - firstIdx < TopDownInsertionSortBatchSize - 1) {
                     InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
                     return;
                 } else {
@@ -235,7 +235,8 @@ namespace SortAlgoBench
             }
         }
 
-        const int InsertionSortBatchSize = 32;
+        const int TopDownInsertionSortBatchSize = 48;
+        const int BottomUpInsertionSortBatchSize = 32;
 
         static void AltTopDownMergeSort(T[] items, T[] scratch, int n)
         {
@@ -245,7 +246,7 @@ namespace SortAlgoBench
 
         static void AltTopDownSplitMerge(T[] items, int firstIdx, int endIdx, T[] scratch)
         {
-            if (endIdx - firstIdx < InsertionSortBatchSize) {
+            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace(items, firstIdx, endIdx);
                 return;
             }
@@ -265,7 +266,7 @@ namespace SortAlgoBench
 
         static void CopyingTopDownSplitMerge(T[] src, T[] items, T[] scratch, int firstIdx, int endIdx)
         {
-            if (endIdx - firstIdx < InsertionSortBatchSize) {
+            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
                 //CopyArray(src, firstIdx, endIdx, items);
                 //InsertionSort_InPlace(items, firstIdx, endIdx);
                 InsertionSort_Copy(src, firstIdx, endIdx, items);
@@ -280,7 +281,7 @@ namespace SortAlgoBench
 
         static void TopDownSplitMerge_toItems(T[] items, int firstIdx, int endIdx, T[] scratch)
         {
-            if (endIdx - firstIdx < InsertionSortBatchSize) {
+            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace(items, firstIdx, endIdx);
                 return;
             }
@@ -293,7 +294,7 @@ namespace SortAlgoBench
 
         static void TopDownSplitMerge_toScratch(T[] items, int firstIdx, int endIdx, T[] scratch)
         {
-            if (endIdx - firstIdx < InsertionSortBatchSize) {
+            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
                 InsertionSort_Copy(items, firstIdx, endIdx, scratch);
                 return;
             }
@@ -329,9 +330,9 @@ namespace SortAlgoBench
         {
             var batchesSortedUpto = 0;
             while (true)
-                if (batchesSortedUpto + InsertionSortBatchSize <= n) {
-                    InsertionSort_InPlace(target, batchesSortedUpto, batchesSortedUpto + InsertionSortBatchSize);
-                    batchesSortedUpto += InsertionSortBatchSize;
+                if (batchesSortedUpto + BottomUpInsertionSortBatchSize <= n) {
+                    InsertionSort_InPlace(target, batchesSortedUpto, batchesSortedUpto + BottomUpInsertionSortBatchSize);
+                    batchesSortedUpto += BottomUpInsertionSortBatchSize;
                 } else {
                     if (n - batchesSortedUpto >= 2)
                         InsertionSort_InPlace(target, batchesSortedUpto, n);
@@ -341,7 +342,7 @@ namespace SortAlgoBench
             var A = target;
             var B = scratchSpace;
 
-            for (var width = InsertionSortBatchSize; width < n; width = width << 1) {
+            for (var width = BottomUpInsertionSortBatchSize; width < n; width = width << 1) {
                 var i = 0;
                 while (i + width + width <= n) {
                     Merge(A, i, i + width, i + width + width, B);
