@@ -1,48 +1,36 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using ExpressionToCodeLib;
 using IncrementalMeanVarianceAccumulator;
+
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
-
 namespace SortAlgoBench
 {
     static class SortAlgoBenchProgram
     {
+        const int MaxArraySize = 1 << 16 << 3;
+
         static void Main()
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            Randomize(uint64SourceData);
-            BenchSort((arr, len) => Array.Sort(arr, 0, len));
-            BenchSort((arr, len) => UInt64OrderingAlgorithms.QuickSort(arr, len));
-            BenchSort((arr, len) => UInt64OrderingAlgorithms.BottomUpMergeSort(arr, len));
-            BenchSort((arr, len) => UInt64OrderingAlgorithms.BottomUpMergeSort2(arr, len));
-            BenchSort((arr, len) => UInt64OrderingAlgorithms.TopDownMergeSort(arr, len));
-            return;
-            BenchSort((arr, len) => UInt64OrderingAlgorithms.AltTopDownMergeSort(arr, len));
+            UInt64OrderingAlgorithms.BencherFor(RandomizeUInt64()).BenchVariousAlgos();
+            Int32OrderingAlgorithms.BencherFor(RandomizeInt32()).BenchVariousAlgos();
+            //UInt32OrderingAlgorithms.BencherFor(RandomizeUInt32()).BenchVariousAlgos();
         }
 
-        const int MaxArrSize = 1 << 18;
-        static readonly ulong[] uint64Array = new ulong[MaxArrSize];
-        static readonly ulong[] uint64SourceData = new ulong[MaxArrSize * 5];
-        static Random random = new Random(42);
-
-        static int RefreshData()
-        {
-            var len = random.Next(uint64Array.Length + 1);
-            var offset = random.Next(uint64SourceData.Length - len + 1);
-            Array.Copy(uint64SourceData, offset, uint64Array, 0, len);
-            return len;
-        }
-
-        static string MSE(MeanVarianceAccumulator acc)
+        public static string MSE(MeanVarianceAccumulator acc)
             => MSE(acc.Mean, StdErr(acc));
 
         static double StdErr(MeanVarianceAccumulator acc)
             => acc.SampleStandardDeviation / Math.Sqrt(acc.WeightSum);
 
-        static string MSE(double mean, double stderr)
+        public static string MSE(double mean, double stderr)
         {
             var significantDigits = Math.Log10(Math.Abs(mean / stderr));
             var digitsToShow = Math.Max(2, (int)(significantDigits + 1.9));
@@ -50,51 +38,31 @@ namespace SortAlgoBench
             return mean.ToString(fmtString) + "~" + stderr.ToString("g2");
         }
 
-        static void Randomize(ulong[] arr)
+        static ulong[] RandomizeUInt64()
         {
-            var r = random;
+            var arr = new ulong[MaxArraySize];
+            var r = new Random(37);
             for (var j = 0; j < arr.Length; j++)
                 arr[j] = ((ulong)(uint)r.Next() << 32) + (uint)r.Next();
+            return arr;
         }
 
-        static void BenchSort(Expression<Action<ulong[], int>> expr)
+        static int[] RandomizeInt32()
         {
-            var action = expr.Compile();
-            var txt = ExpressionToCode.GetNameIn(expr.Body);
-            action(uint64Array, uint64Array.Length); //warmup
-            var justsort = MeanVarianceAccumulator.Empty;
-            for (var i = 0; i < 25; i++) {
-                random = new Random(42);
-                var sw = new Stopwatch();
-                for (var k = 0; k < 25; k++) {
-                    var len = RefreshData();
-                    ulong checkSum = 0;
-                    for (var j = 0; j < len; j++) {
-                        var l = uint64Array[j];
-                        checkSum = checkSum ^ l;
-                    }
+            var arr = new int[MaxArraySize];
+            var r = new Random(37);
+            for (var j = 0; j < arr.Length; j++)
+                arr[j] = r.Next();
+            return arr;
+        }
 
-                    sw.Start();
-                    action(uint64Array, len);
-                    sw.Stop();
-                    for (var j = 0; j < len; j++) {
-                        var l = uint64Array[j];
-                        checkSum = checkSum ^ l;
-                    }
-
-                    if (checkSum != 0)
-                        Console.WriteLine(txt + " has differing elements before and after sort");
-                    for (var j = 1; j < len; j++)
-                        if (uint64Array[j - 1] > uint64Array[j]) {
-                            Console.WriteLine(txt + " did not sort.");
-                            break;
-                        }
-                }
-
-                justsort = justsort.Add(sw.Elapsed.TotalMilliseconds);
-            }
-
-            Console.WriteLine($"{txt}: {MSE(justsort)} (ms)");
+        static uint[] RandomizeUInt32()
+        {
+            var arr = new uint[MaxArraySize];
+            var r = new Random(37);
+            for (var j = 0; j < arr.Length; j++)
+                arr[j] = (uint)r.Next();
+            return arr;
         }
     }
 
@@ -114,6 +82,101 @@ namespace SortAlgoBench
         }
     }
 
+    abstract class Int32OrderingAlgorithms : OrderedAlgorithms<int, Int32OrderingAlgorithms.Int32Order>
+    {
+        public struct Int32Order : IOrdering<int>
+        {
+            public bool LessThan(int a, int b) => a < b;
+        }
+    }
+
+    sealed class SortAlgorithmBench<T, TOrder>
+        where TOrder : struct, IOrdering<T>
+    {
+        public SortAlgorithmBench(T[] uint64SourceData)
+        {
+            this.uint64SourceData = uint64SourceData;
+            uint64Array = new T[uint64SourceData.Length >> 3];
+        }
+
+        readonly T[] uint64Array;
+        readonly T[] uint64SourceData;
+
+        int RefreshData(Random random)
+        {
+            var len = random.Next(uint64Array.Length + 1);
+            var offset = random.Next(uint64SourceData.Length - len + 1);
+            Array.Copy(uint64SourceData, offset, uint64Array, 0, len);
+            return len;
+        }
+
+        public void BenchVariousAlgos()
+        {
+            BenchSort((arr, len) => Array.Sort(arr, 0, len));
+            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.QuickSort(arr, len));
+            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.BottomUpMergeSort(arr, len));
+            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2(arr, len));
+            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.TopDownMergeSort(arr, len));
+            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort(arr, len));
+        }
+
+        public void BenchSort(Expression<Action<T[], int>> expr)
+        {
+            var action = expr.Compile();
+            var txt = ExpressionToCode.GetNameIn(expr.Body) + "|" + typeof(T).ToCSharpFriendlyTypeName();
+            Validate(action, txt); //also a warmup
+            var time = MeanVarianceAccumulator.Empty;
+            var sizes = new List<int>();
+            for (var i = 0; i < 25; i++) {
+                var random = new Random(42);
+                var sw = new Stopwatch();
+                for (var k = 0; k < 25; k++) {
+                    var len = RefreshData(random);
+                    sw.Start();
+                    action(uint64Array, len);
+                    sw.Stop();
+                    if (i == 0)
+                        sizes.Add(len);
+                }
+
+                time = time.Add(sw.Elapsed.TotalMilliseconds);
+            }
+            var meanLen = sizes.Average();
+            var kbTotal = sizes.Sum()*Marshal.SizeOf(typeof(T))/1024.0;
+            Console.WriteLine($"{txt}: {SortAlgoBenchProgram.MSE(time)} (ms) for {sizes.Count} arrays of on average {meanLen:f1} items (total {kbTotal:f1}kb)");
+        }
+
+        public void Validate(Action<T[], int> action, string txt)
+        {
+            var random = new Random(42);
+            var sw = new Stopwatch();
+            for (var k = 0; k < 10; k++) {
+                var len = RefreshData(random);
+                long checkSum = 0;
+                for (var j = 0; j < len; j++) {
+                    var l = uint64Array[j];
+                    checkSum = checkSum + l.GetHashCode();
+                }
+
+                sw.Start();
+                action(uint64Array, len);
+                sw.Stop();
+                for (var j = 0; j < len; j++) {
+                    var l = uint64Array[j];
+                    checkSum = checkSum - l.GetHashCode();
+                }
+
+                if (checkSum != 0)
+                    Console.WriteLine(txt + " has differing elements before and after sort");
+                for (var j = 1; j < len; j++)
+                    if (default(TOrder).LessThan(uint64Array[j], uint64Array[j - 1])) {
+                        Console.WriteLine(txt + " did not sort.");
+                        break;
+                    }
+            }
+        }
+    }
+
     public interface IOrdering<in T>
     {
         bool LessThan(T a, T b);
@@ -122,6 +185,7 @@ namespace SortAlgoBench
     abstract class OrderedAlgorithms<T, TOrder>
         where TOrder : struct, IOrdering<T>
     {
+        public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr) => new SortAlgorithmBench<T, TOrder>(arr);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
         static TOrder Ordering => default(TOrder);
 
@@ -139,7 +203,7 @@ namespace SortAlgoBench
             return outputValues;
         }
 
-        public static void TopDownMergeSort(T[] array, int endIdx) 
+        public static void TopDownMergeSort(T[] array, int endIdx)
             => TopDownSplitMerge_toItems(array, 0, endIdx, GetCachedAccumulator(endIdx));
 
         public static T[] TopDownMergeSort_Copy(T[] array, int endIdx)
@@ -180,6 +244,7 @@ namespace SortAlgoBench
                 }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int Partition(T[] array, int firstIdx, int lastIdx)
         {
             var pivotValue = array[(firstIdx + lastIdx) / 2];
@@ -198,6 +263,7 @@ namespace SortAlgoBench
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void InsertionSort_InPlace(T[] array, int firstIdx, int idxEnd)
         {
             var writeIdx = firstIdx;
