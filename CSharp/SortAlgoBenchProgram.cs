@@ -250,7 +250,7 @@ namespace SortAlgoBench
                 return;
             }
 
-            int middleIdx = (endIdx + firstIdx) / 2;
+            var middleIdx = (endIdx + firstIdx) / 2;
             AltTopDownSplitMerge(scratch, firstIdx, middleIdx, items);
             AltTopDownSplitMerge(scratch, middleIdx, endIdx, items);
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
@@ -272,7 +272,7 @@ namespace SortAlgoBench
                 return;
             }
 
-            int middleIdx = (endIdx + firstIdx) / 2;
+            var middleIdx = (endIdx + firstIdx) / 2;
             CopyingTopDownSplitMerge(src, scratch, items, firstIdx, middleIdx);
             CopyingTopDownSplitMerge(src, scratch, items, middleIdx, endIdx);
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
@@ -285,7 +285,7 @@ namespace SortAlgoBench
                 return;
             }
 
-            int middleIdx = (endIdx + firstIdx) / 2;
+            var middleIdx = (endIdx + firstIdx) / 2;
             TopDownSplitMerge_toScratch(items, firstIdx, middleIdx, scratch);
             TopDownSplitMerge_toScratch(items, middleIdx, endIdx, scratch);
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
@@ -298,7 +298,7 @@ namespace SortAlgoBench
                 return;
             }
 
-            int middleIdx = (endIdx + firstIdx) / 2;
+            var middleIdx = (endIdx + firstIdx) / 2;
             TopDownSplitMerge_toItems(items, firstIdx, middleIdx, scratch);
             TopDownSplitMerge_toItems(items, middleIdx, endIdx, scratch);
             Merge(items, firstIdx, middleIdx, endIdx, scratch);
@@ -366,7 +366,7 @@ namespace SortAlgoBench
             var s = (GetPassCount(n) & 1) != 0 ? 32 : 64;
             { // insertion sort
                 int r;
-                for (int l = 0; l < n; l = r) {
+                for (var l = 0; l < n; l = r) {
                     r = l + s;
                     if (r > n) r = n;
                     l--;
@@ -422,7 +422,7 @@ namespace SortAlgoBench
 
         public static void CopyArray(T[] source, int firstIdx, int endIdx, T[] target)
         {
-            for (int k = firstIdx; k < endIdx; k++)
+            for (var k = firstIdx; k < endIdx; k++)
                 target[k] = source[k];
         }
     }
