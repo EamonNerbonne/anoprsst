@@ -114,9 +114,6 @@ namespace SortAlgoBench
         }
     }
 
-    abstract class SortAlgorithmBench<T, TOrder>
-        where TOrder : struct, IOrdering<T> { }
-
     public interface IOrdering<in T>
     {
         bool LessThan(T a, T b);
