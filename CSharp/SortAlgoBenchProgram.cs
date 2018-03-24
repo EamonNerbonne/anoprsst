@@ -139,8 +139,8 @@ namespace SortAlgoBench
             return outputValues;
         }
 
-        public static void TopDownMergeSort(T[] array, int endIdx)
-            => TopDownMergeSort(array, GetCachedAccumulator(endIdx), 0, endIdx);
+        public static void TopDownMergeSort(T[] array, int endIdx) 
+            => TopDownSplitMerge_toItems(array, 0, endIdx, GetCachedAccumulator(endIdx));
 
         public static T[] TopDownMergeSort_Copy(T[] array, int endIdx)
             => CopyingTopDownMergeSort(array, new T[endIdx], endIdx);
@@ -277,8 +277,6 @@ namespace SortAlgoBench
             CopyingTopDownSplitMerge(src, scratch, items, middleIdx, endIdx);
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
         }
-
-        static void TopDownMergeSort(T[] items, T[] scratch, int firstIdx, int endIdx) { TopDownSplitMerge_toItems(items, firstIdx, endIdx, scratch); }
 
         static void TopDownSplitMerge_toItems(T[] items, int firstIdx, int endIdx, T[] scratch)
         {
