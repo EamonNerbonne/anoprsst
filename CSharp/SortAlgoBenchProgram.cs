@@ -60,7 +60,7 @@ namespace SortAlgoBench
         static void BenchSort(Expression<Action<ulong[], int>> expr)
         {
             var action = expr.Compile();
-            var txt = ExpressionToCode.ToCode(expr.Body);
+            var txt = ExpressionToCode.GetNameIn(expr.Body);
             action(uint64Array, uint64Array.Length); //warmup
             var justsort = MeanVarianceAccumulator.Empty;
             for (var i = 0; i < 20; i++) {
