@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using ExpressionToCodeLib;
 using IncrementalMeanVarianceAccumulator;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace SortAlgoBench
 {
