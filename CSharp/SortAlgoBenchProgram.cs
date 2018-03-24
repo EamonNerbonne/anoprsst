@@ -14,7 +14,7 @@ namespace SortAlgoBench
 {
     static class SortAlgoBenchProgram
     {
-        const int MaxArraySize = 1 << 16 << 3;
+        const int MaxArraySize = 1 << 15 << 3;
 
         static void Main()
         {
@@ -114,9 +114,10 @@ namespace SortAlgoBench
         {
             BenchSort((arr, len) => Array.Sort(arr, 0, len));
             BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.QuickSort(arr, len));
+            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.TopDownMergeSort(arr, len));
+            return;
             BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.BottomUpMergeSort(arr, len));
             BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2(arr, len));
-            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.TopDownMergeSort(arr, len));
             BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort(arr, len));
         }
 
@@ -127,7 +128,7 @@ namespace SortAlgoBench
             Validate(action, txt); //also a warmup
             var time = MeanVarianceAccumulator.Empty;
             var sizes = new List<int>();
-            for (var i = 0; i < 25; i++) {
+            for (var i = 0; i < 100; i++) {
                 var random = new Random(42);
                 var sw = new Stopwatch();
                 for (var k = 0; k < 25; k++) {
@@ -141,8 +142,9 @@ namespace SortAlgoBench
 
                 time = time.Add(sw.Elapsed.TotalMilliseconds);
             }
+
             var meanLen = sizes.Average();
-            var kbTotal = sizes.Sum()*Marshal.SizeOf(typeof(T))/1024.0;
+            var kbTotal = sizes.Sum() * Marshal.SizeOf(typeof(T)) / 1024.0;
             Console.WriteLine($"{txt}: {SortAlgoBenchProgram.MSE(time)} (ms) for {sizes.Count} arrays of on average {meanLen:f1} items (total {kbTotal:f1}kb)");
         }
 
@@ -247,7 +249,7 @@ namespace SortAlgoBench
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int Partition(T[] array, int firstIdx, int lastIdx)
         {
-            var pivotValue = array[(firstIdx + lastIdx) / 2];
+            var pivotValue = array[(firstIdx + lastIdx) >> 1];
             while (true) {
                 while (Ordering.LessThan(array[firstIdx], pivotValue))
                     firstIdx++;
