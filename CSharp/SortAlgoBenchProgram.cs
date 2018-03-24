@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using ExpressionToCodeLib;
 using IncrementalMeanVarianceAccumulator;
 
@@ -14,14 +15,30 @@ namespace SortAlgoBench
 {
     static class SortAlgoBenchProgram
     {
-        const int MaxArraySize = 1 << 15 << 3;
+        const int MaxArraySize = 1 << 14 << 3;
+        public const int TimingTrials = 250;
+        public const int IterationsPerTrial = 12;
+        public static readonly int ParallelSplitScale = ProcScale();
+
+        static int ProcScale()
+        {
+            var splitIters = 4;
+            int threads = Environment.ProcessorCount;
+            while (threads > 0) {
+                threads = threads >> 1;
+                splitIters++;
+            }
+
+            return splitIters;
+        }
 
         static void Main()
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
             UInt64OrderingAlgorithms.BencherFor(RandomizeUInt64()).BenchVariousAlgos();
             Int32OrderingAlgorithms.BencherFor(RandomizeInt32()).BenchVariousAlgos();
-            //UInt32OrderingAlgorithms.BencherFor(RandomizeUInt32()).BenchVariousAlgos();
+            UInt32OrderingAlgorithms.BencherFor(RandomizeUInt32()).BenchVariousAlgos();
+            PairOrderingAlgorithms.BencherFor(RandomizePairs()).BenchVariousAlgos();
         }
 
         public static string MSE(MeanVarianceAccumulator acc)
@@ -44,6 +61,15 @@ namespace SortAlgoBench
             var r = new Random(37);
             for (var j = 0; j < arr.Length; j++)
                 arr[j] = ((ulong)(uint)r.Next() << 32) + (uint)r.Next();
+            return arr;
+        }
+
+        static (int, int)[] RandomizePairs()
+        {
+            var arr = new (int, int)[MaxArraySize];
+            var r = new Random(37);
+            for (var j = 0; j < arr.Length; j++)
+                arr[j] = (r.Next(), r.Next());
             return arr;
         }
 
@@ -70,6 +96,7 @@ namespace SortAlgoBench
     {
         public struct UInt64Ordering : IOrdering<ulong>
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan(ulong a, ulong b) => a < b;
         }
     }
@@ -78,6 +105,7 @@ namespace SortAlgoBench
     {
         public struct UInt32Order : IOrdering<uint>
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan(uint a, uint b) => a < b;
         }
     }
@@ -86,7 +114,17 @@ namespace SortAlgoBench
     {
         public struct Int32Order : IOrdering<int>
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan(int a, int b) => a < b;
+        }
+    }
+
+    abstract class PairOrderingAlgorithms : OrderedAlgorithms<(int, int), PairOrderingAlgorithms.PairOrder>
+    {
+        public struct PairOrder : IOrdering<(int, int)>
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool LessThan((int, int) a, (int, int) b) => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
         }
     }
 
@@ -112,13 +150,15 @@ namespace SortAlgoBench
 
         public void BenchVariousAlgos()
         {
-            BenchSort((arr, len) => Array.Sort(arr, 0, len));
+            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr, len));
             BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.QuickSort(arr, len));
-            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.TopDownMergeSort(arr, len));
-            return;
-            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.BottomUpMergeSort(arr, len));
-            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2(arr, len));
-            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort(arr, len));
+            BenchSort((arr, len) => Array.Sort(arr, 0, len));
+            //BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.BottomUpMergeSort(arr, len));
+            //BenchSort((arr, len) => Array.Sort(arr, 0, len));
+            //BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.DualPivotQuickSort(arr, len));
+            //BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.TopDownMergeSort(arr, len));
+            //BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2(arr, len));
+            //BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort(arr, len));
         }
 
         public void BenchSort(Expression<Action<T[], int>> expr)
@@ -126,12 +166,12 @@ namespace SortAlgoBench
             var action = expr.Compile();
             var txt = ExpressionToCode.GetNameIn(expr.Body) + "|" + typeof(T).ToCSharpFriendlyTypeName();
             Validate(action, txt); //also a warmup
-            var time = MeanVarianceAccumulator.Empty;
             var sizes = new List<int>();
-            for (var i = 0; i < 100; i++) {
+            var milliseconds = new List<double>();
+            for (var i = 0; i < SortAlgoBenchProgram.TimingTrials; i++) {
                 var random = new Random(42);
                 var sw = new Stopwatch();
-                for (var k = 0; k < 25; k++) {
+                for (var k = 0; k < SortAlgoBenchProgram.IterationsPerTrial; k++) {
                     var len = RefreshData(random);
                     sw.Start();
                     action(uint64Array, len);
@@ -140,12 +180,14 @@ namespace SortAlgoBench
                         sizes.Add(len);
                 }
 
-                time = time.Add(sw.Elapsed.TotalMilliseconds);
+                milliseconds.Add(sw.Elapsed.TotalMilliseconds);
             }
 
+            milliseconds.Sort();
+
+            var msDistrib = MeanVarianceAccumulator.FromSequence(milliseconds.Take(milliseconds.Count * 3 / 4));
             var meanLen = sizes.Average();
-            var kbTotal = sizes.Sum() * Marshal.SizeOf(typeof(T)) / 1024.0;
-            Console.WriteLine($"{txt}: {SortAlgoBenchProgram.MSE(time)} (ms) for {sizes.Count} arrays of on average {meanLen:f1} items (total {kbTotal:f1}kb)");
+            Console.WriteLine($"{txt}: {SortAlgoBenchProgram.MSE(msDistrib)} (ms) for {sizes.Count} arrays of on average {meanLen:f1} items");
         }
 
         public void Validate(Action<T[], int> action, string txt)
@@ -181,6 +223,7 @@ namespace SortAlgoBench
 
     public interface IOrdering<in T>
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         bool LessThan(T a, T b);
     }
 
@@ -189,7 +232,6 @@ namespace SortAlgoBench
     {
         public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr) => new SortAlgorithmBench<T, TOrder>(arr);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
-        static TOrder Ordering => default(TOrder);
 
         [ThreadStatic]
         static T[] Accumulator;
@@ -206,7 +248,7 @@ namespace SortAlgoBench
         }
 
         public static void TopDownMergeSort(T[] array, int endIdx)
-            => TopDownSplitMerge_toItems(array, 0, endIdx, GetCachedAccumulator(endIdx));
+            => TopDownSplitMerge_toItems_Par(array, 0, endIdx, GetCachedAccumulator(endIdx));
 
         public static T[] TopDownMergeSort_Copy(T[] array, int endIdx)
             => CopyingTopDownMergeSort(array, new T[endIdx], endIdx);
@@ -220,29 +262,90 @@ namespace SortAlgoBench
         public static void BottomUpMergeSort2(T[] array, int endIdx)
             => BottomUpMergeSort2(array, GetCachedAccumulator(endIdx), endIdx);
 
-        public static void QuickSort(T[] array)
-            => QuickSort(array, 0, array.Length);
-
-        public static void QuickSort(T[] array, int endIdx)
-            => QuickSort(array, 0, endIdx);
-
+        public static void QuickSort(T[] array) => QuickSort(array, 0, array.Length);
+        public static void QuickSort(T[] array, int endIdx) => QuickSort_Inclusive(array, 0, endIdx - 1);
         public static void QuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive(array, firstIdx, endIdx - 1); }
+        public static void ParallelQuickSort(T[] array) => QuickSort_Inclusive_Parallel(array, 0, array.Length);
+        public static void ParallelQuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
+        public static void ParallelQuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Parallel(array, firstIdx, endIdx - 1); }
+        public static void DualPivotQuickSort(T[] array) => DualPivotQuickSort_Inclusive(array, 0, array.Length - 1);
+        public static void DualPivotQuickSort(T[] array, int endIdx) => DualPivotQuickSort_Inclusive(array, 0, endIdx - 1);
+        public static void DualPivotQuickSort(T[] array, int firstIdx, int endIdx) => DualPivotQuickSort_Inclusive(array, firstIdx, endIdx - 1);
+
+        static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx)
+        {
+            var countdownEvent = new CountdownEvent(1);
+            QuickSort_Inclusive_ParallelArgs.Impl(
+                new QuickSort_Inclusive_ParallelArgs {
+                    array = array,
+                    firstIdx = firstIdx,
+                    lastIdx = lastIdx,
+                    countdownEvent = countdownEvent,
+                    splitAt = Math.Max(lastIdx - firstIdx >> SortAlgoBenchProgram.ParallelSplitScale, TopDownInsertionSortBatchSize << 1)
+                });
+            countdownEvent.Wait();
+        }
+
+        class QuickSort_Inclusive_ParallelArgs
+        {
+            public T[] array;
+            public int firstIdx;
+            public int lastIdx;
+            public int splitAt;
+            public CountdownEvent countdownEvent;
+            static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => Impl((QuickSort_Inclusive_ParallelArgs)o);
+
+            public static void Impl(QuickSort_Inclusive_ParallelArgs args)
+            {
+                var firstIdx = args.firstIdx;
+                var lastIdx = args.lastIdx;
+                var countdownEvent = args.countdownEvent;
+                while (true)
+                    if (lastIdx - firstIdx < args.splitAt) {
+                        QuickSort_Inclusive_Small(args.array, firstIdx, lastIdx);
+                        //Array.Sort(args.array, firstIdx, lastIdx - firstIdx + 1);
+                        countdownEvent.Signal();
+                        return;
+                    } else {
+                        var pivot = PartitionMedian5(args.array, firstIdx, lastIdx);
+                        countdownEvent.AddCount(1);
+                        ThreadPool.UnsafeQueueUserWorkItem(
+                            QuickSort_Inclusive_Par2_callback,
+                            new QuickSort_Inclusive_ParallelArgs {
+                                array = args.array,
+                                firstIdx = pivot + 1,
+                                lastIdx = lastIdx,
+                                countdownEvent = countdownEvent,
+                                splitAt = args.splitAt
+                            });
+                        lastIdx = pivot; //QuickSort_Inclusive(array, firstIdx, pivot);
+                    }
+            }
+        }
 
         static void QuickSort_Inclusive(T[] array, int firstIdx, int lastIdx)
         {
             while (true)
-                if (lastIdx - firstIdx < TopDownInsertionSortBatchSize - 1) {
+                if (lastIdx - firstIdx < TopDownInsertionSortBatchSize << 8) {
+                    QuickSort_Inclusive_Small(array, firstIdx, lastIdx);
+                    return;
+                } else {
+                    var pivot = PartitionMedian5(array, firstIdx, lastIdx);
+                    QuickSort_Inclusive(array, pivot + 1, lastIdx);
+                    lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
+                }
+        }
+
+        static void QuickSort_Inclusive_Small(T[] array, int firstIdx, int lastIdx)
+        {
+            while (true)
+                if (lastIdx - firstIdx < TopDownInsertionSortBatchSize) {
                     InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
                     return;
                 } else {
                     var pivot = Partition(array, firstIdx, lastIdx);
-                    if (pivot - firstIdx > lastIdx - pivot) {
-                        QuickSort_Inclusive(array, pivot + 1, lastIdx);
-                        lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
-                    } else {
-                        QuickSort_Inclusive(array, firstIdx, pivot);
-                        firstIdx = pivot + 1; //QuickSort(array, pivot + 1, lastIdx);
-                    }
+                    QuickSort_Inclusive_Small(array, pivot + 1, lastIdx);
+                    lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
                 }
         }
 
@@ -251,17 +354,134 @@ namespace SortAlgoBench
         {
             var pivotValue = array[(firstIdx + lastIdx) >> 1];
             while (true) {
-                while (Ordering.LessThan(array[firstIdx], pivotValue))
+                while (default(TOrder).LessThan(array[firstIdx], pivotValue))
                     firstIdx++;
-                while (Ordering.LessThan(pivotValue, array[lastIdx]))
+                while (default(TOrder).LessThan(pivotValue, array[lastIdx]))
                     lastIdx--;
                 if (lastIdx <= firstIdx)
                     return lastIdx;
-                var tmp = array[firstIdx];
-                array[firstIdx] = array[lastIdx];
-                array[lastIdx] = tmp;
+                array.Swap(firstIdx, lastIdx);
                 firstIdx++;
                 lastIdx--;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static int PartitionMedian5(T[] array, int firstIdx, int lastIdx)
+        {
+            var half = lastIdx - firstIdx >> 1;
+            int a = firstIdx, b = firstIdx + 1, c = firstIdx + half, d = lastIdx - 1, e = lastIdx;
+            SortFiveIndexes(array, a, b, c, d, e);
+
+            var pivotValue = array[c];
+            firstIdx += 2;
+            lastIdx -= 2;
+            while (true) {
+                while (default(TOrder).LessThan(array[firstIdx], pivotValue))
+                    firstIdx++;
+                while (default(TOrder).LessThan(pivotValue, array[lastIdx]))
+                    lastIdx--;
+                if (lastIdx <= firstIdx)
+                    return lastIdx;
+                array.Swap(firstIdx, lastIdx);
+                firstIdx++;
+                lastIdx--;
+            }
+        }
+
+        static void SortFiveIndexes(T[] array, int a, int b, int c, int d, int e)
+        {
+            if (default(TOrder).LessThan(array[e], array[a])) (array[e], array[a]) = (array[a], array[e]);
+            if (default(TOrder).LessThan(array[d], array[b])) (array[d], array[b]) = (array[b], array[d]);
+            if (default(TOrder).LessThan(array[c], array[a])) (array[c], array[a]) = (array[a], array[c]);
+            if (default(TOrder).LessThan(array[e], array[c])) (array[e], array[c]) = (array[c], array[e]);
+            if (default(TOrder).LessThan(array[b], array[a])) (array[b], array[a]) = (array[a], array[b]);
+            if (default(TOrder).LessThan(array[d], array[c])) (array[d], array[c]) = (array[c], array[d]);
+            if (default(TOrder).LessThan(array[e], array[b])) (array[e], array[b]) = (array[b], array[e]);
+            if (default(TOrder).LessThan(array[c], array[b])) (array[c], array[b]) = (array[b], array[c]);
+            if (default(TOrder).LessThan(array[e], array[d])) (array[e], array[d]) = (array[d], array[e]);
+        }
+
+        static void SortThreeIndexes(T[] array, int a, int b, int c)
+        {
+            if (default(TOrder).LessThan(array[c], array[a])) (array[c], array[a]) = (array[a], array[c]);
+            if (default(TOrder).LessThan(array[b], array[a])) (array[b], array[a]) = (array[a], array[b]);
+            if (default(TOrder).LessThan(array[c], array[b])) (array[c], array[b]) = (array[b], array[c]);
+        }
+
+        static void DualPivotQuickSort_Inclusive(T[] array, int firstIdx, int lastIdx)
+        {
+            if (lastIdx - firstIdx < 500) {
+                QuickSort_Inclusive(array, firstIdx, lastIdx);
+                //InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
+            } else {
+                // lp means left pivot, and rp means right pivot.
+                var (lowPivot, highPivot) = DualPivotPartition(array, firstIdx, lastIdx);
+                var a = Task.Run(() => DualPivotQuickSort_Inclusive(array, firstIdx, lowPivot - 1));
+                var b = Task.Run(() => DualPivotQuickSort_Inclusive(array, lowPivot + 1, highPivot - 1));
+                DualPivotQuickSort_Inclusive(array, highPivot + 1, lastIdx);
+                a.Wait();
+                b.Wait();
+            }
+        }
+
+        static (int lowPivot, int highPivot) DualPivotPartition(T[] arr, int firstIdx, int lastIdx)
+        {
+            if (default(TOrder).LessThan(arr[lastIdx], arr[firstIdx]))
+                arr.Swap(firstIdx, lastIdx);
+
+            // p is the left pivot, and q is the right pivot.
+            var lowPivot = firstIdx + 1;
+            var highPivot = lastIdx - 1;
+            var betweenPivots = firstIdx + 1;
+            var lowPivotValue = arr[firstIdx];
+            var highPivotValue = arr[lastIdx];
+            while (betweenPivots <= highPivot) {
+                if (default(TOrder).LessThan(arr[betweenPivots], lowPivotValue)) {
+                    arr.Swap(betweenPivots, lowPivot);
+                    lowPivot++;
+                } else if (!default(TOrder).LessThan(arr[betweenPivots], highPivotValue)) {
+                    while (default(TOrder).LessThan(highPivotValue, arr[highPivot]) && betweenPivots < highPivot)
+                        highPivot--;
+                    arr.Swap(betweenPivots, highPivot);
+                    highPivot--;
+                    if (default(TOrder).LessThan(arr[betweenPivots], lowPivotValue)) {
+                        arr.Swap(betweenPivots, lowPivot);
+                        lowPivot++;
+                    }
+                }
+
+                betweenPivots++;
+            }
+
+            lowPivot--;
+            highPivot++;
+
+            // bring pivots to their appropriate positions.
+            arr.Swap(firstIdx, lowPivot);
+            arr.Swap(lastIdx, highPivot);
+
+            return (lowPivot, highPivot);
+        }
+
+        static void BitonicSort(int logn, T[] array, int firstIdx)
+        {
+            var endIdx = firstIdx + (1 << logn);
+            var mask = (1 << logn) - 1;
+
+            for (var i = 0; i < logn; i++)
+            for (var j = 0; j <= i; j++) {
+                var bitMask = 1 << (i - j);
+
+                for (var idx = firstIdx; idx < endIdx; idx++) {
+                    var up = (((idx & mask) >> i) & 2) == 0;
+
+                    if ((idx & bitMask) == 0 && default(TOrder).LessThan(array[idx | bitMask], array[idx]) == up) {
+                        var t = array[idx];
+                        array[idx] = array[idx | bitMask];
+                        array[idx | bitMask] = t;
+                    }
+                }
             }
         }
 
@@ -273,7 +493,7 @@ namespace SortAlgoBench
             while (readIdx < idxEnd) {
                 var x = array[readIdx];
                 //writeIdx == readIdx -1;
-                while (writeIdx >= firstIdx && Ordering.LessThan(x, array[writeIdx])) {
+                while (writeIdx >= firstIdx && default(TOrder).LessThan(x, array[writeIdx])) {
                     array[writeIdx + 1] = array[writeIdx];
                     writeIdx--;
                 }
@@ -285,6 +505,26 @@ namespace SortAlgoBench
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SelectionSort_InPlace(T[] a, int firstIdx, int idxEnd)
+        {
+            var lastIdx = idxEnd - 1;
+            for (var j = firstIdx; j < lastIdx; j++) {
+                var iMin = j;
+                var minVal = a[iMin];
+                for (var i = j + 1; i < idxEnd; i++)
+                    if (default(TOrder).LessThan(a[i], minVal)) {
+                        iMin = i;
+                        minVal = a[i];
+                    }
+
+                if (iMin != j) {
+                    a[iMin] = a[j];
+                    a[j] = minVal;
+                }
+            }
+        }
+
         public static void InsertionSort_Copy(T[] source, int firstIdx, int idxEnd, T[] target)
         {
             var readIdx = firstIdx;
@@ -293,7 +533,7 @@ namespace SortAlgoBench
             while (readIdx < idxEnd) {
                 var x = source[readIdx];
                 //writeIdx == readIdx -1;
-                while (writeIdx > firstIdx && Ordering.LessThan(x, target[writeIdx - 1])) {
+                while (writeIdx > firstIdx && default(TOrder).LessThan(x, target[writeIdx - 1])) {
                     target[writeIdx] = target[writeIdx - 1];
                     writeIdx--;
                 }
@@ -303,7 +543,7 @@ namespace SortAlgoBench
             }
         }
 
-        const int TopDownInsertionSortBatchSize = 48;
+        const int TopDownInsertionSortBatchSize = 40;
         const int BottomUpInsertionSortBatchSize = 32;
 
         static void AltTopDownMergeSort(T[] items, T[] scratch, int n)
@@ -335,8 +575,6 @@ namespace SortAlgoBench
         static void CopyingTopDownSplitMerge(T[] src, T[] items, T[] scratch, int firstIdx, int endIdx)
         {
             if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                //CopyArray(src, firstIdx, endIdx, items);
-                //InsertionSort_InPlace(items, firstIdx, endIdx);
                 InsertionSort_Copy(src, firstIdx, endIdx, items);
                 return;
             }
@@ -347,6 +585,34 @@ namespace SortAlgoBench
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
         }
 
+        static void TopDownSplitMerge_toItems_Par(T[] items, int firstIdx, int endIdx, T[] scratch)
+        {
+            if (endIdx - firstIdx < 500) {
+                TopDownSplitMerge_toItems(items, firstIdx, endIdx, scratch);
+                return;
+            }
+
+            var middleIdx = (endIdx + firstIdx) / 2;
+            var t = Task.Run(() => TopDownSplitMerge_toScratch_Par(items, firstIdx, middleIdx, scratch));
+            TopDownSplitMerge_toScratch_Par(items, middleIdx, endIdx, scratch);
+            t.Wait();
+            Merge(scratch, firstIdx, middleIdx, endIdx, items);
+        }
+
+        static void TopDownSplitMerge_toScratch_Par(T[] items, int firstIdx, int endIdx, T[] scratch)
+        {
+            if (endIdx - firstIdx < 500) {
+                TopDownSplitMerge_toScratch(items, firstIdx, endIdx, scratch);
+                return;
+            }
+
+            var middleIdx = (endIdx + firstIdx) / 2;
+            var t = Task.Run(() => TopDownSplitMerge_toItems_Par(items, firstIdx, middleIdx, scratch));
+            TopDownSplitMerge_toItems_Par(items, middleIdx, endIdx, scratch);
+            t.Wait();
+            Merge(items, firstIdx, middleIdx, endIdx, scratch);
+        }
+
         static void TopDownSplitMerge_toItems(T[] items, int firstIdx, int endIdx, T[] scratch)
         {
             if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
@@ -355,8 +621,9 @@ namespace SortAlgoBench
             }
 
             var middleIdx = (endIdx + firstIdx) / 2;
-            TopDownSplitMerge_toScratch(items, firstIdx, middleIdx, scratch);
+            var t = Task.Run(() => TopDownSplitMerge_toScratch(items, firstIdx, middleIdx, scratch));
             TopDownSplitMerge_toScratch(items, middleIdx, endIdx, scratch);
+            t.Wait();
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
         }
 
@@ -368,8 +635,9 @@ namespace SortAlgoBench
             }
 
             var middleIdx = (endIdx + firstIdx) / 2;
-            TopDownSplitMerge_toItems(items, firstIdx, middleIdx, scratch);
+            var t = Task.Run(() => TopDownSplitMerge_toItems(items, firstIdx, middleIdx, scratch));
             TopDownSplitMerge_toItems(items, middleIdx, endIdx, scratch);
+            t.Wait();
             Merge(items, firstIdx, middleIdx, endIdx, scratch);
         }
 
@@ -377,7 +645,7 @@ namespace SortAlgoBench
         {
             int i = firstIdx, j = middleIdx, k = firstIdx;
             while (true)
-                if (!Ordering.LessThan(source[j], source[i])) {
+                if (!default(TOrder).LessThan(source[j], source[i])) {
                     target[k++] = source[i++];
                     if (i == middleIdx) {
                         while (j < endIdx)
@@ -397,10 +665,12 @@ namespace SortAlgoBench
         static void BottomUpMergeSort(T[] target, T[] scratchSpace, int n)
         {
             var batchesSortedUpto = 0;
+            const int batchSize = BottomUpInsertionSortBatchSize;
+
             while (true)
-                if (batchesSortedUpto + BottomUpInsertionSortBatchSize <= n) {
-                    InsertionSort_InPlace(target, batchesSortedUpto, batchesSortedUpto + BottomUpInsertionSortBatchSize);
-                    batchesSortedUpto += BottomUpInsertionSortBatchSize;
+                if (batchesSortedUpto + batchSize <= n) {
+                    InsertionSort_InPlace(target, batchesSortedUpto, batchesSortedUpto + batchSize);
+                    batchesSortedUpto += batchSize;
                 } else {
                     if (n - batchesSortedUpto >= 2)
                         InsertionSort_InPlace(target, batchesSortedUpto, n);
@@ -410,7 +680,7 @@ namespace SortAlgoBench
             var A = target;
             var B = scratchSpace;
 
-            for (var width = BottomUpInsertionSortBatchSize; width < n; width = width << 1) {
+            for (var width = batchSize; width < n; width = width << 1) {
                 var i = 0;
                 while (i + width + width <= n) {
                     Merge(A, i, i + width, i + width + width, B);
@@ -421,9 +691,7 @@ namespace SortAlgoBench
                     Merge(A, i, i + width, n, B);
                 else
                     CopyArray(A, i, n, B);
-                var tmp = A;
-                A = B;
-                B = tmp;
+                (A, B) = (B, A);
             }
 
             if (target != A)
@@ -443,7 +711,7 @@ namespace SortAlgoBench
                     for (j = l + 2; j < r; j++) {
                         var t = a[j];
                         var i = j - 1;
-                        while (i != l && Ordering.LessThan(t, a[i])) {
+                        while (i != l && default(TOrder).LessThan(t, a[i])) {
                             a[i + 1] = a[i];
                             i--;
                         }
@@ -474,9 +742,7 @@ namespace SortAlgoBench
                     Merge(a, ll, rr, ee, b);
                 }
 
-                var tmp = a; // swap a and b
-                a = b;
-                b = tmp;
+                (a, b) = (b, a);
                 s <<= 1; // double the run size
             }
         }
@@ -494,5 +760,11 @@ namespace SortAlgoBench
             for (var k = firstIdx; k < endIdx; k++)
                 target[k] = source[k];
         }
+    }
+
+    static class ArrSwapHelper
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Swap<T>(this T[] arr, int a, int b) { (arr[a], arr[b]) = (arr[b], arr[a]); }
     }
 }
