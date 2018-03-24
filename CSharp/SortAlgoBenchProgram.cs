@@ -14,12 +14,12 @@ namespace SortAlgoBench
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
             Randomize(uint64SourceData);
+            BenchSort((arr, len) => Array.Sort(arr, 0, len));
+            BenchSort((arr, len) => UInt64OrderingAlgorithms.QuickSort(arr, len));
             BenchSort((arr, len) => UInt64OrderingAlgorithms.BottomUpMergeSort(arr, len));
             BenchSort((arr, len) => UInt64OrderingAlgorithms.BottomUpMergeSort2(arr, len));
             BenchSort((arr, len) => UInt64OrderingAlgorithms.TopDownMergeSort(arr, len));
             return;
-            BenchSort((arr, len) => UInt64OrderingAlgorithms.QuickSort(arr, len));
-            BenchSort((arr, len) => Array.Sort(arr, 0, len));
             BenchSort((arr, len) => UInt64OrderingAlgorithms.AltTopDownMergeSort(arr, len));
         }
 
