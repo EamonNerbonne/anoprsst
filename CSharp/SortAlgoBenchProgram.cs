@@ -86,7 +86,7 @@ namespace SortAlgoBench
 
             milliseconds.Sort();
 
-            var msDistrib = MeanVarianceAccumulator.FromSequence(milliseconds.Take(milliseconds.Count * 3 / 4));
+            var msDistrib = MeanVarianceAccumulator.FromSequence(milliseconds.Take(milliseconds.Count >>1));
             var meanLen = sizes.Average();
             Console.WriteLine($"{txt}: {Helpers.MSE(msDistrib)} (ms) for {sizes.Count} arrays of on average {meanLen:f1} items");
         }
