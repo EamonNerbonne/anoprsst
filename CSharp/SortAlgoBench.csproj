@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExpressionToCodeLib" Version="2.7.0" />
     <PackageReference Include="IncrementalMeanVarianceAccumulator" Version="1.0.0" />
   </ItemGroup>
 

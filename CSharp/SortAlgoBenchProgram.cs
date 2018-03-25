@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using ExpressionToCodeLib;
 using IncrementalMeanVarianceAccumulator;
 
 // ReSharper disable UnusedMember.Global
@@ -15,18 +13,19 @@ namespace SortAlgoBench
 {
     static class SortAlgoBenchProgram
     {
-        public const int MaxArraySize = 1 << 14 << 3;
+        public const int MaxArraySize = 1 << 15 << 3;
         public const int TimingTrials = 250;
-        public const int IterationsPerTrial = 12;
+        public const int IterationsPerTrial = 10;
         public static readonly int ParallelSplitScale = Helpers.ProcScale();
 
         static void Main()
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            UInt64OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt64()).BenchVariousAlgos();
+            //UInt64OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt64()).BenchVariousAlgos();
             Int32OrderingAlgorithms.BencherFor(Helpers.RandomizeInt32()).BenchVariousAlgos();
-            UInt32OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt32()).BenchVariousAlgos();
-            PairOrderingAlgorithms.BencherFor(Helpers.RandomizePairs()).BenchVariousAlgos();
+            SampleClassOrderingAlgorithms.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
+            //UInt32OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt32()).BenchVariousAlgos();
+            //PairOrderingAlgorithms.BencherFor(Helpers.RandomizePairs()).BenchVariousAlgos();
         }
     }
 
@@ -35,16 +34,17 @@ namespace SortAlgoBench
     {
         public void BenchVariousAlgos()
         {
-            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr, len));
-            BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.QuickSort(arr, len));
-            BenchSort((arr, len) => Array.Sort(arr, 0, len));
-            //BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.BottomUpMergeSort(arr, len));
-            //BenchSort((arr, len) => Array.Sort(arr, 0, len));
-            //BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.DualPivotQuickSort(arr, len));
-            //BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.TopDownMergeSort(arr, len));
-            //BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2(arr, len));
-            //BenchSort((arr, len) => OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort(arr, len));
+            BenchSort(SystemArraySort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
+            //BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
+            //BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
+            //BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
+            //BenchSort(OrderedAlgorithms<T, TOrder>.TopDownMergeSort);
+            //BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2);
+            //BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
         }
+
+        static void SystemArraySort(T[] arr, int len) { Array.Sort(arr, 0, len); }
 
         public SortAlgorithmBench(T[] uint64SourceData)
         {
@@ -63,10 +63,9 @@ namespace SortAlgoBench
             return len;
         }
 
-        public void BenchSort(Expression<Action<T[], int>> expr)
+        public void BenchSort(Action<T[], int> action)
         {
-            var action = expr.Compile();
-            var txt = ExpressionToCode.GetNameIn(expr.Body) + "|" + typeof(T).ToCSharpFriendlyTypeName();
+            var txt = action.Method.Name + "|" + typeof(T).Name;
             Validate(action, txt); //also a warmup
             var sizes = new List<int>();
             var milliseconds = new List<double>();
@@ -156,6 +155,21 @@ namespace SortAlgoBench
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan((int, int) a, (int, int) b) => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
+        }
+    }
+
+    class SampleClass : IComparable<SampleClass>
+    {
+        public int Value;
+        public int CompareTo(SampleClass other) => Value.CompareTo(other.Value);
+    }
+
+    abstract class SampleClassOrderingAlgorithms : OrderedAlgorithms<SampleClass, SampleClassOrderingAlgorithms.Order>
+    {
+        public struct Order : IOrdering<SampleClass>
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool LessThan(SampleClass a, SampleClass b) => a.Value < b.Value;
         }
     }
 
@@ -755,6 +769,15 @@ namespace SortAlgoBench
             var r = new Random(37);
             for (var j = 0; j < arr.Length; j++)
                 arr[j] = r.Next();
+            return arr;
+        }
+
+        public static SampleClass[] RandomizeSampleClass()
+        {
+            var arr = new SampleClass[SortAlgoBenchProgram.MaxArraySize];
+            var r = new Random(37);
+            for (var j = 0; j < arr.Length; j++)
+                arr[j] = new SampleClass { Value = r.Next() };
             return arr;
         }
 
