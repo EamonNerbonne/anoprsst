@@ -215,7 +215,11 @@ namespace SortAlgoBench
             => BottomUpMergeSort2(array, GetCachedAccumulator(endIdx), endIdx);
 
         public static void QuickSort(T[] array) => QuickSort(array, 0, array.Length);
-        public static void QuickSort(T[] array, int endIdx) => QuickSort_Inclusive(array, 0, endIdx - 1);
+
+        public static void QuickSort(T[] array, int endIdx) =>
+            QuickSort_Inclusive_Small_Unsafe(ref array[0], 0, endIdx - 1);
+        //QuickSort_Inclusive_Small(array, 0, endIdx - 1);
+
         public static void QuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive(array, firstIdx, endIdx - 1); }
         public static void ParallelQuickSort(T[] array) => QuickSort_Inclusive_Parallel(array, 0, array.Length);
         public static void ParallelQuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
@@ -288,10 +292,24 @@ namespace SortAlgoBench
                 }
         }
 
+        static void QuickSort_Inclusive_Unsafe(ref T ptr, int firstIdx, int lastIdx)
+        {
+            while (true)
+                if (lastIdx - firstIdx < TopDownInsertionSortBatchSize << 8) {
+                    QuickSort_Inclusive_Small_Unsafe(ref ptr, firstIdx, lastIdx);
+                    return;
+                } else {
+                    var pivot = PartitionMedian5_Unsafe(ref ptr, firstIdx, lastIdx);
+                    QuickSort_Inclusive_Unsafe(ref ptr, pivot + 1, lastIdx);
+                    lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
+                }
+        }
+
         static void QuickSort_Inclusive_Small(T[] array, int firstIdx, int lastIdx)
         {
             while (true)
                 if (lastIdx - firstIdx < TopDownInsertionSortBatchSize) {
+                    //InsertionSort_InPlace_Unsafe(ref array[0], firstIdx, lastIdx + 1);
                     InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
                     return;
                 } else {
@@ -299,6 +317,36 @@ namespace SortAlgoBench
                     QuickSort_Inclusive_Small(array, pivot + 1, lastIdx);
                     lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
                 }
+        }
+
+        static unsafe void QuickSort_Inclusive_Small_Unsafe(ref T ptr, int firstIdx, int lastIdx)
+        {
+            while (true)
+                if (lastIdx - firstIdx < TopDownInsertionSortBatchSize) {
+                    InsertionSort_InPlace_Unsafe(ref ptr, firstIdx, lastIdx + 1);
+                    return;
+                } else {
+                    var pivot = Partition_Unsafe(ref ptr, firstIdx, lastIdx);
+                    QuickSort_Inclusive_Small_Unsafe(ref ptr, pivot + 1, lastIdx);
+                    lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
+                }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe int Partition_Unsafe(ref T ptr, int firstIdx, int lastIdx)
+        {
+            var pivotValue = Unsafe.Add(ref ptr, (firstIdx + lastIdx) >> 1);
+            while (true) {
+                while (default(TOrder).LessThan(Unsafe.Add(ref ptr, firstIdx), pivotValue))
+                    firstIdx++;
+                while (default(TOrder).LessThan(pivotValue, Unsafe.Add(ref ptr, lastIdx)))
+                    lastIdx--;
+                if (lastIdx <= firstIdx)
+                    return lastIdx;
+                (Unsafe.Add(ref ptr, firstIdx), Unsafe.Add(ref ptr, lastIdx)) = (Unsafe.Add(ref ptr, lastIdx), Unsafe.Add(ref ptr, firstIdx));
+                firstIdx++;
+                lastIdx--;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -322,10 +370,10 @@ namespace SortAlgoBench
         static int PartitionMedian5(T[] array, int firstIdx, int lastIdx)
         {
             var half = lastIdx - firstIdx >> 1;
-            int a = firstIdx, b = firstIdx + 1, c = firstIdx + half, d = lastIdx - 1, e = lastIdx;
-            SortFiveIndexes(array, a, b, c, d, e);
+            ref var c = ref array[firstIdx + half];
+            SortFiveIndexes(ref array[firstIdx], ref array[firstIdx + 1], ref c, ref array[lastIdx - 1], ref array[lastIdx]);
 
-            var pivotValue = array[c];
+            var pivotValue = c;
             firstIdx += 2;
             lastIdx -= 2;
             while (true) {
@@ -341,17 +389,45 @@ namespace SortAlgoBench
             }
         }
 
-        static void SortFiveIndexes(T[] array, int a, int b, int c, int d, int e)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static int PartitionMedian5_Unsafe(ref T ptr, int firstIdx, int lastIdx)
         {
-            if (default(TOrder).LessThan(array[e], array[a])) (array[e], array[a]) = (array[a], array[e]);
-            if (default(TOrder).LessThan(array[d], array[b])) (array[d], array[b]) = (array[b], array[d]);
-            if (default(TOrder).LessThan(array[c], array[a])) (array[c], array[a]) = (array[a], array[c]);
-            if (default(TOrder).LessThan(array[e], array[c])) (array[e], array[c]) = (array[c], array[e]);
-            if (default(TOrder).LessThan(array[b], array[a])) (array[b], array[a]) = (array[a], array[b]);
-            if (default(TOrder).LessThan(array[d], array[c])) (array[d], array[c]) = (array[c], array[d]);
-            if (default(TOrder).LessThan(array[e], array[b])) (array[e], array[b]) = (array[b], array[e]);
-            if (default(TOrder).LessThan(array[c], array[b])) (array[c], array[b]) = (array[b], array[c]);
-            if (default(TOrder).LessThan(array[e], array[d])) (array[e], array[d]) = (array[d], array[e]);
+            var half = lastIdx - firstIdx >> 1;
+            ref var c = ref Unsafe.Add(ref ptr, firstIdx + half);
+            SortFiveIndexes(
+                ref Unsafe.Add(ref ptr, firstIdx),
+                ref Unsafe.Add(ref ptr, firstIdx + 1),
+                ref c,
+                ref Unsafe.Add(ref ptr, lastIdx - 1),
+                ref Unsafe.Add(ref ptr, lastIdx));
+
+            var pivotValue = c;
+            firstIdx += 2;
+            lastIdx -= 2;
+            while (true) {
+                while (default(TOrder).LessThan(Unsafe.Add(ref ptr, firstIdx), pivotValue))
+                    firstIdx++;
+                while (default(TOrder).LessThan(pivotValue, Unsafe.Add(ref ptr, lastIdx)))
+                    lastIdx--;
+                if (lastIdx <= firstIdx)
+                    return lastIdx;
+                (Unsafe.Add(ref ptr, firstIdx), Unsafe.Add(ref ptr, lastIdx)) = (Unsafe.Add(ref ptr, lastIdx), Unsafe.Add(ref ptr, firstIdx));
+                firstIdx++;
+                lastIdx--;
+            }
+        }
+
+        static void SortFiveIndexes(ref T a, ref T b, ref T c, ref T d, ref T e)
+        {
+            if (default(TOrder).LessThan(e, a)) (e, a) = (a, e);
+            if (default(TOrder).LessThan(d, b)) (d, b) = (b, d);
+            if (default(TOrder).LessThan(c, a)) (c, a) = (a, c);
+            if (default(TOrder).LessThan(e, c)) (e, c) = (c, e);
+            if (default(TOrder).LessThan(b, a)) (b, a) = (a, b);
+            if (default(TOrder).LessThan(d, c)) (d, c) = (c, d);
+            if (default(TOrder).LessThan(e, b)) (e, b) = (b, e);
+            if (default(TOrder).LessThan(c, b)) (c, b) = (b, c);
+            if (default(TOrder).LessThan(e, d)) (e, d) = (d, e);
         }
 
         static void SortThreeIndexes(T[] array, int a, int b, int c)
@@ -452,6 +528,26 @@ namespace SortAlgoBench
 
                 if (writeIdx + 1 != readIdx)
                     array[writeIdx + 1] = x;
+                writeIdx = readIdx;
+                readIdx = readIdx + 1;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void InsertionSort_InPlace_Unsafe(ref T ptr, int firstIdx, int idxEnd)
+        {
+            var writeIdx = firstIdx;
+            var readIdx = writeIdx + 1;
+            while (readIdx < idxEnd) {
+                var x = Unsafe.Add(ref ptr, readIdx);
+                //writeIdx == readIdx -1;
+                while (writeIdx >= firstIdx && default(TOrder).LessThan(x, Unsafe.Add(ref ptr, writeIdx))) {
+                    Unsafe.Add(ref ptr, writeIdx + 1) = Unsafe.Add(ref ptr, writeIdx);
+                    writeIdx--;
+                }
+
+                if (writeIdx + 1 != readIdx)
+                    Unsafe.Add(ref ptr, writeIdx + 1) = x;
                 writeIdx = readIdx;
                 readIdx = readIdx + 1;
             }
