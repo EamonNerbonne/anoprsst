@@ -21,13 +21,13 @@ namespace SortAlgoBench
         static void Main()
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            SampleClassOrderingAlgorithms.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
             Int32OrderingAlgorithms.BencherFor(Helpers.RandomizeInt32()).BenchVariousAlgos();
-            ComparableOrderingAlgorithms<int>.BencherFor(Helpers.RandomizeInt32()).BenchVariousAlgos();
             UInt64OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt64()).BenchVariousAlgos();
+            SampleClassOrderingAlgorithms.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
+            PairOrderingAlgorithms.BencherFor(Helpers.RandomizePairs()).BenchVariousAlgos();
+            ComparableOrderingAlgorithms<int>.BencherFor(Helpers.RandomizeInt32()).BenchVariousAlgos();
             ComparableOrderingAlgorithms<SampleClass>.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
             //UInt32OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt32()).BenchVariousAlgos();
-            //PairOrderingAlgorithms.BencherFor(Helpers.RandomizePairs()).BenchVariousAlgos();
         }
     }
 
@@ -36,14 +36,17 @@ namespace SortAlgoBench
     {
         public void BenchVariousAlgos()
         {
+            Console.WriteLine("Benchmarking array of "+typeof(T).Name + " with ordering "+typeof(TOrder).FullName +" (where relevant)");
             BenchSort(SystemArraySort);
             BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
-            BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2);
             BenchSort(OrderedAlgorithms<T, TOrder>.TopDownMergeSort);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.ParallelDualPivotQuickSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.ParallelTopDownMergeSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
+            Console.WriteLine();
         }
 
         static void SystemArraySort(T[] arr, int len) { Array.Sort(arr, 0, len); }
