@@ -222,6 +222,9 @@ namespace SortAlgoBench
         }
 
         public static void TopDownMergeSort(T[] array, int endIdx)
+            => TopDownSplitMerge_toItems(array, 0, endIdx, GetCachedAccumulator(endIdx));
+        
+        public static void ParallelTopDownMergeSort(T[] array, int endIdx)
             => TopDownSplitMerge_toItems_Par(array, 0, endIdx, GetCachedAccumulator(endIdx));
 
         public static T[] TopDownMergeSort_Copy(T[] array, int endIdx)
@@ -246,9 +249,9 @@ namespace SortAlgoBench
         public static void ParallelQuickSort(T[] array) => QuickSort_Inclusive_Parallel(array, 0, array.Length);
         public static void ParallelQuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
         public static void ParallelQuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Parallel(array, firstIdx, endIdx - 1); }
-        public static void DualPivotQuickSort(T[] array) => DualPivotQuickSort_Inclusive(array, 0, array.Length - 1);
-        public static void DualPivotQuickSort(T[] array, int endIdx) => DualPivotQuickSort_Inclusive(array, 0, endIdx - 1);
-        public static void DualPivotQuickSort(T[] array, int firstIdx, int endIdx) => DualPivotQuickSort_Inclusive(array, firstIdx, endIdx - 1);
+        public static void ParallelDualPivotQuickSort(T[] array) => DualPivotQuickSort_Inclusive(array, 0, array.Length - 1);
+        public static void ParallelDualPivotQuickSort(T[] array, int endIdx) => DualPivotQuickSort_Inclusive(array, 0, endIdx - 1);
+        public static void ParallelDualPivotQuickSort(T[] array, int firstIdx, int endIdx) => DualPivotQuickSort_Inclusive(array, firstIdx, endIdx - 1);
 
         static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx)
         {
@@ -722,9 +725,8 @@ namespace SortAlgoBench
             }
 
             var middleIdx = (endIdx + firstIdx) / 2;
-            var t = Task.Run(() => TopDownSplitMerge_toScratch(items, firstIdx, middleIdx, scratch));
+            TopDownSplitMerge_toScratch(items, firstIdx, middleIdx, scratch);
             TopDownSplitMerge_toScratch(items, middleIdx, endIdx, scratch);
-            t.Wait();
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
         }
 
@@ -736,9 +738,8 @@ namespace SortAlgoBench
             }
 
             var middleIdx = (endIdx + firstIdx) / 2;
-            var t = Task.Run(() => TopDownSplitMerge_toItems(items, firstIdx, middleIdx, scratch));
+            TopDownSplitMerge_toItems(items, firstIdx, middleIdx, scratch);
             TopDownSplitMerge_toItems(items, middleIdx, endIdx, scratch);
-            t.Wait();
             Merge(items, firstIdx, middleIdx, endIdx, scratch);
         }
 
