@@ -105,6 +105,16 @@ namespace SortAlgoBench
                     checkSum = checkSum + l.GetHashCode();
                 }
 
+                if (len > 50) {
+                    var sorted = true;
+                    for (var j = 1; j < len; j++)
+                        if (!default(TOrder).LessThan(workspace[j], workspace[j - 1]))
+                            sorted = false;
+                    if (sorted)
+                        Console.WriteLine("Already sorted??");
+                    break;
+                }
+
                 sw.Start();
                 action(workspace, len);
                 sw.Stop();
