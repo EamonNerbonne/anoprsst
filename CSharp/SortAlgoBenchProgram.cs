@@ -495,7 +495,7 @@ namespace SortAlgoBench
 
         static void DualPivotQuickSort_Inclusive(T[] array, int firstIdx, int lastIdx)
         {
-            if (lastIdx - firstIdx < 500) {
+            if (lastIdx - firstIdx < 400) {
                 QuickSort_Inclusive(array, firstIdx, lastIdx);
                 //InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
             } else {
@@ -691,7 +691,7 @@ namespace SortAlgoBench
 
         static void TopDownSplitMerge_toItems_Par(T[] items, int firstIdx, int endIdx, T[] scratch)
         {
-            if (endIdx - firstIdx < 500) {
+            if (endIdx - firstIdx < 400) {
                 TopDownSplitMerge_toItems(items, firstIdx, endIdx, scratch);
                 return;
             }
@@ -705,7 +705,7 @@ namespace SortAlgoBench
 
         static void TopDownSplitMerge_toScratch_Par(T[] items, int firstIdx, int endIdx, T[] scratch)
         {
-            if (endIdx - firstIdx < 500) {
+            if (endIdx - firstIdx < 400) {
                 TopDownSplitMerge_toScratch(items, firstIdx, endIdx, scratch);
                 return;
             }
