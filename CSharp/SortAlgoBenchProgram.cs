@@ -48,20 +48,20 @@ namespace SortAlgoBench
 
         static void SystemArraySort(T[] arr, int len) { Array.Sort(arr, 0, len); }
 
-        public SortAlgorithmBench(T[] uint64SourceData)
+        public SortAlgorithmBench(T[] sourceData)
         {
-            this.uint64SourceData = uint64SourceData;
-            uint64Array = new T[uint64SourceData.Length >> 3];
+            this.sourceData = sourceData;
+            workspace = new T[sourceData.Length >> 3];
         }
 
-        readonly T[] uint64Array;
-        readonly T[] uint64SourceData;
+        readonly T[] workspace;
+        readonly T[] sourceData;
 
         int RefreshData(Random random)
         {
-            var len = random.Next(uint64Array.Length + 1);
-            var offset = random.Next(uint64SourceData.Length - len + 1);
-            Array.Copy(uint64SourceData, offset, uint64Array, 0, len);
+            var len = random.Next(workspace.Length + 1);
+            var offset = random.Next(sourceData.Length - len + 1);
+            Array.Copy(sourceData, offset, workspace, 0, len);
             return len;
         }
 
@@ -77,7 +77,7 @@ namespace SortAlgoBench
                 for (var k = 0; k < SortAlgoBenchProgram.IterationsPerTrial; k++) {
                     var len = RefreshData(random);
                     sw.Start();
-                    action(uint64Array, len);
+                    action(workspace, len);
                     sw.Stop();
                     if (i == 0)
                         sizes.Add(len);
@@ -101,22 +101,22 @@ namespace SortAlgoBench
                 var len = RefreshData(random);
                 long checkSum = 0;
                 for (var j = 0; j < len; j++) {
-                    var l = uint64Array[j];
+                    var l = workspace[j];
                     checkSum = checkSum + l.GetHashCode();
                 }
 
                 sw.Start();
-                action(uint64Array, len);
+                action(workspace, len);
                 sw.Stop();
                 for (var j = 0; j < len; j++) {
-                    var l = uint64Array[j];
+                    var l = workspace[j];
                     checkSum = checkSum - l.GetHashCode();
                 }
 
                 if (checkSum != 0)
                     Console.WriteLine(txt + " has differing elements before and after sort");
                 for (var j = 1; j < len; j++)
-                    if (default(TOrder).LessThan(uint64Array[j], uint64Array[j - 1])) {
+                    if (default(TOrder).LessThan(workspace[j], workspace[j - 1])) {
                         Console.WriteLine(txt + " did not sort.");
                         break;
                     }
