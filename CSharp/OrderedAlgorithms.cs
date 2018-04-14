@@ -435,8 +435,9 @@ namespace SortAlgoBench
             var writeIdx = firstIdx;
             var readIdx = firstIdx + 1;
             while (readIdx < idxEnd) {
-                //writeIdx + 1 == readIdx;
-                //readIdx > firstIdx
+                Debug.Assert(writeIdx + 1 == readIdx);
+                Debug.Assert(readIdx > firstIdx);
+                Debug.Assert(writeIdx < readIdx);
 
                 var readPtr = Unsafe.Add(ref ptr, readIdx);
 
