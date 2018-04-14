@@ -36,7 +36,7 @@ namespace SortAlgoBench
     {
         public void BenchVariousAlgos()
         {
-            Console.WriteLine("Benchmarking array of "+typeof(T).Name + " with ordering "+typeof(TOrder).FullName +" (where relevant)");
+            Console.WriteLine("Benchmarking array of " + typeof(T).Name + " with ordering " + typeof(TOrder).FullName + " (where relevant)");
             BenchSort(SystemArraySort);
             BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
             BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
@@ -226,7 +226,7 @@ namespace SortAlgoBench
 
         public static void TopDownMergeSort(T[] array, int endIdx)
             => TopDownSplitMerge_toItems(array, 0, endIdx, GetCachedAccumulator(endIdx));
-        
+
         public static void ParallelTopDownMergeSort(T[] array, int endIdx)
             => TopDownSplitMerge_toItems_Par(array, 0, endIdx, GetCachedAccumulator(endIdx));
 
