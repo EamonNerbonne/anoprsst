@@ -246,7 +246,7 @@ namespace SortAlgoBench
 
         public static void QuickSort(T[] array, int endIdx) => //*
             QuickSort_Inclusive_Unsafe(ref array[0], 0, endIdx - 1); /*/
-            QuickSort_Inclusive_Small(array, 0, endIdx - 1);/**/
+            QuickSort_Inclusive(array, 0, endIdx - 1);/**/
 
         public static void QuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive(array, firstIdx, endIdx - 1); }
         public static void ParallelQuickSort(T[] array) => QuickSort_Inclusive_Parallel(array, 0, array.Length - 1);
@@ -582,15 +582,18 @@ namespace SortAlgoBench
             var writeIdx = firstIdx;
             var readIdx = writeIdx + 1;
             while (readIdx < idxEnd) {
-                var x = array[readIdx];
-                //writeIdx == readIdx -1;
-                while (writeIdx >= firstIdx && default(TOrder).LessThan(x, array[writeIdx])) {
-                    array[writeIdx + 1] = array[writeIdx];
-                    writeIdx--;
-                }
+                ref var readPtr = ref array[readIdx];
+                if (default(TOrder).LessThan(readPtr, array[writeIdx]))
+                    while (true) {
+                        array[writeIdx + 1] = array[writeIdx];
+                        if (writeIdx > firstIdx && default(TOrder).LessThan(readPtr, array[writeIdx - 1])) {
+                            writeIdx--;
+                        } else {
+                            array[writeIdx] = readPtr;
+                            break;
+                        }
+                    }
 
-                if (writeIdx + 1 != readIdx)
-                    array[writeIdx + 1] = x;
                 writeIdx = readIdx;
                 readIdx = readIdx + 1;
             }
