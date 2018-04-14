@@ -13,9 +13,9 @@ namespace SortAlgoBench
 {
     static class SortAlgoBenchProgram
     {
-        public const int MaxArraySize = 1 << 17 << 3;
-        public const int TimingTrials = 50;
-        public const int IterationsPerTrial = 40;
+        public const int MaxArraySize = 1 << 15 << 3;
+        public const int TimingTrials = 30;
+        public const int IterationsPerTrial = 20;
         public static readonly int ParallelSplitScale = Helpers.ProcScale();
 
         static void Main()
