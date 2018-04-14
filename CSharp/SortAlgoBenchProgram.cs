@@ -112,9 +112,10 @@ namespace SortAlgoBench
                     for (var j = 1; j < len; j++)
                         if (!default(TOrder).LessThan(workspace[j], workspace[j - 1]))
                             sorted = false;
-                    if (sorted)
+                    if (sorted) {
                         Console.WriteLine("Already sorted??");
-                    break;
+                        break;
+                    }
                 }
 
                 sw.Start();

@@ -390,7 +390,7 @@ namespace SortAlgoBench
             var writeIdx = firstIdx;
             var readIdx = writeIdx + 1;
             while (readIdx < idxEnd) {
-                ref var readPtr = ref array[readIdx];
+                var readPtr = array[readIdx];
                 if (default(TOrder).LessThan(readPtr, array[writeIdx]))
                     while (true) {
                         array[writeIdx + 1] = array[writeIdx];
@@ -438,7 +438,7 @@ namespace SortAlgoBench
                 //writeIdx + 1 == readIdx;
                 //readIdx > firstIdx
 
-                ref var readPtr = ref Unsafe.Add(ref ptr, readIdx);
+                var readPtr = Unsafe.Add(ref ptr, readIdx);
 
                 if (default(TOrder).LessThan(readPtr, Unsafe.Add(ref ptr, writeIdx)))
                     while (true) {
