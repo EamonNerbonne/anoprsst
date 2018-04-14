@@ -389,14 +389,6 @@ namespace SortAlgoBench
         static int Partition_Unsafe(ref T ptr, int firstIdx, int lastIdx)
         {
             var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
-            //if (default(TOrder).LessThan(Unsafe.Add(ref ptr, midpoint), Unsafe.Add(ref ptr, firstIdx)))
-            //    (Unsafe.Add(ref ptr, midpoint), Unsafe.Add(ref ptr, firstIdx)) = (Unsafe.Add(ref ptr, firstIdx), Unsafe.Add(ref ptr, midpoint));
-            //if (default(TOrder).LessThan(Unsafe.Add(ref ptr, lastIdx), Unsafe.Add(ref ptr, firstIdx)))
-            //    (Unsafe.Add(ref ptr, lastIdx), Unsafe.Add(ref ptr, firstIdx)) = (Unsafe.Add(ref ptr, firstIdx), Unsafe.Add(ref ptr, lastIdx));
-            //if (default(TOrder).LessThan(Unsafe.Add(ref ptr, lastIdx), Unsafe.Add(ref ptr, midpoint)))
-            //    (Unsafe.Add(ref ptr, lastIdx), Unsafe.Add(ref ptr, midpoint)) = (Unsafe.Add(ref ptr, midpoint), Unsafe.Add(ref ptr, lastIdx));
-            //firstIdx++;
-            //lastIdx--;
             var pivotValue = Unsafe.Add(ref ptr, midpoint);
             while (true) {
                 while (default(TOrder).LessThan(Unsafe.Add(ref ptr, firstIdx), pivotValue))
