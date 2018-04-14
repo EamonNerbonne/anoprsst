@@ -385,7 +385,7 @@ namespace SortAlgoBench
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int Partition_Unsafe(ref T ptr, int firstIdx, int lastIdx)
         {
-            var midpoint = (firstIdx + lastIdx) >> 1;
+            var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
             //if (default(TOrder).LessThan(Unsafe.Add(ref ptr, midpoint), Unsafe.Add(ref ptr, firstIdx)))
             //    (Unsafe.Add(ref ptr, midpoint), Unsafe.Add(ref ptr, firstIdx)) = (Unsafe.Add(ref ptr, firstIdx), Unsafe.Add(ref ptr, midpoint));
             //if (default(TOrder).LessThan(Unsafe.Add(ref ptr, lastIdx), Unsafe.Add(ref ptr, firstIdx)))
@@ -411,7 +411,8 @@ namespace SortAlgoBench
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int Partition(T[] array, int firstIdx, int lastIdx)
         {
-            var pivotValue = array[(firstIdx + lastIdx) >> 1];
+            var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
+            var pivotValue = array[midpoint];
             while (true) {
                 while (default(TOrder).LessThan(array[firstIdx], pivotValue))
                     firstIdx++;
@@ -428,8 +429,8 @@ namespace SortAlgoBench
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int PartitionMedian5(T[] array, int firstIdx, int lastIdx)
         {
-            var half = lastIdx - firstIdx >> 1;
-            ref var c = ref array[firstIdx + half];
+            var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
+            ref var c = ref array[firstIdx + midpoint];
             SortFiveIndexes(ref array[firstIdx], ref array[firstIdx + 1], ref c, ref array[lastIdx - 1], ref array[lastIdx]);
 
             var pivotValue = c;
@@ -451,8 +452,8 @@ namespace SortAlgoBench
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int PartitionMedian5_Unsafe(ref T ptr, int firstIdx, int lastIdx)
         {
-            var half = lastIdx - firstIdx >> 1;
-            ref var c = ref Unsafe.Add(ref ptr, firstIdx + half);
+            var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
+            ref var c = ref Unsafe.Add(ref ptr, firstIdx + midpoint);
             SortFiveIndexes(
                 ref Unsafe.Add(ref ptr, firstIdx),
                 ref Unsafe.Add(ref ptr, firstIdx + 1),
