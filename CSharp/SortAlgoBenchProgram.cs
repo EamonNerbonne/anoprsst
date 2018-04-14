@@ -605,20 +605,27 @@ namespace SortAlgoBench
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void InsertionSort_InPlace_Unsafe(ref T ptr, int firstIdx, int idxEnd)
+        static void InsertionSort_InPlace_Unsafe(ref T ptr, int firstIdx, int idxEnd)
         {
             var writeIdx = firstIdx;
-            var readIdx = writeIdx + 1;
+            var readIdx = firstIdx + 1;
             while (readIdx < idxEnd) {
-                var x = Unsafe.Add(ref ptr, readIdx);
-                //writeIdx == readIdx -1;
-                while (writeIdx >= firstIdx && default(TOrder).LessThan(x, Unsafe.Add(ref ptr, writeIdx))) {
-                    Unsafe.Add(ref ptr, writeIdx + 1) = Unsafe.Add(ref ptr, writeIdx);
-                    writeIdx--;
-                }
+                //writeIdx + 1 == readIdx;
+                //readIdx > firstIdx
 
-                if (writeIdx + 1 != readIdx)
-                    Unsafe.Add(ref ptr, writeIdx + 1) = x;
+                ref var readPtr = ref Unsafe.Add(ref ptr, readIdx);
+
+                if (default(TOrder).LessThan(readPtr, Unsafe.Add(ref ptr, writeIdx)))
+                    while (true) {
+                        Unsafe.Add(ref ptr, writeIdx + 1) = Unsafe.Add(ref ptr, writeIdx);
+                        if (writeIdx > firstIdx && default(TOrder).LessThan(readPtr, Unsafe.Add(ref ptr, writeIdx - 1))) {
+                            writeIdx--;
+                        } else {
+                            Unsafe.Add(ref ptr, writeIdx) = readPtr;
+                            break;
+                        }
+                    }
+
                 writeIdx = readIdx;
                 readIdx = readIdx + 1;
             }
