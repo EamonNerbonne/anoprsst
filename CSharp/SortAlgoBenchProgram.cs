@@ -242,7 +242,7 @@ namespace SortAlgoBench
         public static void BottomUpMergeSort2(T[] array, int endIdx)
             => BottomUpMergeSort2(array, GetCachedAccumulator(endIdx), endIdx);
 
-        public static void QuickSort(T[] array) => QuickSort(array, 0, array.Length);
+        public static void QuickSort(T[] array) => QuickSort_Inclusive(array, 0, array.Length - 1);
 
         public static void QuickSort(T[] array, int endIdx) => //*
             QuickSort_Inclusive_Unsafe(ref array[0], 0, endIdx - 1); /*/
