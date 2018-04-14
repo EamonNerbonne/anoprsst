@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -390,18 +391,18 @@ namespace SortAlgoBench
             var writeIdx = firstIdx;
             var readIdx = writeIdx + 1;
             while (readIdx < idxEnd) {
-                var readPtr = array[readIdx];
-                if (default(TOrder).LessThan(readPtr, array[writeIdx]))
+                if (default(TOrder).LessThan(array[readIdx], array[writeIdx])) {
+                    var readValue = array[readIdx];
                     while (true) {
                         array[writeIdx + 1] = array[writeIdx];
-                        if (writeIdx > firstIdx && default(TOrder).LessThan(readPtr, array[writeIdx - 1])) {
+                        if (writeIdx > firstIdx && default(TOrder).LessThan(readValue, array[writeIdx - 1])) {
                             writeIdx--;
                         } else {
-                            array[writeIdx] = readPtr;
+                            array[writeIdx] = readValue;
                             break;
                         }
                     }
-
+                }
                 writeIdx = readIdx;
                 readIdx = readIdx + 1;
             }
@@ -439,18 +440,19 @@ namespace SortAlgoBench
                 Debug.Assert(readIdx > firstIdx);
                 Debug.Assert(writeIdx < readIdx);
 
-                var readPtr = Unsafe.Add(ref ptr, readIdx);
+                if (default(TOrder).LessThan(Unsafe.Add(ref ptr, readIdx), Unsafe.Add(ref ptr, writeIdx))) {
+                    var readValue = Unsafe.Add(ref ptr, readIdx);
 
-                if (default(TOrder).LessThan(readPtr, Unsafe.Add(ref ptr, writeIdx)))
                     while (true) {
                         Unsafe.Add(ref ptr, writeIdx + 1) = Unsafe.Add(ref ptr, writeIdx);
-                        if (writeIdx > firstIdx && default(TOrder).LessThan(readPtr, Unsafe.Add(ref ptr, writeIdx - 1))) {
+                        if (writeIdx > firstIdx && default(TOrder).LessThan(readValue, Unsafe.Add(ref ptr, writeIdx - 1))) {
                             writeIdx--;
                         } else {
-                            Unsafe.Add(ref ptr, writeIdx) = readPtr;
+                            Unsafe.Add(ref ptr, writeIdx) = readValue;
                             break;
                         }
                     }
+                }
 
                 writeIdx = readIdx;
                 readIdx = readIdx + 1;
