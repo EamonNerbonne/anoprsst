@@ -249,7 +249,7 @@ namespace SortAlgoBench
             QuickSort_Inclusive_Small(array, 0, endIdx - 1);/**/
 
         public static void QuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive(array, firstIdx, endIdx - 1); }
-        public static void ParallelQuickSort(T[] array) => QuickSort_Inclusive_Parallel(array, 0, array.Length);
+        public static void ParallelQuickSort(T[] array) => QuickSort_Inclusive_Parallel(array, 0, array.Length - 1);
         public static void ParallelQuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
         public static void ParallelQuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Parallel(array, firstIdx, endIdx - 1); }
         public static void ParallelDualPivotQuickSort(T[] array) => DualPivotQuickSort_Inclusive(array, 0, array.Length - 1);
@@ -430,7 +430,7 @@ namespace SortAlgoBench
         static int PartitionMedian5(T[] array, int firstIdx, int lastIdx)
         {
             var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
-            ref var c = ref array[firstIdx + midpoint];
+            ref var c = ref array[midpoint];
             SortFiveIndexes(ref array[firstIdx], ref array[firstIdx + 1], ref c, ref array[lastIdx - 1], ref array[lastIdx]);
 
             var pivotValue = c;
@@ -453,7 +453,7 @@ namespace SortAlgoBench
         static int PartitionMedian5_Unsafe(ref T ptr, int firstIdx, int lastIdx)
         {
             var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
-            ref var c = ref Unsafe.Add(ref ptr, firstIdx + midpoint);
+            ref var c = ref Unsafe.Add(ref ptr, midpoint);
             SortFiveIndexes(
                 ref Unsafe.Add(ref ptr, firstIdx),
                 ref Unsafe.Add(ref ptr, firstIdx + 1),
