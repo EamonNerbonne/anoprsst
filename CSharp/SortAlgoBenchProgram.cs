@@ -489,11 +489,11 @@ namespace SortAlgoBench
             if (default(TOrder).LessThan(e, d)) (e, d) = (d, e);
         }
 
-        static void SortThreeIndexes(T[] array, int a, int b, int c)
+        static void SortThreeIndexes(ref T a, ref T b, ref T c)
         {
-            if (default(TOrder).LessThan(array[c], array[a])) (array[c], array[a]) = (array[a], array[c]);
-            if (default(TOrder).LessThan(array[b], array[a])) (array[b], array[a]) = (array[a], array[b]);
-            if (default(TOrder).LessThan(array[c], array[b])) (array[c], array[b]) = (array[b], array[c]);
+            if (default(TOrder).LessThan(c, a)) (c, a) = (a, c);
+            if (default(TOrder).LessThan(b, a)) (b, a) = (a, b);
+            if (default(TOrder).LessThan(c, b)) (c, b) = (b, c);
         }
 
         static void DualPivotQuickSort_Inclusive(T[] array, int firstIdx, int lastIdx)
