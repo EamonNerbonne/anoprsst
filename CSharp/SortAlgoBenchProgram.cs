@@ -345,6 +345,20 @@ namespace SortAlgoBench
                 }
         }
 
+        /*/
+        static void QuickSort_Inclusive_Unsafe(ref T ptr, int firstIdx, int lastIdx)
+        {
+            while (lastIdx - firstIdx >= TopDownInsertionSortBatchSize << 9) {
+                var pivot = PartitionMedian5_Unsafe(ref ptr, firstIdx, lastIdx);
+                QuickSort_Inclusive_Unsafe(ref ptr, pivot + 1, lastIdx);
+                lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
+            }
+
+            QuickSort_Inclusive_Small_Unsafe(ref ptr, firstIdx, lastIdx);
+        }
+        /**/
+
+        //*
         static void QuickSort_Inclusive_Small_Unsafe(ref T ptr, int firstIdx, int lastIdx)
         {
             while (true)
@@ -358,17 +372,6 @@ namespace SortAlgoBench
                 }
         }
         /*/
-        static void QuickSort_Inclusive_Unsafe(ref T ptr, int firstIdx, int lastIdx)
-        {
-            while (lastIdx - firstIdx >= TopDownInsertionSortBatchSize << 9) {
-                var pivot = PartitionMedian5_Unsafe(ref ptr, firstIdx, lastIdx);
-                QuickSort_Inclusive_Unsafe(ref ptr, pivot + 1, lastIdx);
-                lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
-            }
-
-            QuickSort_Inclusive_Small_Unsafe(ref ptr, firstIdx, lastIdx);
-        }
-
         static void QuickSort_Inclusive_Small_Unsafe(ref T ptr, int firstIdx, int lastIdx)
         {
             while (lastIdx - firstIdx >= TopDownInsertionSortBatchSize) {
@@ -454,15 +457,23 @@ namespace SortAlgoBench
         {
             var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
             ref var c = ref Unsafe.Add(ref ptr, midpoint);
+            //*
             SortFiveIndexes(
                 ref Unsafe.Add(ref ptr, firstIdx),
                 ref Unsafe.Add(ref ptr, firstIdx + 1),
                 ref c,
                 ref Unsafe.Add(ref ptr, lastIdx - 1),
                 ref Unsafe.Add(ref ptr, lastIdx));
-
             firstIdx += 2;
             lastIdx -= 2;
+            /*/
+            SortThreeIndexes(
+                ref Unsafe.Add(ref ptr, firstIdx),
+                ref c,
+                ref Unsafe.Add(ref ptr, lastIdx));
+            firstIdx += 1;
+            lastIdx -= 1;
+            /**/
             var pivotValue = c;
             while (true) {
                 while (default(TOrder).LessThan(Unsafe.Add(ref ptr, firstIdx), pivotValue))
