@@ -537,7 +537,7 @@ namespace SortAlgoBench
             }
         }
 
-        const int TopDownInsertionSortBatchSize = 64;
+        const int TopDownInsertionSortBatchSize = 44;
         const int BottomUpInsertionSortBatchSize = 32;
 
         static void AltTopDownMergeSort(T[] items, T[] scratch, int n)
