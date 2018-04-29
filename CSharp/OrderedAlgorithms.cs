@@ -176,7 +176,7 @@ namespace SortAlgoBench
                     InsertionSort_InPlace_Unsafe_Inclusive(ref Unsafe.Add(ref ptr, firstIdx), ref Unsafe.Add(ref ptr, lastIdx));
                     return;
                 } else {
-                    var pivot = Partition_Unsafe(ref ptr, firstIdx, lastIdx);
+                    var pivot = firstIdx+ Partition_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx- firstIdx);
                     QuickSort_Inclusive_Small_Unsafe(ref ptr, pivot + 1, lastIdx);
                     lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
                 }
@@ -196,20 +196,28 @@ namespace SortAlgoBench
         /**/
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static int Partition_Unsafe(ref T ptr, int firstIdx, int lastIdx)
+        unsafe static int Partition_Unsafe(ref T firstPtr, int lastOffset)
         {
-            var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
-            var pivotValue = Unsafe.Add(ref ptr, midpoint);
+            var midpoint = lastOffset>> 1;
+            var pivotValue = Unsafe.Add(ref firstPtr, midpoint);
+            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+            int firstOffset=0;
             while (true) {
-                while (default(TOrder).LessThan(Unsafe.Add(ref ptr, firstIdx), pivotValue))
-                    firstIdx++;
-                while (default(TOrder).LessThan(pivotValue, Unsafe.Add(ref ptr, lastIdx)))
-                    lastIdx--;
-                if (lastIdx <= firstIdx)
-                    return lastIdx;
-                (Unsafe.Add(ref ptr, firstIdx), Unsafe.Add(ref ptr, lastIdx)) = (Unsafe.Add(ref ptr, lastIdx), Unsafe.Add(ref ptr, firstIdx));
-                firstIdx++;
-                lastIdx--;
+                while (default(TOrder).LessThan(firstPtr, pivotValue)) {
+                    firstPtr = ref Unsafe.Add(ref firstPtr, 1); 
+                    firstOffset++; 
+                }
+                while (default(TOrder).LessThan(pivotValue, lastPtr)) {
+                    lastPtr = ref Unsafe.Subtract(ref lastPtr, 1); 
+                    lastOffset--;
+                }
+                if (lastOffset <= firstOffset)
+                    return lastOffset;
+                lastOffset--;
+                firstOffset++;
+                (firstPtr, lastPtr) = (lastPtr, firstPtr);
+                firstPtr = ref Unsafe.Add(ref firstPtr, 1);
+                lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
             }
         }
 
