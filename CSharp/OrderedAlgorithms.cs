@@ -477,6 +477,35 @@ namespace SortAlgoBench
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        unsafe static void InsertionSort_InPlace_Unsafe_Inclusive(ref T firstPtr, ref T lastPtr) {
+            if(Unsafe.AreSame(ref firstPtr, ref lastPtr))
+                return;
+            ref var writePtr = ref firstPtr;
+            ref var readPtr = ref Unsafe.Add(ref firstPtr, 1);
+            while (true) {//readIdx < idxEnd
+                var readValue = readPtr;
+                if (default(TOrder).LessThan(readValue, writePtr)) {
+                    while(true){
+                        Unsafe.Add(ref writePtr,  1) = writePtr;
+                        if(Unsafe.AreSame(ref writePtr, ref firstPtr)) {
+                            writePtr = readValue;
+                            break;
+                        }
+                        writePtr = ref Unsafe.Subtract(ref writePtr, 1);
+                        if(!default(TOrder).LessThan(readValue, writePtr)) 
+                        {
+                            Unsafe.Add(ref writePtr, 1) = readValue;
+                            break;
+                        }
+                    }
+                }
+                if(Unsafe.AreSame(ref readPtr, ref lastPtr))
+                    return;
+                writePtr = ref readPtr;
+                readPtr = ref Unsafe.Add(ref readPtr ,1);
+            }
+        }
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         //static void InsertionSort_InPlace_Unsafe(ref T ptr, int firstIdx, int idxEnd)

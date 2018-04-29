@@ -43,7 +43,7 @@ namespace SortAlgoBench
             //BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
             //BenchSort(OrderedAlgorithms<T, TOrder>.ParallelDualPivotQuickSort);
             //BenchSort(OrderedAlgorithms<T, TOrder>.ParallelTopDownMergeSort);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
 
             Console.WriteLine();
         }
