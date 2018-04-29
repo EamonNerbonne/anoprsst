@@ -8,77 +8,34 @@ Benchmarking array of Int32 with ordering SortAlgoBench.Int32OrderingAlgorithms+
 SystemArraySort|Int32: 11.1678~0.00063 (ms) for 20 arrays of on average 13684.7 items
 QuickSort|Int32: 11.561~0.0012 (ms) for 20 arrays of on average 13684.7 items
 ParallelQuickSort|Int32: 3.778~0.0046 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort|Int32: 14.6025~0.001 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort2|Int32: 14.248~0.0029 (ms) for 20 arrays of on average 13684.7 items
-TopDownMergeSort|Int32: 14.3337~0.0011 (ms) for 20 arrays of on average 13684.7 items
-AltTopDownMergeSort|Int32: 14.6284~0.00095 (ms) for 20 arrays of on average 13684.7 items
-ParallelDualPivotQuickSort|Int32: 5.053~0.0064 (ms) for 20 arrays of on average 13684.7 items
-ParallelTopDownMergeSort|Int32: 5.587~0.011 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of UInt64 with ordering SortAlgoBench.UInt64OrderingAlgorithms+UInt64Ordering (where relevant)
 SystemArraySort|UInt64: 11.97~0.00096 (ms) for 20 arrays of on average 13684.7 items
 QuickSort|UInt64: 11.157~0.0014 (ms) for 20 arrays of on average 13684.7 items
 ParallelQuickSort|UInt64: 3.934~0.0086 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort|UInt64: 14.921~0.0021 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort2|UInt64: 14.482~0.0023 (ms) for 20 arrays of on average 13684.7 items
-TopDownMergeSort|UInt64: 14.611~0.0018 (ms) for 20 arrays of on average 13684.7 items
-AltTopDownMergeSort|UInt64: 15.074~0.0014 (ms) for 20 arrays of on average 13684.7 items
-ParallelDualPivotQuickSort|UInt64: 5.12~0.0082 (ms) for 20 arrays of on average 13684.7 items
-ParallelTopDownMergeSort|UInt64: 5.793~0.0065 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of SampleClass with ordering SortAlgoBench.SampleClassOrderingAlgorithms+Order (where relevant)
 SystemArraySort|SampleClass: 32.982~0.0075 (ms) for 20 arrays of on average 13684.7 items
 QuickSort|SampleClass: 19.28~0.0025 (ms) for 20 arrays of on average 13684.7 items
 ParallelQuickSort|SampleClass: 6.082~0.007 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort|SampleClass: 27.227~0.0035 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort2|SampleClass: 28.09~0.004 (ms) for 20 arrays of on average 13684.7 items
-TopDownMergeSort|SampleClass: 25.816~0.0036 (ms) for 20 arrays of on average 13684.7 items
-AltTopDownMergeSort|SampleClass: 26.637~0.0027 (ms) for 20 arrays of on average 13684.7 items
-ParallelDualPivotQuickSort|SampleClass: 9.019~0.013 (ms) for 20 arrays of on average 13684.7 items
-ParallelTopDownMergeSort|SampleClass: 9.954~0.024 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of ValueTuple`2 with ordering SortAlgoBench.PairOrderingAlgorithms+PairOrder (where relevant)
 SystemArraySort|ValueTuple`2: 27.017~0.004 (ms) for 20 arrays of on average 13684.7 items
 QuickSort|ValueTuple`2: 12.399~0.0012 (ms) for 20 arrays of on average 13684.7 items
 ParallelQuickSort|ValueTuple`2: 4.144~0.0042 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort|ValueTuple`2: 18.417~0.0023 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort2|ValueTuple`2: 17.693~0.0017 (ms) for 20 arrays of on average 13684.7 items
-TopDownMergeSort|ValueTuple`2: 17.9863~0.0013 (ms) for 20 arrays of on average 13684.7 items
-AltTopDownMergeSort|ValueTuple`2: 18.556~0.0015 (ms) for 20 arrays of on average 13684.7 items
-ParallelDualPivotQuickSort|ValueTuple`2: 6.625~0.0077 (ms) for 20 arrays of on average 13684.7 items
-ParallelTopDownMergeSort|ValueTuple`2: 6.869~0.0058 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of Int32 with ordering SortAlgoBench.ComparableOrderingAlgorithms`1+ComparableOrdering[[System.Int32, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] (where relevant)
 SystemArraySort|Int32: 11.1712~0.00081 (ms) for 20 arrays of on average 13684.7 items
 QuickSort|Int32: 14.016~0.0018 (ms) for 20 arrays of on average 13684.7 items
 ParallelQuickSort|Int32: 4.076~0.0043 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort|Int32: 14.6124~0.001 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort2|Int32: 14.1681~0.00087 (ms) for 20 arrays of on average 13684.7 items
-TopDownMergeSort|Int32: 14.3927~0.00094 (ms) for 20 arrays of on average 13684.7 items
-AltTopDownMergeSort|Int32: 14.725~0.0018 (ms) for 20 arrays of on average 13684.7 items
-ParallelDualPivotQuickSort|Int32: 5.454~0.016 (ms) for 20 arrays of on average 13684.7 items
-ParallelTopDownMergeSort|Int32: 5.6849~0.0045 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of SampleClass with ordering SortAlgoBench.ComparableOrderingAlgorithms`1+ComparableOrdering[[SortAlgoBench.SampleClass, SortAlgoBench, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] (where relevant)
 SystemArraySort|SampleClass: 32.654~0.0083 (ms) for 20 arrays of on average 13684.7 items
 QuickSort|SampleClass: 52.071~0.0066 (ms) for 20 arrays of on average 13684.7 items
 ParallelQuickSort|SampleClass: 14.119~0.0097 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort|SampleClass: 54.593~0.0091 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort2|SampleClass: 58.181~0.013 (ms) for 20 arrays of on average 13684.7 items
-TopDownMergeSort|SampleClass: 52.541~0.0062 (ms) for 20 arrays of on average 13684.7 items
-AltTopDownMergeSort|SampleClass: 52.721~0.01 (ms) for 20 arrays of on average 13684.7 items
-ParallelDualPivotQuickSort|SampleClass: 19.24~0.06 (ms) for 20 arrays of on average 13684.7 items
-ParallelTopDownMergeSort|SampleClass: 18.87~0.04 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of UInt32 with ordering SortAlgoBench.UInt32OrderingAlgorithms+UInt32Order (where relevant)
 SystemArraySort|UInt32: 12.0187~0.00088 (ms) for 20 arrays of on average 13684.7 items
 QuickSort|UInt32: 11.7039~0.00081 (ms) for 20 arrays of on average 13684.7 items
 ParallelQuickSort|UInt32: 3.897~0.0051 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort|UInt32: 14.5864~0.0011 (ms) for 20 arrays of on average 13684.7 items
-BottomUpMergeSort2|UInt32: 14.167~0.001 (ms) for 20 arrays of on average 13684.7 items
-TopDownMergeSort|UInt32: 14.332~0.0011 (ms) for 20 arrays of on average 13684.7 items
-AltTopDownMergeSort|UInt32: 14.626~0.0014 (ms) for 20 arrays of on average 13684.7 items
-ParallelDualPivotQuickSort|UInt32: 5.133~0.0068 (ms) for 20 arrays of on average 13684.7 items
-ParallelTopDownMergeSort|UInt32: 5.657~0.0067 (ms) for 20 arrays of on average 13684.7 items
 
-Press any key to continue . . .
