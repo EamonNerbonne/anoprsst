@@ -173,7 +173,7 @@ namespace SortAlgoBench
         {
             while (true)
                 if (lastIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                    InsertionSort_InPlace_Unsafe(ref ptr, firstIdx, lastIdx + 1);
+                    InsertionSort_InPlace_Unsafe_Inclusive(ref Unsafe.Add(ref ptr, firstIdx), ref Unsafe.Add(ref ptr, lastIdx));
                     return;
                 } else {
                     var pivot = Partition_Unsafe(ref ptr, firstIdx, lastIdx);
