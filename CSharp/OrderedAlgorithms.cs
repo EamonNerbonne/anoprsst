@@ -79,7 +79,7 @@ namespace SortAlgoBench
             countdownEvent.Wait();
         }
 
-        class QuickSort_Inclusive_ParallelArgs
+        struct QuickSort_Inclusive_ParallelArgs
         {
             public T[] array;
             public int firstIdx;
@@ -88,7 +88,7 @@ namespace SortAlgoBench
             public CountdownEvent countdownEvent;
             static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => Impl((QuickSort_Inclusive_ParallelArgs)o);
 
-            public static void Impl(QuickSort_Inclusive_ParallelArgs args)
+            public static void Impl(in QuickSort_Inclusive_ParallelArgs args)
             {
                 var firstIdx = args.firstIdx;
                 var lastIdx = args.lastIdx;
