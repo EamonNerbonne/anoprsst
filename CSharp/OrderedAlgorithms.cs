@@ -197,8 +197,6 @@ namespace SortAlgoBench
         }
 
         /**/
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         unsafe static int Partition_Unsafe(ref T firstPtr, int lastOffset)
         {
             var midpoint = lastOffset>> 1;
@@ -224,7 +222,6 @@ namespace SortAlgoBench
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int Partition(T[] array, int firstIdx, int lastIdx)
         {
             var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
@@ -242,7 +239,6 @@ namespace SortAlgoBench
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int PartitionMedian5(T[] array, int firstIdx, int lastIdx)
         {
             var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
@@ -265,7 +261,6 @@ namespace SortAlgoBench
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int PartitionMedian5_Unsafe(ref T ptr, int firstIdx, int lastIdx)
         {
             var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
@@ -397,7 +392,6 @@ namespace SortAlgoBench
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void InsertionSort_InPlace(T[] array, int firstIdx, int idxEnd)
         {
             var writeIdx = firstIdx;
@@ -421,7 +415,6 @@ namespace SortAlgoBench
         }
 
         /*
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void InsertionSort_InPlace_Unsafe(ref T ptr, int firstIdx, int idxEnd)
         {
             var writeIdx = firstIdx;
@@ -451,7 +444,6 @@ namespace SortAlgoBench
         }
 
         /*/
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void InsertionSort_InPlace_Unsafe(ref T ptr, int firstIdx, int idxEnd)
         {
             var writeIdx = firstIdx;
@@ -488,7 +480,6 @@ namespace SortAlgoBench
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         unsafe static void InsertionSort_InPlace_Unsafe_Inclusive(ref T firstPtr, ref T lastPtr) {
             if(Unsafe.AreSame(ref firstPtr, ref lastPtr))
                 return;
@@ -518,7 +509,6 @@ namespace SortAlgoBench
             }
         }
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         //static void InsertionSort_InPlace_Unsafe(ref T ptr, int firstIdx, int idxEnd)
         //{
         //    for (var readIdx = firstIdx + 1; readIdx < idxEnd; ++readIdx) {
@@ -540,7 +530,6 @@ namespace SortAlgoBench
         //}
 
         /**/
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SelectionSort_InPlace(T[] a, int firstIdx, int idxEnd)
         {
             var lastIdx = idxEnd - 1;
