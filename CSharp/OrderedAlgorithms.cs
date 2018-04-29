@@ -94,7 +94,7 @@ namespace SortAlgoBench
                 var lastIdx = args.lastIdx;
                 var countdownEvent = args.countdownEvent;
                 while (lastIdx - firstIdx >= args.splitAt) {
-                    var pivot = PartitionMedian5_Unsafe(ref args.array[0], firstIdx, lastIdx);
+                    var pivot = PartitionMedian5_Unsafe(ref args.array[firstIdx], lastIdx - firstIdx) + firstIdx;
                     countdownEvent.AddCount(1);
                     ThreadPool.UnsafeQueueUserWorkItem(
                         QuickSort_Inclusive_Par2_callback,
@@ -149,7 +149,7 @@ namespace SortAlgoBench
                     //InsertionSort_InPlace_Unsafe(ref ptr, firstIdx, lastIdx + 1);
                     return;
                 } else {
-                    var pivot = PartitionMedian5_Unsafe(ref ptr, firstIdx, lastIdx);
+                    var pivot = PartitionMedian5_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx - firstIdx) + firstIdx;
                     QuickSort_Inclusive_Unsafe(ref ptr, pivot + 1, lastIdx);
                     lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
                 }
@@ -199,7 +199,7 @@ namespace SortAlgoBench
         /**/
         unsafe static int Partition_Unsafe(ref T firstPtr, int lastOffset)
         {
-            var midpoint = lastOffset>> 1;
+            var midpoint = lastOffset >> 1;
             var pivotValue = Unsafe.Add(ref firstPtr, midpoint);
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
             int firstOffset=0;
@@ -261,38 +261,52 @@ namespace SortAlgoBench
             }
         }
 
-        static int PartitionMedian5_Unsafe(ref T ptr, int firstIdx, int lastIdx)
+        static int PartitionMedian5_Unsafe(ref T firstPtr, int lastOffset)
         {
-            var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
-            ref var c = ref Unsafe.Add(ref ptr, midpoint);
+            var midpoint = lastOffset >> 1;
+            ref var midPtr = ref Unsafe.Add(ref firstPtr, midpoint);
             //*
             SortFiveIndexes(
-                ref Unsafe.Add(ref ptr, firstIdx),
-                ref Unsafe.Add(ref ptr, firstIdx + 1),
-                ref c,
-                ref Unsafe.Add(ref ptr, lastIdx - 1),
-                ref Unsafe.Add(ref ptr, lastIdx));
-            firstIdx += 2;
-            lastIdx -= 2;
+                ref firstPtr,
+                ref Unsafe.Add(ref firstPtr, 1),
+                ref midPtr,
+                ref Unsafe.Add(ref firstPtr, lastOffset - 1),
+                ref Unsafe.Add(ref firstPtr, lastOffset));
+            
+            var pivotValue = midPtr;
+
+            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 2);
+            firstPtr = ref Unsafe.Add(ref firstPtr, 2);
+            lastOffset = lastOffset - 2;
+            var firstOffset = 2;
             /*/
             SortThreeIndexes(
-                ref Unsafe.Add(ref ptr, firstIdx),
-                ref c,
-                ref Unsafe.Add(ref ptr, lastIdx));
-            firstIdx += 1;
-            lastIdx -= 1;
+                ref firstPtr,
+                ref midPtr,
+                ref Unsafe.Add(ref firstPtr, lastOffset));
+            var pivotValue = midPtr;
+
+            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 1);
+            firstPtr = ref Unsafe.Add(ref firstPtr, 1);
+            lastOffset = lastOffset - 1;
+            var firstOffset = 1;
             /**/
-            var pivotValue = c;
             while (true) {
-                while (default(TOrder).LessThan(Unsafe.Add(ref ptr, firstIdx), pivotValue))
-                    firstIdx++;
-                while (default(TOrder).LessThan(pivotValue, Unsafe.Add(ref ptr, lastIdx)))
-                    lastIdx--;
-                if (lastIdx <= firstIdx)
-                    return lastIdx;
-                (Unsafe.Add(ref ptr, firstIdx), Unsafe.Add(ref ptr, lastIdx)) = (Unsafe.Add(ref ptr, lastIdx), Unsafe.Add(ref ptr, firstIdx));
-                firstIdx++;
-                lastIdx--;
+                while (default(TOrder).LessThan(firstPtr, pivotValue)) {
+                    firstPtr = ref Unsafe.Add(ref firstPtr, 1);
+                    firstOffset++;
+                }
+                while (default(TOrder).LessThan(pivotValue, lastPtr)) {
+                    lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
+                    lastOffset--;
+                }
+                if (lastOffset <= firstOffset)
+                    return lastOffset;
+                firstOffset++;
+                lastOffset--;
+                (firstPtr, lastPtr) = (lastPtr, firstPtr);
+                firstPtr = ref Unsafe.Add(ref firstPtr, 1);
+                lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
             }
         }
 

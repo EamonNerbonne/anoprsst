@@ -5,36 +5,37 @@
 
 
 Benchmarking array of Int32 with ordering SortAlgoBench.Int32OrderingAlgorithms+Int32Order (where relevant)
-SystemArraySort|Int32: 11.228~0.0017 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|Int32: 10.684~0.0033 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|Int32: 3.844~0.005 (ms) for 20 arrays of on average 13684.7 items
+SystemArraySort|Int32: 11.171~0.0011 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|Int32: 10.659~0.0026 (ms) for 20 arrays of on average 13684.7 items
+ParallelQuickSort|Int32: 3.641~0.005 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of UInt64 with ordering SortAlgoBench.UInt64OrderingAlgorithms+UInt64Ordering (where relevant)
-SystemArraySort|UInt64: 12.033~0.0031 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|UInt64: 10.761~0.002 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|UInt64: 3.853~0.0044 (ms) for 20 arrays of on average 13684.7 items
+SystemArraySort|UInt64: 12.023~0.0074 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|UInt64: 10.751~0.0016 (ms) for 20 arrays of on average 13684.7 items
+ParallelQuickSort|UInt64: 3.667~0.0052 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of SampleClass with ordering SortAlgoBench.SampleClassOrderingAlgorithms+Order (where relevant)
-SystemArraySort|SampleClass: 33.831~0.015 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|SampleClass: 18.491~0.0028 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|SampleClass: 6.118~0.011 (ms) for 20 arrays of on average 13684.7 items
+SystemArraySort|SampleClass: 32.929~0.0075 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|SampleClass: 18.393~0.0073 (ms) for 20 arrays of on average 13684.7 items
+ParallelQuickSort|SampleClass: 6.059~0.018 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of ValueTuple`2 with ordering SortAlgoBench.PairOrderingAlgorithms+PairOrder (where relevant)
-SystemArraySort|ValueTuple`2: 26.994~0.0047 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|ValueTuple`2: 11.298~0.0013 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|ValueTuple`2: 4.096~0.0047 (ms) for 20 arrays of on average 13684.7 items
+SystemArraySort|ValueTuple`2: 27.033~0.0053 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|ValueTuple`2: 11.287~0.005 (ms) for 20 arrays of on average 13684.7 items
+ParallelQuickSort|ValueTuple`2: 3.937~0.0092 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of Int32 with ordering SortAlgoBench.ComparableOrderingAlgorithms`1+ComparableOrdering[[System.Int32, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] (where relevant)
-SystemArraySort|Int32: 11.221~0.0018 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|Int32: 10.793~0.002 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|Int32: 3.803~0.0038 (ms) for 20 arrays of on average 13684.7 items
+SystemArraySort|Int32: 11.1678~0.00085 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|Int32: 10.858~0.0066 (ms) for 20 arrays of on average 13684.7 items
+ParallelQuickSort|Int32: 3.759~0.0087 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of SampleClass with ordering SortAlgoBench.ComparableOrderingAlgorithms`1+ComparableOrdering[[SortAlgoBench.SampleClass, SortAlgoBench, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] (where relevant)
-SystemArraySort|SampleClass: 33.856~0.018 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|SampleClass: 52.684~0.026 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|SampleClass: 14.517~0.011 (ms) for 20 arrays of on average 13684.7 items
+SystemArraySort|SampleClass: 32.691~0.0039 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|SampleClass: 50.613~0.004 (ms) for 20 arrays of on average 13684.7 items
+ParallelQuickSort|SampleClass: 15.06~0.023 (ms) for 20 arrays of on average 13684.7 items
 
 Benchmarking array of UInt32 with ordering SortAlgoBench.UInt32OrderingAlgorithms+UInt32Order (where relevant)
-SystemArraySort|UInt32: 12.063~0.002 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|UInt32: 10.908~0.0021 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|UInt32: 3.754~0.0037 (ms) for 20 arrays of on average 13684.7 items
+SystemArraySort|UInt32: 12.13~0.011 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|UInt32: 10.69~0.0018 (ms) for 20 arrays of on average 13684.7 items
+ParallelQuickSort|UInt32: 3.717~0.0094 (ms) for 20 arrays of on average 13684.7 items
+
