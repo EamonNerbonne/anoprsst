@@ -310,6 +310,7 @@ namespace SortAlgoBench
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void SortFiveIndexes(ref T a, ref T b, ref T c, ref T d, ref T e)
         {
             if (default(TOrder).LessThan(e, a)) (e, a) = (a, e);
@@ -323,6 +324,7 @@ namespace SortAlgoBench
             if (default(TOrder).LessThan(e, d)) (e, d) = (d, e);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void SortThreeIndexes(ref T a, ref T b, ref T c)
         {
             if (default(TOrder).LessThan(c, a)) (c, a) = (a, c);
