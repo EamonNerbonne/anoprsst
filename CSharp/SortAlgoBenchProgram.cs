@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using IncrementalMeanVarianceAccumulator;
+using ExpressionToCodeLib;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -34,7 +35,7 @@ namespace SortAlgoBench
     {
         public void BenchVariousAlgos()
         {
-            Console.WriteLine("Benchmarking array of " + typeof(T).Name + " with ordering " + typeof(TOrder).FullName + " (where relevant)");
+            Console.WriteLine("Benchmarking array of " + typeof(T).ToCSharpFriendlyTypeName() + " with ordering " + typeof(TOrder).ToCSharpFriendlyTypeName() + " (where relevant)");
             BenchSort(SystemArraySort);
             BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
             BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
@@ -69,7 +70,7 @@ namespace SortAlgoBench
 
         public void BenchSort(Action<T[], int> action)
         {
-            var txt = action.Method.Name + "|" + typeof(T).Name;
+            var txt = action.Method.Name + "|" + typeof(T).ToCSharpFriendlyTypeName();
             Validate(action, txt); //also a warmup
             var sizes = new List<int>();
             var milliseconds = new List<double>();

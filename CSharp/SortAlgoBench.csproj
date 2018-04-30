@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -10,7 +10,14 @@
   <ItemGroup>
     <PackageReference Include="IncrementalMeanVarianceAccumulator" Version="1.0.0" />
     <PackageReference Include="System.Memory" Version="4.5.0-preview1-26216-02" />
+    <PackageReference Include="ExpressionToCodeLib" Version="2.7.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-preview1-26216-02" />
+    <!--The following are workarounds for package downgrade warnings due to prerelease stuff-->
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
   </ItemGroup>
 
 </Project>
