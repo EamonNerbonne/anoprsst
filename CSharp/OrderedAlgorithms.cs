@@ -48,9 +48,9 @@ namespace SortAlgoBench {
 
         public static void QuickSort(T[] array) => QuickSort(array, array.Length - 1);
 
-        public static void QuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Unsafe(ref array[0], 0, endIdx - 1);
+        public static void QuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Unsafe(ref array[0], endIdx - 1);
 
-        public static void QuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Unsafe(ref array[firstIdx], 0, endIdx - firstIdx - 1); }
+        public static void QuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Unsafe(ref array[firstIdx], endIdx - firstIdx - 1); }
         public static void ParallelQuickSort(T[] array) => QuickSort_Inclusive_Parallel(array, 0, array.Length - 1);
         public static void ParallelQuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
         public static void ParallelQuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Parallel(array, firstIdx, endIdx - 1); }
@@ -104,13 +104,13 @@ namespace SortAlgoBench {
             }
         }
 
-        static void QuickSort_Inclusive_Unsafe(ref T ptr, int firstIdx, int lastIdx) {
-            while (lastIdx - firstIdx >= TopDownInsertionSortBatchSize << 9) {
-                var pivot = PartitionMedian5_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx - firstIdx) + firstIdx;
-                QuickSort_Inclusive_Unsafe(ref ptr, pivot + 1, lastIdx);
-                lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
+        static void QuickSort_Inclusive_Unsafe(ref T ptr, int lastOffset) {
+            while (lastOffset >= TopDownInsertionSortBatchSize << 9) {
+                var pivot = PartitionMedian5_Unsafe(ref ptr, lastOffset);
+                QuickSort_Inclusive_Unsafe(ref Unsafe.Add(ref ptr, pivot + 1), lastOffset - (pivot + 1));
+                lastOffset = pivot; //QuickSort_Inclusive_Unsafe(ref ptr, pivot);
             }
-            QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx - firstIdx);
+            QuickSort_Inclusive_Small_Unsafe(ref ptr, lastOffset);
         }
 
         static void QuickSort_Inclusive_Small_Unsafe(ref T firstPtr, int lastOffset) {
