@@ -46,13 +46,11 @@ namespace SortAlgoBench {
         public static void BottomUpMergeSort2(T[] array, int endIdx)
             => BottomUpMergeSort2(array, GetCachedAccumulator(endIdx), endIdx);
 
-        public static void QuickSort(T[] array) => QuickSort_Inclusive(array, 0, array.Length - 1);
+        public static void QuickSort(T[] array) => QuickSort(array, array.Length - 1);
 
-        public static void QuickSort(T[] array, int endIdx) => //*
-            QuickSort_Inclusive_Unsafe(ref array[0], 0, endIdx - 1); /*/
-            QuickSort_Inclusive(array, 0, endIdx - 1);/**/
+        public static void QuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Unsafe(ref array[0], 0, endIdx - 1);
 
-        public static void QuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive(array, firstIdx, endIdx - 1); }
+        public static void QuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Unsafe(ref array[firstIdx], 0, endIdx - firstIdx - 1); }
         public static void ParallelQuickSort(T[] array) => QuickSort_Inclusive_Parallel(array, 0, array.Length - 1);
         public static void ParallelQuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
         public static void ParallelQuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Parallel(array, firstIdx, endIdx - 1); }
@@ -106,31 +104,6 @@ namespace SortAlgoBench {
             }
         }
 
-        static void QuickSort_Inclusive(T[] array, int firstIdx, int lastIdx) {
-            while (true)
-                if (lastIdx - firstIdx < TopDownInsertionSortBatchSize << 9) {
-                    QuickSort_Inclusive_Small(array, firstIdx, lastIdx);
-                    break;
-                } else {
-                    var pivot = PartitionMedian5(array, firstIdx, lastIdx);
-                    QuickSort_Inclusive(array, pivot + 1, lastIdx);
-                    lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
-                }
-        }
-
-        static void QuickSort_Inclusive_Small(T[] array, int firstIdx, int lastIdx) {
-            while (true)
-                if (lastIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                    //InsertionSort_InPlace_Unsafe(ref array[0], firstIdx, lastIdx + 1);
-                    InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
-                    break;
-                } else {
-                    var pivot = Partition(array, firstIdx, lastIdx);
-                    QuickSort_Inclusive_Small(array, pivot + 1, lastIdx);
-                    lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
-                }
-        }
-
         static void QuickSort_Inclusive_Unsafe(ref T ptr, int firstIdx, int lastIdx) {
             while (lastIdx - firstIdx >= TopDownInsertionSortBatchSize << 9) {
                 var pivot = PartitionMedian5_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx - firstIdx) + firstIdx;
@@ -149,7 +122,7 @@ namespace SortAlgoBench {
             InsertionSort_InPlace_Unsafe_Inclusive(ref firstPtr, ref Unsafe.Add(ref firstPtr, lastOffset));
         }
 
-        unsafe static int Partition_Unsafe(ref T firstPtr, int lastOffset) {
+        static int Partition_Unsafe(ref T firstPtr, int lastOffset) {
             var midpoint = lastOffset >> 1;
             var pivotValue = Unsafe.Add(ref firstPtr, midpoint);
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
@@ -169,45 +142,6 @@ namespace SortAlgoBench {
                 lastOffset--;
             }
             return lastOffset;
-        }
-
-        static int Partition(T[] array, int firstIdx, int lastIdx) {
-            var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
-            var pivotValue = array[midpoint];
-            while (true) {
-                while (default(TOrder).LessThan(array[firstIdx], pivotValue))
-                    firstIdx++;
-                while (default(TOrder).LessThan(pivotValue, array[lastIdx]))
-                    lastIdx--;
-                if (lastIdx <= firstIdx)
-                    break;// TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
-                array.Swap(firstIdx, lastIdx);
-                firstIdx++;
-                lastIdx--;
-            }
-            return lastIdx;
-        }
-
-        static int PartitionMedian5(T[] array, int firstIdx, int lastIdx) {
-            var midpoint = (int)(((uint)firstIdx + (uint)lastIdx) >> 1);
-            ref var c = ref array[midpoint];
-            SortFiveIndexes(ref array[firstIdx], ref array[firstIdx + 1], ref c, ref array[lastIdx - 1], ref array[lastIdx]);
-
-            var pivotValue = c;
-            firstIdx += 2;
-            lastIdx -= 2;
-            while (true) {
-                while (default(TOrder).LessThan(array[firstIdx], pivotValue))
-                    firstIdx++;
-                while (default(TOrder).LessThan(pivotValue, array[lastIdx]))
-                    lastIdx--;
-                if (lastIdx <= firstIdx)
-                    break;// TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
-                array.Swap(firstIdx, lastIdx);
-                firstIdx++;
-                lastIdx--;
-            }
-            return lastIdx;
         }
 
         static int PartitionMedian5_Unsafe(ref T firstPtr, int lastOffset) {
@@ -278,7 +212,7 @@ namespace SortAlgoBench {
 
         static void DualPivotQuickSort_Inclusive(T[] array, int firstIdx, int lastIdx) {
             if (lastIdx - firstIdx < 400) {
-                QuickSort_Inclusive(array, firstIdx, lastIdx);
+                QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx-firstIdx);
                 //InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
             } else {
                 // lp means left pivot, and rp means right pivot.
