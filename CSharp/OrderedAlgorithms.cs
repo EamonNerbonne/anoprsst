@@ -67,7 +67,7 @@ namespace SortAlgoBench {
                     firstIdx = firstIdx,
                     lastIdx = lastIdx,
                     countdownEvent = countdownEvent,
-                    splitAt = Math.Max(lastIdx - firstIdx >> SortAlgoBenchProgram.ParallelSplitScale, TopDownInsertionSortBatchSize() << 1)
+                    splitAt = Math.Max(lastIdx - firstIdx >> SortAlgoBenchProgram.ParallelSplitScale, TopDownInsertionSortBatchSize << 1)
                 });
             countdownEvent.Wait();
         }
@@ -105,7 +105,7 @@ namespace SortAlgoBench {
         }
 
         static void QuickSort_Inclusive_Unsafe(ref T ptr, int lastOffset) {
-            while (lastOffset >= TopDownInsertionSortBatchSize() << 9) {
+            while (lastOffset >= TopDownInsertionSortBatchSize << 9) {
                 var pivot = PartitionMedian5_Unsafe(ref ptr, lastOffset);
                 QuickSort_Inclusive_Unsafe(ref Unsafe.Add(ref ptr, pivot + 1), lastOffset - (pivot + 1));
                 lastOffset = pivot; //QuickSort_Inclusive_Unsafe(ref ptr, pivot);
@@ -114,7 +114,7 @@ namespace SortAlgoBench {
         }
 
         static void QuickSort_Inclusive_Small_Unsafe(ref T firstPtr, int lastOffset) {
-            while (lastOffset >= TopDownInsertionSortBatchSize()) {
+            while (lastOffset >= TopDownInsertionSortBatchSize) {
                 var pivotIdx = Partition_Unsafe(ref firstPtr, lastOffset);
                 QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - (pivotIdx + 1));
                 lastOffset = pivotIdx; //QuickSort(array, firstIdx, pivot);
@@ -212,7 +212,7 @@ namespace SortAlgoBench {
 
         static void DualPivotQuickSort_Inclusive(T[] array, int firstIdx, int lastIdx) {
             if (lastIdx - firstIdx < 400) {
-                QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx-firstIdx);
+                QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx - firstIdx);
                 //InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
             } else {
                 // lp means left pivot, and rp means right pivot.
@@ -369,9 +369,15 @@ namespace SortAlgoBench {
                 readIdx = writeIdx = readIdx + 1;
             }
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static int TopDownInsertionSortBatchSize() => 44;
+        //*
+        const int TopDownInsertionSortBatchSize = 24;
+        /*/
+        static readonly int TopDownInsertionSortBatchSize = !typeof(T).IsValueType ? 24 
+            : Unsafe.SizeOf<T>() > 32 ? 16
+            : Unsafe.SizeOf<T>() > 8 ? 32
+            : Unsafe.SizeOf<T>() > 4 ? 44
+            : 64;
+            /**/
         const int BottomUpInsertionSortBatchSize = 32;
 
         static void AltTopDownMergeSort(T[] items, T[] scratch, int n) {
@@ -380,7 +386,7 @@ namespace SortAlgoBench {
         }
 
         static void AltTopDownSplitMerge(T[] items, int firstIdx, int endIdx, T[] scratch) {
-            if (endIdx - firstIdx < TopDownInsertionSortBatchSize()) {
+            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace(items, firstIdx, endIdx);
                 return;
             }
@@ -398,7 +404,7 @@ namespace SortAlgoBench {
         }
 
         static void CopyingTopDownSplitMerge(T[] src, T[] items, T[] scratch, int firstIdx, int endIdx) {
-            if (endIdx - firstIdx < TopDownInsertionSortBatchSize()) {
+            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
                 InsertionSort_Copy(src, firstIdx, endIdx, items);
                 return;
             }
@@ -436,7 +442,7 @@ namespace SortAlgoBench {
         }
 
         static void TopDownSplitMerge_toItems(T[] items, int firstIdx, int endIdx, T[] scratch) {
-            if (endIdx - firstIdx < TopDownInsertionSortBatchSize()) {
+            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace(items, firstIdx, endIdx);
                 return;
             }
@@ -448,7 +454,7 @@ namespace SortAlgoBench {
         }
 
         static void TopDownSplitMerge_toScratch(T[] items, int firstIdx, int endIdx, T[] scratch) {
-            if (endIdx - firstIdx < TopDownInsertionSortBatchSize()) {
+            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
                 InsertionSort_Copy(items, firstIdx, endIdx, scratch);
                 return;
             }
