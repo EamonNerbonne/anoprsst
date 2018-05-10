@@ -202,20 +202,17 @@ namespace SortAlgoBench
             var midpoint = lastOffset >> 1;
             var pivotValue = Unsafe.Add(ref firstPtr, midpoint);
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
-            int firstOffset=0;
             while (true) {
                 while (default(TOrder).LessThan(firstPtr, pivotValue)) {
                     firstPtr = ref Unsafe.Add(ref firstPtr, 1); 
-                    firstOffset++; 
                 }
                 while (default(TOrder).LessThan(pivotValue, lastPtr)) {
                     lastPtr = ref Unsafe.Subtract(ref lastPtr, 1); 
                     lastOffset--;
                 }
-                if (lastOffset <= firstOffset)
+                if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr))
                     return lastOffset;
                 lastOffset--;
-                firstOffset++;
                 (firstPtr, lastPtr) = (lastPtr, firstPtr);
                 firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                 lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
@@ -278,7 +275,6 @@ namespace SortAlgoBench
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 2);
             firstPtr = ref Unsafe.Add(ref firstPtr, 2);
             lastOffset = lastOffset - 2;
-            var firstOffset = 2;
             /*/
             SortThreeIndexes(
                 ref firstPtr,
@@ -294,15 +290,13 @@ namespace SortAlgoBench
             while (true) {
                 while (default(TOrder).LessThan(firstPtr, pivotValue)) {
                     firstPtr = ref Unsafe.Add(ref firstPtr, 1);
-                    firstOffset++;
                 }
                 while (default(TOrder).LessThan(pivotValue, lastPtr)) {
                     lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
                     lastOffset--;
                 }
-                if (lastOffset <= firstOffset)
+                if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr))
                     return lastOffset;
-                firstOffset++;
                 lastOffset--;
                 (firstPtr, lastPtr) = (lastPtr, firstPtr);
                 firstPtr = ref Unsafe.Add(ref firstPtr, 1);
