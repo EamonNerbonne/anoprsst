@@ -43,12 +43,12 @@ namespace SortAlgoBench {
             return arr;
         }
 
-        public static (int, int)[] RandomizePairs()
+        public static (int, long, DateTime, string)[] RandomizeBigStruct()
         {
-            var arr = new (int, int)[SortAlgoBenchProgram.MaxArraySize];
+            var arr = new (int, long, DateTime, string)[SortAlgoBenchProgram.MaxArraySize];
             var r = new Random(37);
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = (r.Next(), r.Next());
+                arr[j] = (r.Next(), (long)((ulong)(uint)r.Next() << 32) + (uint)r.Next(), new DateTime(2000,1,1)+TimeSpan.FromSeconds(r.Next()), r.Next().ToString());
             return arr;
         }
 

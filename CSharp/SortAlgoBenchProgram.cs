@@ -23,7 +23,7 @@ namespace SortAlgoBench
             Int32OrderingAlgorithms.BencherFor(Helpers.RandomizeInt32()).BenchVariousAlgos();
             UInt64OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt64()).BenchVariousAlgos();
             SampleClassOrderingAlgorithms.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
-            PairOrderingAlgorithms.BencherFor(Helpers.RandomizePairs()).BenchVariousAlgos();
+            BigStructOrderingAlgorithms.BencherFor(Helpers.RandomizeBigStruct()).BenchVariousAlgos();
             ComparableOrderingAlgorithms<int>.BencherFor(Helpers.RandomizeInt32()).BenchVariousAlgos();
             //ComparableOrderingAlgorithms<SampleClass>.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
             UInt32OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt32()).BenchVariousAlgos();
@@ -175,12 +175,12 @@ namespace SortAlgoBench
         }
     }
 
-    abstract class PairOrderingAlgorithms : OrderedAlgorithms<(int, int), PairOrderingAlgorithms.PairOrder>
+    abstract class BigStructOrderingAlgorithms : OrderedAlgorithms<(int, long, DateTime, string), BigStructOrderingAlgorithms.Order>
     {
-        public struct PairOrder : IOrdering<(int, int)>
+        public struct Order : IOrdering<(int, long, DateTime, string)>
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool LessThan((int, int) a, (int, int) b) => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
+            public bool LessThan((int, long, DateTime, string) a, (int, long, DateTime, string) b) => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
         }
     }
 
