@@ -116,7 +116,7 @@ namespace SortAlgoBench {
         static void QuickSort_Inclusive_Small_Unsafe(ref T firstPtr, int lastOffset) {
             while (lastOffset >= TopDownInsertionSortBatchSize) {
                 var pivotIdx = Partition_Unsafe(ref firstPtr, lastOffset);
-                QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - pivotIdx - 1);
+                QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - (pivotIdx + 1));
                 lastOffset = pivotIdx; //QuickSort(array, firstIdx, pivot);
             }
             InsertionSort_InPlace_Unsafe_Inclusive(ref firstPtr, ref Unsafe.Add(ref firstPtr, lastOffset));
