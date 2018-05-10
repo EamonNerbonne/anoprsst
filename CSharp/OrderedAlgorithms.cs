@@ -211,12 +211,13 @@ namespace SortAlgoBench
                     lastOffset--;
                 }
                 if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr))
-                    return lastOffset;
-                lastOffset--;
+                    break;// TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
                 (firstPtr, lastPtr) = (lastPtr, firstPtr);
                 firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                 lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
+                lastOffset--;
             }
+            return lastOffset;
         }
 
         static int Partition(T[] array, int firstIdx, int lastIdx)
@@ -229,11 +230,12 @@ namespace SortAlgoBench
                 while (default(TOrder).LessThan(pivotValue, array[lastIdx]))
                     lastIdx--;
                 if (lastIdx <= firstIdx)
-                    return lastIdx;
+                    break;// TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
                 array.Swap(firstIdx, lastIdx);
                 firstIdx++;
                 lastIdx--;
             }
+            return lastIdx;
         }
 
         static int PartitionMedian5(T[] array, int firstIdx, int lastIdx)
@@ -251,11 +253,12 @@ namespace SortAlgoBench
                 while (default(TOrder).LessThan(pivotValue, array[lastIdx]))
                     lastIdx--;
                 if (lastIdx <= firstIdx)
-                    return lastIdx;
+                    break;// TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
                 array.Swap(firstIdx, lastIdx);
                 firstIdx++;
                 lastIdx--;
             }
+            return lastIdx;
         }
 
         static int PartitionMedian5_Unsafe(ref T firstPtr, int lastOffset)
@@ -296,12 +299,13 @@ namespace SortAlgoBench
                     lastOffset--;
                 }
                 if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr))
-                    return lastOffset;
+                    break;// TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
                 lastOffset--;
                 (firstPtr, lastPtr) = (lastPtr, firstPtr);
                 firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                 lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
             }
+            return lastOffset;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
