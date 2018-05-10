@@ -304,70 +304,6 @@ namespace SortAlgoBench {
             }
         }
 
-        /*
-        static void InsertionSort_InPlace_Unsafe(ref T ptr, int firstIdx, int idxEnd)
-        {
-            var writeIdx = firstIdx;
-            var readIdx = firstIdx + 1;
-            while (readIdx < idxEnd) {
-                Debug.Assert(writeIdx + 1 == readIdx);
-                Debug.Assert(readIdx > firstIdx);
-                Debug.Assert(writeIdx < readIdx);
-
-                if (default(TOrder).LessThan(Unsafe.Add(ref ptr, readIdx), Unsafe.Add(ref ptr, writeIdx))) {
-                    var readValue = Unsafe.Add(ref ptr, readIdx);
-
-                    while (true) {
-                        Unsafe.Add(ref ptr, writeIdx + 1) = Unsafe.Add(ref ptr, writeIdx);
-                        if (writeIdx > firstIdx && default(TOrder).LessThan(readValue, Unsafe.Add(ref ptr, writeIdx - 1))) {
-                            writeIdx--;
-                        } else {
-                            Unsafe.Add(ref ptr, writeIdx) = readValue;
-                            break;
-                        }
-                    }
-                }
-
-                writeIdx = readIdx;
-                readIdx = readIdx + 1;
-            }
-        }
-
-        /*/
-        static void InsertionSort_InPlace_Unsafe(ref T ptr, int firstIdx, int idxEnd) {
-            var writeIdx = firstIdx;
-            var readIdx = writeIdx + 1;
-            while (readIdx < idxEnd) {
-                Debug.Assert(writeIdx + 1 == readIdx);
-                Debug.Assert(readIdx > firstIdx);
-                Debug.Assert(writeIdx < readIdx);
-#if false
-                var readValue = Unsafe.Add(ref ptr, readIdx);
-                while (writeIdx >= firstIdx && default(TOrder).LessThan(readValue, Unsafe.Add(ref ptr, writeIdx)))
-                {
-                    Unsafe.Add(ref ptr, writeIdx + 1) = Unsafe.Add(ref ptr, writeIdx);
-                    writeIdx--;
-                }
-
-                if (writeIdx + 1 != readIdx)
-                    Unsafe.Add(ref ptr, writeIdx + 1) = readValue;
-#else 
-                if (default(TOrder).LessThan(Unsafe.Add(ref ptr, readIdx), Unsafe.Add(ref ptr, writeIdx))) {
-                    var readValue = Unsafe.Add(ref ptr, readIdx);
-                    do {
-                        Unsafe.Add(ref ptr, writeIdx + 1) = Unsafe.Add(ref ptr, writeIdx);
-                        writeIdx--;
-                    }
-                    while (writeIdx >= firstIdx && default(TOrder).LessThan(readValue, Unsafe.Add(ref ptr, writeIdx)));
-
-                    Unsafe.Add(ref ptr, writeIdx + 1) = readValue;
-                }
-#endif
-                writeIdx = readIdx;
-                readIdx = readIdx + 1;
-            }
-        }
-
         unsafe static void InsertionSort_InPlace_Unsafe_Inclusive(ref T firstPtr, ref T lastPtr) {
             if (Unsafe.AreSame(ref firstPtr, ref lastPtr))
                 return;
@@ -399,27 +335,6 @@ namespace SortAlgoBench {
             }
         }
 
-        //static void InsertionSort_InPlace_Unsafe(ref T ptr, int firstIdx, int idxEnd)
-        //{
-        //    for (var readIdx = firstIdx + 1; readIdx < idxEnd; ++readIdx) {
-        //        var writeIdx = readIdx - 1;
-
-        //        var readValue = Unsafe.Add(ref ptr, readIdx);
-
-        //        if (default(TOrder).LessThan(readValue, Unsafe.Add(ref ptr, writeIdx)))
-        //            while (true) {
-        //                Unsafe.Add(ref ptr, writeIdx + 1) = Unsafe.Add(ref ptr, writeIdx);
-        //                if (writeIdx > firstIdx && default(TOrder).LessThan(readValue, Unsafe.Add(ref ptr, writeIdx - 1))) {
-        //                    --writeIdx;
-        //                } else {
-        //                    Unsafe.Add(ref ptr, writeIdx) = readValue;
-        //                    break;
-        //                }
-        //            }
-        //    }
-        //}
-
-        /**/
         public static void SelectionSort_InPlace(T[] a, int firstIdx, int idxEnd) {
             var lastIdx = idxEnd - 1;
             for (var j = firstIdx; j < lastIdx; j++) {
