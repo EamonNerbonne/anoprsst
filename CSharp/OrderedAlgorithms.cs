@@ -377,6 +377,7 @@ namespace SortAlgoBench {
                 var readValue = readPtr;
                 if (default(TOrder).LessThan(readValue, writePtr)) {
                     while (true) {
+                        //default(TOrder).LessThan(readValue, writePtr) holds
                         Unsafe.Add(ref writePtr, 1) = writePtr;
                         if (Unsafe.AreSame(ref writePtr, ref firstPtr)) {
                             break;
@@ -386,6 +387,7 @@ namespace SortAlgoBench {
                             writePtr = ref Unsafe.Add(ref writePtr, 1);
                             break;
                         }
+                        //default(TOrder).LessThan(readValue, writePtr) holds
                     }
                     writePtr = readValue;
                 }
