@@ -479,19 +479,18 @@ namespace SortAlgoBench {
             while (true) {//readIdx < idxEnd
                 var readValue = readPtr;
                 if (default(TOrder).LessThan(readValue, writePtr)) {
-                    while(true){
-                        Unsafe.Add(ref writePtr,  1) = writePtr;
-                        if(Unsafe.AreSame(ref writePtr, ref firstPtr)) {
-                            writePtr = readValue;
+                    while (true) {
+                        Unsafe.Add(ref writePtr, 1) = writePtr;
+                        if (Unsafe.AreSame(ref writePtr, ref firstPtr)) {
                             break;
                         }
                         writePtr = ref Unsafe.Subtract(ref writePtr, 1);
-                        if(!default(TOrder).LessThan(readValue, writePtr)) 
-                        {
-                            Unsafe.Add(ref writePtr, 1) = readValue;
+                        if (!default(TOrder).LessThan(readValue, writePtr)) {
+                            writePtr = ref Unsafe.Add(ref writePtr, 1);
                             break;
                         }
                     }
+                    writePtr = readValue;
                 }
                 if (Unsafe.AreSame(ref readPtr, ref lastPtr)) {
                     break;
