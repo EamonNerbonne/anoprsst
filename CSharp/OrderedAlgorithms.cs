@@ -517,7 +517,7 @@ namespace SortAlgoBench
                     }
                 }
                 if(Unsafe.AreSame(ref readPtr, ref lastPtr))
-                    return;
+                    break;
                 writePtr = ref readPtr;
                 readPtr = ref Unsafe.Add(ref readPtr ,1);
             }
