@@ -1,40 +1,29 @@
 ﻿        public const int MaxArraySize = 1 << 15 << 3;
-        public const int TimingTrials = 100;
-        public const int IterationsPerTrial = 20;
+        public const int TimingTrials = 200;
+        public const int IterationsPerTrial = 40;
         netcoreapp 2.0
 
 
 Benchmarking array of int with ordering Int32OrderingAlgorithms.Int32Order (where relevant)
-SystemArraySort|int: 11.159~0.0021 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|int: 9.8366~0.001 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|int: 3.424~0.0039 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|int: 17.8872~0.00054 (ms) for 40 arrays of on average 12396.6 items
+ParallelQuickSort|int: 6.268~0.0059 (ms) for 40 arrays of on average 12396.6 items
 
 Benchmarking array of ulong with ordering UInt64OrderingAlgorithms.UInt64Ordering (where relevant)
-SystemArraySort|ulong: 11.943~0.0018 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|ulong: 9.8917~0.0011 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|ulong: 3.472~0.0066 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|ulong: 17.9261~0.00058 (ms) for 40 arrays of on average 12396.6 items
+ParallelQuickSort|ulong: 6.296~0.0061 (ms) for 40 arrays of on average 12396.6 items
 
 Benchmarking array of SampleClass with ordering SampleClassOrderingAlgorithms.Order (where relevant)
-SystemArraySort|SampleClass: 32.445~0.0071 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|SampleClass: 17.81~0.0023 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|SampleClass: 5.77~0.0085 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|SampleClass: 32.151~0.0035 (ms) for 40 arrays of on average 12396.6 items
+ParallelQuickSort|SampleClass: 10.65~0.01 (ms) for 40 arrays of on average 12396.6 items
 
 Benchmarking array of ValueTuple<int, int> with ordering PairOrderingAlgorithms.PairOrder (where relevant)
-SystemArraySort|ValueTuple<int, int>: 26.905~0.0065 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|ValueTuple<int, int>: 10.95~0.0019 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|ValueTuple<int, int>: 3.793~0.0036 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|ValueTuple<int, int>: 19.8004~0.00081 (ms) for 40 arrays of on average 12396.6 items
+ParallelQuickSort|ValueTuple<int, int>: 6.888~0.0076 (ms) for 40 arrays of on average 12396.6 items
 
 Benchmarking array of int with ordering ComparableOrderingAlgorithms<int>.ComparableOrdering (where relevant)
-SystemArraySort|int: 11.15~0.0014 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|int: 9.9511~0.0018 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|int: 3.482~0.0054 (ms) for 20 arrays of on average 13684.7 items
-
-Benchmarking array of SampleClass with ordering ComparableOrderingAlgorithms<SampleClass>.ComparableOrdering (where relevant)
-SystemArraySort|SampleClass: 32.532~0.0082 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|SampleClass: 48.576~0.0058 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|SampleClass: 13.516~0.0082 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|int: 18.3182~0.00082 (ms) for 40 arrays of on average 12396.6 items
+ParallelQuickSort|int: 6.48~0.0053 (ms) for 40 arrays of on average 12396.6 items
 
 Benchmarking array of uint with ordering UInt32OrderingAlgorithms.UInt32Order (where relevant)
-SystemArraySort|uint: 11.9793~0.00077 (ms) for 20 arrays of on average 13684.7 items
-QuickSort|uint: 9.9248~0.0011 (ms) for 20 arrays of on average 13684.7 items
-ParallelQuickSort|uint: 3.3705~0.0025 (ms) for 20 arrays of on average 13684.7 items
+QuickSort|uint: 17.914~0.0034 (ms) for 40 arrays of on average 12396.6 items
+ParallelQuickSort|uint: 6.378~0.0045 (ms) for 40 arrays of on average 12396.6 items

@@ -13,8 +13,8 @@ namespace SortAlgoBench
     static class SortAlgoBenchProgram
     {
         public const int MaxArraySize = 1 << 15 << 3;
-        public const int TimingTrials = 100;
-        public const int IterationsPerTrial = 20;
+        public const int TimingTrials = 200;
+        public const int IterationsPerTrial = 40;
         public static readonly int ParallelSplitScale = Helpers.ProcScale();
 
         static void Main()
@@ -25,7 +25,7 @@ namespace SortAlgoBench
             SampleClassOrderingAlgorithms.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
             PairOrderingAlgorithms.BencherFor(Helpers.RandomizePairs()).BenchVariousAlgos();
             ComparableOrderingAlgorithms<int>.BencherFor(Helpers.RandomizeInt32()).BenchVariousAlgos();
-            ComparableOrderingAlgorithms<SampleClass>.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
+            //ComparableOrderingAlgorithms<SampleClass>.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
             UInt32OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt32()).BenchVariousAlgos();
         }
     }
@@ -36,7 +36,7 @@ namespace SortAlgoBench
         public void BenchVariousAlgos()
         {
             Console.WriteLine("Benchmarking array of " + typeof(T).ToCSharpFriendlyTypeName() + " with ordering " + typeof(TOrder).ToCSharpFriendlyTypeName() + " (where relevant)");
-            BenchSort(SystemArraySort);
+            //BenchSort(SystemArraySort);
             BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
             BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
             //BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
