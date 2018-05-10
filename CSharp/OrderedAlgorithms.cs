@@ -304,7 +304,7 @@ namespace SortAlgoBench {
             }
         }
 
-        unsafe static void InsertionSort_InPlace_Unsafe_Inclusive(ref T firstPtr, ref T lastPtr) {
+        static void InsertionSort_InPlace_Unsafe_Inclusive(ref T firstPtr, ref T lastPtr) {
             if (Unsafe.AreSame(ref firstPtr, ref lastPtr))
                 return;
             ref var writePtr = ref firstPtr;
