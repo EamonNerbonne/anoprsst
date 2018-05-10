@@ -131,61 +131,24 @@ namespace SortAlgoBench {
                 }
         }
 
-        //*
         static void QuickSort_Inclusive_Unsafe(ref T ptr, int firstIdx, int lastIdx) {
-            while (true)
-                if (lastIdx - firstIdx < TopDownInsertionSortBatchSize << 9) {
-                    QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx - firstIdx);
-                    //InsertionSort_InPlace_Unsafe(ref ptr, firstIdx, lastIdx + 1);
-                    break;
-                } else {
-                    var pivot = PartitionMedian5_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx - firstIdx) + firstIdx;
-                    QuickSort_Inclusive_Unsafe(ref ptr, pivot + 1, lastIdx);
-                    lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
-                }
-        }
-
-        /*/
-        static void QuickSort_Inclusive_Unsafe(ref T ptr, int firstIdx, int lastIdx)
-        {
             while (lastIdx - firstIdx >= TopDownInsertionSortBatchSize << 9) {
-                var pivot = PartitionMedian5_Unsafe(ref ptr, firstIdx, lastIdx);
+                var pivot = PartitionMedian5_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx - firstIdx) + firstIdx;
                 QuickSort_Inclusive_Unsafe(ref ptr, pivot + 1, lastIdx);
                 lastIdx = pivot; //QuickSort(array, firstIdx, pivot);
             }
-
-            QuickSort_Inclusive_Small_Unsafe(ref ptr, firstIdx, lastIdx);
+            QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx - firstIdx);
         }
-        /**/
 
-        //*
         static void QuickSort_Inclusive_Small_Unsafe(ref T firstPtr, int lastOffset) {
-            while (true)
-                if (lastOffset < TopDownInsertionSortBatchSize) {
-                    InsertionSort_InPlace_Unsafe_Inclusive(ref firstPtr, ref Unsafe.Add(ref firstPtr, lastOffset));
-                    break;
-                } else {
-                    var pivotIdx = Partition_Unsafe(ref firstPtr, lastOffset);
-                    QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - pivotIdx - 1);
-                    lastOffset = pivotIdx; //QuickSort(array, firstIdx, pivot);
-                }
-        }
-        /*/
-        static void QuickSort_Inclusive_Small_Unsafe(ref T firstPtr, int lastOffset)
-        {
             while (lastOffset >= TopDownInsertionSortBatchSize) {
                 var pivotIdx = Partition_Unsafe(ref firstPtr, lastOffset);
-                QuickSort_Inclusive_Small_Unsafe(ref firstPtr, pivotIdx);
-                firstPtr = ref Unsafe.Add(ref firstPtr, pivotIdx +1);
-                lastOffset = lastOffset - pivotIdx - 1; //QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - pivotIdx - 1);
-                //QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - pivotIdx - 1);
-                //lastOffset = pivotIdx; //QuickSort(array, firstIdx, pivot);
+                QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - pivotIdx - 1);
+                lastOffset = pivotIdx; //QuickSort(array, firstIdx, pivot);
             }
-
             InsertionSort_InPlace_Unsafe_Inclusive(ref firstPtr, ref Unsafe.Add(ref firstPtr, lastOffset));
         }
 
-        /**/
         unsafe static int Partition_Unsafe(ref T firstPtr, int lastOffset) {
             var midpoint = lastOffset >> 1;
             var pivotValue = Unsafe.Add(ref firstPtr, midpoint);
