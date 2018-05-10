@@ -118,7 +118,7 @@ namespace SortAlgoBench
             while (true)
                 if (lastIdx - firstIdx < TopDownInsertionSortBatchSize << 9) {
                     QuickSort_Inclusive_Small(array, firstIdx, lastIdx);
-                    return;
+                    break;
                 } else {
                     var pivot = PartitionMedian5(array, firstIdx, lastIdx);
                     QuickSort_Inclusive(array, pivot + 1, lastIdx);
@@ -132,7 +132,7 @@ namespace SortAlgoBench
                 if (lastIdx - firstIdx < TopDownInsertionSortBatchSize) {
                     //InsertionSort_InPlace_Unsafe(ref array[0], firstIdx, lastIdx + 1);
                     InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
-                    return;
+                    break;
                 } else {
                     var pivot = Partition(array, firstIdx, lastIdx);
                     QuickSort_Inclusive_Small(array, pivot + 1, lastIdx);
@@ -147,7 +147,7 @@ namespace SortAlgoBench
                 if (lastIdx - firstIdx < TopDownInsertionSortBatchSize << 9) {
                     QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx-firstIdx);
                     //InsertionSort_InPlace_Unsafe(ref ptr, firstIdx, lastIdx + 1);
-                    return;
+                    break;
                 } else {
                     var pivot = PartitionMedian5_Unsafe(ref Unsafe.Add(ref ptr, firstIdx), lastIdx - firstIdx) + firstIdx;
                     QuickSort_Inclusive_Unsafe(ref ptr, pivot + 1, lastIdx);
@@ -174,7 +174,7 @@ namespace SortAlgoBench
             while (true)
                 if (lastOffset < TopDownInsertionSortBatchSize) {
                     InsertionSort_InPlace_Unsafe_Inclusive(ref firstPtr, ref Unsafe.Add(ref firstPtr, lastOffset));
-                    return;
+                    break;
                 } else {
                     var pivotIdx = Partition_Unsafe(ref firstPtr, lastOffset);
                     QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - pivotIdx - 1);
