@@ -14,9 +14,6 @@ namespace SortAlgoBench {
         where TOrder : struct, IOrdering<T> {
         public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr) => new SortAlgorithmBench<T, TOrder>(arr);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
-
-        [ThreadStatic]
-        static T[] Accumulator;
         //*
         const int TopDownInsertionSortBatchSize = 32;
         /*/
@@ -28,33 +25,25 @@ namespace SortAlgoBench {
             /**/
         const int BottomUpInsertionSortBatchSize = 24;
 
-        static T[] GetCachedAccumulator(int maxSize) {
-            var outputValues = Accumulator ?? (Accumulator = new T[16]);
-            if (outputValues.Length < maxSize) {
-                var newSize = (int)Math.Max(maxSize, outputValues.Length * 3L / 2L);
-                Accumulator = outputValues = new T[newSize];
-            }
 
-            return outputValues;
-        }
 
         public static void TopDownMergeSort(T[] array, int endIdx)
-            => TopDownSplitMerge_toItems(array, 0, endIdx, GetCachedAccumulator(endIdx));
+            => TopDownSplitMerge_toItems(array, 0, endIdx, new T[endIdx]);
 
         public static void ParallelTopDownMergeSort(T[] array, int endIdx)
-            => TopDownSplitMerge_toItems_Par(array, 0, endIdx, GetCachedAccumulator(endIdx));
+            => TopDownSplitMerge_toItems_Par(array, 0, endIdx, new T[endIdx]);
 
         public static T[] TopDownMergeSort_Copy(T[] array, int endIdx)
             => CopyingTopDownMergeSort(array, new T[endIdx], endIdx);
 
         public static void AltTopDownMergeSort(T[] array, int endIdx)
-            => AltTopDownMergeSort(array, GetCachedAccumulator(endIdx), endIdx);
+            => AltTopDownMergeSort(array, new T[endIdx], endIdx);
 
         public static void BottomUpMergeSort(T[] array, int endIdx)
-            => BottomUpMergeSort(array, GetCachedAccumulator(endIdx), endIdx);
+            => BottomUpMergeSort(array, new T[endIdx], endIdx);
 
         public static void BottomUpMergeSort2(T[] array, int endIdx)
-            => BottomUpMergeSort2(array, GetCachedAccumulator(endIdx), endIdx);
+            => BottomUpMergeSort2(array, new T[endIdx], endIdx);
 
         public static void QuickSort(T[] array) => QuickSort(array, array.Length - 1);
 
