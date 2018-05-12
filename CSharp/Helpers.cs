@@ -43,39 +43,35 @@ namespace SortAlgoBench {
             return arr;
         }
 
-        public static (int, long, DateTime, string)[] RandomizeBigStruct()
+        public static (int, long, DateTime, string)[] MapToBigStruct(ulong[] data)
         {
-            var arr = new (int, long, DateTime, string)[SortAlgoBenchProgram.MaxArraySize];
-            var r = new Random(37);
+            var arr = new (int, long, DateTime, string)[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = (r.Next(), (long)((ulong)(uint)r.Next() << 32) + (uint)r.Next(), new DateTime(2000,1,1)+TimeSpan.FromSeconds(r.Next()), r.Next().ToString());
+                arr[j] = ((int)(data[j] & 0xfffful), (long)(data[j] >> 16), new DateTime(2000,1,1)+TimeSpan.FromSeconds((int)data[j]), data[j].ToString("x"));
             return arr;
         }
 
-        public static int[] RandomizeInt32()
+        public static int[] MapToInt32(ulong[] data)
         {
-            var arr = new int[SortAlgoBenchProgram.MaxArraySize];
-            var r = new Random(37);
+            var arr = new int[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = r.Next();
+                arr[j] = (int)data[j];
             return arr;
         }
 
-        public static SampleClass[] RandomizeSampleClass()
+        public static SampleClass[] MapToSampleClass(ulong[]data)
         {
-            var arr = new SampleClass[SortAlgoBenchProgram.MaxArraySize];
-            var r = new Random(37);
+            var arr = new SampleClass[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = new SampleClass { Value = r.Next() };
+                arr[j] = new SampleClass { Value = (int)data[j] };
             return arr;
         }
 
-        public static uint[] RandomizeUInt32()
+        public static uint[] MapToUInt32(ulong[]data)
         {
-            var arr = new uint[SortAlgoBenchProgram.MaxArraySize];
-            var r = new Random(37);
+            var arr = new uint[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = (uint)r.Next();
+                arr[j] = (uint)data[j];
             return arr;
         }
 

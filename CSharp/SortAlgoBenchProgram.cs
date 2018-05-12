@@ -20,13 +20,13 @@ namespace SortAlgoBench
         static void Main()
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            Int32OrderingAlgorithms.BencherFor(Helpers.RandomizeInt32()).BenchVariousAlgos();
-            UInt64OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt64()).BenchVariousAlgos();
-            SampleClassOrderingAlgorithms.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
-            BigStructOrderingAlgorithms.BencherFor(Helpers.RandomizeBigStruct()).BenchVariousAlgos();
-            ComparableOrderingAlgorithms<int>.BencherFor(Helpers.RandomizeInt32()).BenchVariousAlgos();
-            //ComparableOrderingAlgorithms<SampleClass>.BencherFor(Helpers.RandomizeSampleClass()).BenchVariousAlgos();
-            UInt32OrderingAlgorithms.BencherFor(Helpers.RandomizeUInt32()).BenchVariousAlgos();
+            var data = Helpers.RandomizeUInt64();
+            Int32OrderingAlgorithms.BencherFor(Helpers.MapToInt32(data)).BenchVariousAlgos();
+            UInt64OrderingAlgorithms.BencherFor(data).BenchVariousAlgos();
+            SampleClassOrderingAlgorithms.BencherFor(Helpers.MapToSampleClass(data)).BenchVariousAlgos();
+            BigStructOrderingAlgorithms.BencherFor(Helpers.MapToBigStruct(data)).BenchVariousAlgos();
+            ComparableOrderingAlgorithms<int>.BencherFor(Helpers.MapToInt32(data)).BenchVariousAlgos();
+            UInt32OrderingAlgorithms.BencherFor(Helpers.MapToUInt32(data)).BenchVariousAlgos();
         }
     }
 
