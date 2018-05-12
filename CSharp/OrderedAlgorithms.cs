@@ -12,8 +12,6 @@ namespace SortAlgoBench {
 
     abstract class OrderedAlgorithms<T, TOrder>
         where TOrder : struct, IOrdering<T> {
-        public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr) => new SortAlgorithmBench<T, TOrder>(arr);
-        protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
         //*
         const int TopDownInsertionSortBatchSize = 32;
         /*/
@@ -26,6 +24,8 @@ namespace SortAlgoBench {
         const int BottomUpInsertionSortBatchSize = 24;
 
 
+        public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr) => new SortAlgorithmBench<T, TOrder>(arr);
+        protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
 
         public static void TopDownMergeSort(T[] array, int endIdx)
             => TopDownSplitMerge_toItems(array, 0, endIdx, new T[endIdx]);
