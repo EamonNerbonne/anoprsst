@@ -17,6 +17,16 @@ namespace SortAlgoBench {
 
         [ThreadStatic]
         static T[] Accumulator;
+        //*
+        const int TopDownInsertionSortBatchSize = 32;
+        /*/
+        static readonly int TopDownInsertionSortBatchSize = !typeof(T).IsValueType ? 24 
+            : Unsafe.SizeOf<T>() > 32 ? 16
+            : Unsafe.SizeOf<T>() > 8 ? 32
+            : Unsafe.SizeOf<T>() > 4 ? 44
+            : 64;
+            /**/
+        const int BottomUpInsertionSortBatchSize = 24;
 
         static T[] GetCachedAccumulator(int maxSize) {
             var outputValues = Accumulator ?? (Accumulator = new T[16]);
@@ -369,16 +379,6 @@ namespace SortAlgoBench {
                 readIdx = writeIdx = readIdx + 1;
             }
         }
-        //*
-        const int TopDownInsertionSortBatchSize = 24;
-        /*/
-        static readonly int TopDownInsertionSortBatchSize = !typeof(T).IsValueType ? 24 
-            : Unsafe.SizeOf<T>() > 32 ? 16
-            : Unsafe.SizeOf<T>() > 8 ? 32
-            : Unsafe.SizeOf<T>() > 4 ? 44
-            : 64;
-            /**/
-        const int BottomUpInsertionSortBatchSize = 32;
 
         static void AltTopDownMergeSort(T[] items, T[] scratch, int n) {
             CopyArray(items, 0, n, scratch);
