@@ -39,7 +39,7 @@ namespace SortAlgoBench {
             var arr = new ulong[SortAlgoBenchProgram.MaxArraySize];
             var r = new Random(37);
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = ((ulong)(uint)r.Next() << 32) + (uint)r.Next();
+                arr[j] = (((ulong)(uint)r.Next() << 32) + (uint)r.Next())>>60 <<60 ;
             return arr;
         }
 
@@ -47,7 +47,7 @@ namespace SortAlgoBench {
         {
             var arr = new (int, long, DateTime, string)[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = ((int)(data[j] & 0xfffful), (long)(data[j] >> 16), new DateTime(2000,1,1)+TimeSpan.FromSeconds((int)data[j]), data[j].ToString("x"));
+                arr[j] = ((int)(data[j] >>48), (long)(data[j] -(data[j] >>48<<48)), new DateTime(2000,1,1)+TimeSpan.FromSeconds((int)data[j]), data[j].ToString("x"));
             return arr;
         }
 
@@ -55,7 +55,7 @@ namespace SortAlgoBench {
         {
             var arr = new int[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = (int)data[j];
+                arr[j] = (int)(data[j]>>32);
             return arr;
         }
 
@@ -63,7 +63,7 @@ namespace SortAlgoBench {
         {
             var arr = new SampleClass[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = new SampleClass { Value = (int)data[j] };
+                arr[j] = new SampleClass { Value = (int)(data[j]>>32) };
             return arr;
         }
 
@@ -71,7 +71,7 @@ namespace SortAlgoBench {
         {
             var arr = new uint[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = (uint)data[j];
+                arr[j] = (uint)(data[j]>>32);
             return arr;
         }
 
