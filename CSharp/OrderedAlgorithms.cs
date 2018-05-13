@@ -95,7 +95,7 @@ namespace SortAlgoBench {
                             countdownEvent = countdownEvent,
                             splitAt = args.splitAt
                         });
-                    lastIdx = pivot; //QuickSort_Inclusive(array, firstIdx, pivot);
+                    lastIdx = pivot; //effectively QuickSort_Inclusive(array, firstIdx, pivot);
                 }
 
                 QuickSort_Inclusive_Small_Unsafe(ref args.array[firstIdx], lastIdx - firstIdx);
