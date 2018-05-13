@@ -50,10 +50,12 @@ namespace SortAlgoBench {
             Console.WriteLine();
         }
 
-        static void SystemArraySort(T[] arr, int len) { Array.Sort(arr, 0, len); }
+        static void ArraySort_Primitive(T[] arr, int len) { Array.Sort(arr, 0, len); }
+        static void ArraySort_OrderComparer(T[] arr, int len) { Array.Sort(arr, 0, len, Helpers.ComparerFor<T, TOrder>()); }
 
-        public SortAlgorithmBench(T[] sourceData,int TimingTrials, int IterationsPerTrial)
-        {
+        static readonly Action<T[], int> SystemArraySort = typeof(T).IsPrimitive ? (Action<T[], int>)ArraySort_Primitive : ArraySort_OrderComparer;
+
+        public SortAlgorithmBench(T[] sourceData, int TimingTrials, int IterationsPerTrial) {
             this.sourceData = sourceData;
             this.TimingTrials = TimingTrials;
             this.IterationsPerTrial = IterationsPerTrial;

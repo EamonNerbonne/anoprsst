@@ -99,5 +99,18 @@ namespace SortAlgoBench {
         public static void ThrowIndexOutOfRange<T>(T[] array, int firstIdx, int lastIdx) {
             throw new IndexOutOfRangeException($"Attempted to sort [{firstIdx}, {lastIdx}), which not entirely within bounds of [0, {array.Length})");
         }
+
+        public static IComparer<T> ComparerFor<T, TOrder>() 
+            where TOrder : IOrdering<T> 
+            => OrderComparer<T,TOrder>.Instance;
+
+        class OrderComparer<T, TOrder> : IComparer<T>
+            where TOrder : IOrdering<T> {
+            public static  IComparer<T> Instance = new OrderComparer<T,TOrder>();
+            public int Compare(T x, T y)
+                => default(TOrder).LessThan(x,y) ? -1
+                :default(TOrder).LessThan(y,x) ? 1
+                :0;
+        }
     }
 }
