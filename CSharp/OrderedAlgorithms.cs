@@ -98,6 +98,10 @@ namespace SortAlgoBench {
         }
 
         static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx) {
+            if(lastIdx - firstIdx < MinimalParallelQuickSortBatchSize<<2) {
+                QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx-firstIdx);
+                return;
+            }
             var countdownEvent = new CountdownEvent(1);
             new QuickSort_Inclusive_ParallelArgs {
                 array = array,
