@@ -39,7 +39,7 @@ namespace SortAlgoBench {
             var arr = new ulong[SortAlgoBenchProgram.MaxArraySize];
             var r = new Random(37);
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = (((ulong)(uint)r.Next() << 32) + (uint)r.Next())>>60 <<60 ;
+                arr[j] = (((ulong)(uint)r.Next() << 32) + (uint)r.Next());
             return arr;
         }
 
