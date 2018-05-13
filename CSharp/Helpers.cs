@@ -50,6 +50,13 @@ namespace SortAlgoBench {
                 arr[j] = ((int)(data[j] >>48), (long)(data[j] -(data[j] >>48<<48)), new DateTime(2000,1,1)+TimeSpan.FromSeconds((int)data[j]), data[j].ToString("x"));
             return arr;
         }
+        public static (int, int, int)[] MapToSmallStruct(ulong[] data)
+        {
+            var arr = new (int, int, int)[data.Length];
+            for (var j = 0; j < arr.Length; j++)
+                arr[j] = ((int)(data[j] >>32), (int)(data[j] -(data[j] >>32<<32)),  (int)(data[j]*13));
+            return arr;
+        }
 
         public static int[] MapToInt32(ulong[] data)
         {

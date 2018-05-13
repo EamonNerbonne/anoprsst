@@ -16,13 +16,14 @@ namespace SortAlgoBench
 
         static void Main() {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            BenchSize(1 << 8 << 3, 1000, 1000);
-            BenchSize(1 << 15 << 3, 200, 40);
+            BenchSize(1 << 8 << 3, 400, 500);
+            BenchSize(1 << 15 << 3, 100, 40);
         }
 
         private static void BenchSize(int MaxArraySize, int TimingTrials, int IterationsPerTrial) {
             var data = Helpers.RandomizeUInt64(MaxArraySize);
             Int32OrderingAlgorithms.BencherFor(Helpers.MapToInt32(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
+            SmallStructOrderingAlgorithms.BencherFor(Helpers.MapToSmallStruct(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
             //UInt64OrderingAlgorithms.BencherFor(data).BenchVariousAlgos();
             SampleClassOrderingAlgorithms.BencherFor(Helpers.MapToSampleClass(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
             BigStructOrderingAlgorithms.BencherFor(Helpers.MapToBigStruct(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
@@ -37,7 +38,7 @@ namespace SortAlgoBench
         public void BenchVariousAlgos()
         {
             Console.WriteLine("Benchmarking array of " + typeof(T).ToCSharpFriendlyTypeName() + " with ordering " + typeof(TOrder).ToCSharpFriendlyTypeName() + " (where relevant)");
-            //BenchSort(SystemArraySort);
+            BenchSort(SystemArraySort);
             //BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
             BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
             BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
@@ -186,6 +187,15 @@ namespace SortAlgoBench
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan((int, long, DateTime, string) a, (int, long, DateTime, string) b) => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
+        }
+    }
+
+    public abstract class SmallStructOrderingAlgorithms : OrderedAlgorithms<(int, int, int), SmallStructOrderingAlgorithms.Order>
+    {
+        public struct Order : IOrdering<(int, int, int)>
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool LessThan((int, int, int) a, (int, int, int) b) => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
         }
     }
 
