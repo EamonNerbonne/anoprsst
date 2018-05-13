@@ -25,7 +25,7 @@ namespace SortAlgoBench {
         const int QuickSortNoMedianThreshold = 16_384;
         const int MinimalParallelQuickSortBatchSize = 64;
 
-        public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr) => new SortAlgorithmBench<T, TOrder>(arr);
+        public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr, int TimingTrials, int IterationsPerTrial) => new SortAlgorithmBench<T, TOrder>(arr, TimingTrials, IterationsPerTrial);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
         public static void TopDownMergeSort(T[] array, int endIdx) => TopDownSplitMerge_toItems(array, 0, endIdx, new T[endIdx]);
         public static void ParallelTopDownMergeSort(T[] array, int endIdx) => TopDownSplitMerge_toItems_Par(array, 0, endIdx, new T[endIdx]);

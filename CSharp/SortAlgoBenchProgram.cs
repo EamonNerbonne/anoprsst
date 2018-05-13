@@ -12,19 +12,20 @@ namespace SortAlgoBench
 {
     static class SortAlgoBenchProgram
     {
-        public const int MaxArraySize = 1 << 17 << 3;
-        public const int TimingTrials = 100;
-        public const int IterationsPerTrial = 40;
         public static readonly int ParallelSplitScale = Helpers.ProcScale();
 
-        static void Main()
-        {
+        static void Main() {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            var data = Helpers.RandomizeUInt64();
-            Int32OrderingAlgorithms.BencherFor(Helpers.MapToInt32(data)).BenchVariousAlgos();
+            BenchSize(1 << 8 << 3, 1000, 1000);
+            BenchSize(1 << 15 << 3, 200, 40);
+        }
+
+        private static void BenchSize(int MaxArraySize, int TimingTrials, int IterationsPerTrial) {
+            var data = Helpers.RandomizeUInt64(MaxArraySize);
+            Int32OrderingAlgorithms.BencherFor(Helpers.MapToInt32(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
             //UInt64OrderingAlgorithms.BencherFor(data).BenchVariousAlgos();
-            SampleClassOrderingAlgorithms.BencherFor(Helpers.MapToSampleClass(data)).BenchVariousAlgos();
-            BigStructOrderingAlgorithms.BencherFor(Helpers.MapToBigStruct(data)).BenchVariousAlgos();
+            SampleClassOrderingAlgorithms.BencherFor(Helpers.MapToSampleClass(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
+            BigStructOrderingAlgorithms.BencherFor(Helpers.MapToBigStruct(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
             //ComparableOrderingAlgorithms<int>.BencherFor(Helpers.MapToInt32(data)).BenchVariousAlgos();
             //UInt32OrderingAlgorithms.BencherFor(Helpers.MapToUInt32(data)).BenchVariousAlgos();
         }
@@ -51,14 +52,18 @@ namespace SortAlgoBench
 
         static void SystemArraySort(T[] arr, int len) { Array.Sort(arr, 0, len); }
 
-        public SortAlgorithmBench(T[] sourceData)
+        public SortAlgorithmBench(T[] sourceData,int TimingTrials, int IterationsPerTrial)
         {
             this.sourceData = sourceData;
+            this.TimingTrials = TimingTrials;
+            this.IterationsPerTrial = IterationsPerTrial;
             workspace = new T[sourceData.Length >> 3];
         }
 
         readonly T[] workspace;
         readonly T[] sourceData;
+        readonly int TimingTrials;
+        readonly int IterationsPerTrial;
 
         int RefreshData(Random random)
         {
@@ -74,10 +79,10 @@ namespace SortAlgoBench
             Validate(action, txt); //also a warmup
             var sizes = new List<int>();
             var milliseconds = new List<double>();
-            for (var i = 0; i < SortAlgoBenchProgram.TimingTrials; i++) {
+            for (var i = 0; i < TimingTrials; i++) {
                 var random = new Random(42);
                 var sw = new Stopwatch();
-                for (var k = 0; k < SortAlgoBenchProgram.IterationsPerTrial; k++) {
+                for (var k = 0; k < IterationsPerTrial; k++) {
                     var len = RefreshData(random);
                     sw.Start();
                     action(workspace, len);
@@ -93,7 +98,7 @@ namespace SortAlgoBench
 
             var msDistrib = MeanVarianceAccumulator.FromSequence(milliseconds.Take(milliseconds.Count >> 1));
             var meanLen = sizes.Average();
-            Console.WriteLine($"{txt}: {Helpers.MSE(msDistrib)} (ms) for {sizes.Count} arrays of on average {meanLen:f1} items");
+            Console.WriteLine($"{txt}: {Helpers.MSE(msDistrib)} (ms) over {TimingTrials} runs for {sizes.Count} arrays of on average {meanLen:f1} items: {msDistrib.Mean/sizes.Sum()*1000_000:f1}ns/item");
         }
 
         public void Validate(Action<T[], int> action, string txt)

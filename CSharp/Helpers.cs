@@ -34,9 +34,9 @@ namespace SortAlgoBench {
             return mean.ToString(fmtString) + "~" + stderr.ToString("g2");
         }
 
-        public static ulong[] RandomizeUInt64()
+        public static ulong[] RandomizeUInt64(int size)
         {
-            var arr = new ulong[SortAlgoBenchProgram.MaxArraySize];
+            var arr = new ulong[size];
             var r = new Random(37);
             for (var j = 0; j < arr.Length; j++)
                 arr[j] = (((ulong)(uint)r.Next() << 32) + (uint)r.Next());
