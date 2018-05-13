@@ -16,8 +16,11 @@ namespace SortAlgoBench
 
         static void Main() {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            BenchSize(1 << 8 << 3, 400, 500);
-            BenchSize(1 << 15 << 3, 100, 40);
+            BenchSize(1 << 7 << 4, 400, 500);
+            Console.WriteLine();
+            BenchSize(1 << 9 << 4, 200, 250);
+            Console.WriteLine();
+            BenchSize(1 << 14 << 4, 100, 40);
         }
 
         private static void BenchSize(int MaxArraySize, int TimingTrials, int IterationsPerTrial) {
