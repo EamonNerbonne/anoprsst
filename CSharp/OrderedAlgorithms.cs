@@ -61,45 +61,41 @@ namespace SortAlgoBench {
         static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx) {
             Helpers.BoundsCheck(array, firstIdx, lastIdx);
             var countdownEvent = new CountdownEvent(1);
-            QuickSort_Inclusive_ParallelArgs.Impl(
-                new QuickSort_Inclusive_ParallelArgs {
-                    array = array,
-                    firstIdx = firstIdx,
-                    lastIdx = lastIdx,
-                    countdownEvent = countdownEvent,
-                    splitAt = Math.Max(lastIdx - firstIdx >> SortAlgoBenchProgram.ParallelSplitScale, MinimalParallelQuickSortBatchSize)
-                });
+            new QuickSort_Inclusive_ParallelArgs {
+                array = array,
+                countdownEvent = countdownEvent,
+                splitAt = Math.Max(lastIdx - firstIdx >> SortAlgoBenchProgram.ParallelSplitScale, MinimalParallelQuickSortBatchSize),
+                firstIdx = firstIdx,
+                lastIdx = lastIdx,
+            }.Impl();
             countdownEvent.Wait();
         }
 
         struct QuickSort_Inclusive_ParallelArgs {
             public T[] array;
+            public CountdownEvent countdownEvent;
+            public int splitAt;
             public int firstIdx;
             public int lastIdx;
-            public int splitAt;
-            public CountdownEvent countdownEvent;
-            static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => Impl((QuickSort_Inclusive_ParallelArgs)o);
+            static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => ((QuickSort_Inclusive_ParallelArgs)o).Impl();
 
-            public static void Impl(in QuickSort_Inclusive_ParallelArgs args) {
-                var firstIdx = args.firstIdx;
-                var lastIdx = args.lastIdx;
-                var countdownEvent = args.countdownEvent;
-                while (lastIdx - firstIdx >= args.splitAt) {
-                    var pivot = PartitionWithMedian_Unsafe(ref args.array[firstIdx], lastIdx - firstIdx) + firstIdx;
+            public void Impl() {
+                while (lastIdx - firstIdx >= splitAt) {
+                    var pivot = PartitionWithMedian_Unsafe(ref array[firstIdx], lastIdx - firstIdx) + firstIdx;
                     countdownEvent.AddCount(1);
                     ThreadPool.UnsafeQueueUserWorkItem(
                         QuickSort_Inclusive_Par2_callback,
                         new QuickSort_Inclusive_ParallelArgs {
-                            array = args.array,
+                            array = array,
+                            countdownEvent = countdownEvent,
+                            splitAt = splitAt,
                             firstIdx = pivot + 1,
                             lastIdx = lastIdx,
-                            countdownEvent = countdownEvent,
-                            splitAt = args.splitAt
                         });
                     lastIdx = pivot; //effectively QuickSort_Inclusive(array, firstIdx, pivot);
                 }
 
-                QuickSort_Inclusive_Small_Unsafe(ref args.array[firstIdx], lastIdx - firstIdx);
+                QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx - firstIdx);
                 countdownEvent.Signal();
             }
         }

@@ -5,14 +5,13 @@
 
 
 Benchmarking array of int with ordering Int32OrderingAlgorithms.Int32Order (where relevant)
-QuickSort|int: 83.5882~0.0043 (ms) for 40 arrays of on average 49586.6 items
-ParallelQuickSort|int: 22.995~0.0085 (ms) for 40 arrays of on average 49586.6 items
+QuickSort|int: 83.8251~0.0024 (ms) for 40 arrays of on average 49586.6 items
+ParallelQuickSort|int: 23.114~0.013 (ms) for 40 arrays of on average 49586.6 items
 
 Benchmarking array of SampleClass with ordering SampleClassOrderingAlgorithms.Order (where relevant)
-QuickSort|SampleClass: 154.65~0.013 (ms) for 40 arrays of on average 49586.6 items
-ParallelQuickSort|SampleClass: 42.738~0.015 (ms) for 40 arrays of on average 49586.6 items
+QuickSort|SampleClass: 154.642~0.0067 (ms) for 40 arrays of on average 49586.6 items
+ParallelQuickSort|SampleClass: 43.807~0.026 (ms) for 40 arrays of on average 49586.6 items
 
 Benchmarking array of ValueTuple<int, long, DateTime, string> with ordering BigStructOrderingAlgorithms.Order (where relevant)
-QuickSort|ValueTuple<int, long, DateTime, string>: 227.99~0.018 (ms) for 40 arrays of on average 49586.6 items
-ParallelQuickSort|ValueTuple<int, long, DateTime, string>: 56.293~0.034 (ms) for 40 arrays of on average 49586.6 items
-Press any key to continue . . .
+QuickSort|ValueTuple<int, long, DateTime, string>: 227.74~0.0073 (ms) for 40 arrays of on average 49586.6 items
+ParallelQuickSort|ValueTuple<int, long, DateTime, string>: 55.098~0.032 (ms) for 40 arrays of on average 49586.6 items
