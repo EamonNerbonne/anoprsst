@@ -31,17 +31,17 @@ namespace SortAlgoBench {
             if (!typeof(T).IsValueType) {
                 TopDownInsertionSortBatchSize = 24;
                 BottomUpInsertionSortBatchSize = 16;
-                QuickSortNoMedianThreshold = 16_384;
+                QuickSortNoMedianThreshold = 16_000;
                 MinimalParallelQuickSortBatchSize = 80;
             } else if (Unsafe.SizeOf<T>() <= 8) {
                 TopDownInsertionSortBatchSize = 64;
                 BottomUpInsertionSortBatchSize = 40;
-                QuickSortNoMedianThreshold = 20_000;
+                QuickSortNoMedianThreshold = 16_000;
                 MinimalParallelQuickSortBatchSize = 80;
             } else {
                 TopDownInsertionSortBatchSize = Math.Max(8, 550/(Unsafe.SizeOf<T>()));
                 BottomUpInsertionSortBatchSize = TopDownInsertionSortBatchSize*2/3;
-                QuickSortNoMedianThreshold = 10_000;
+                QuickSortNoMedianThreshold = 16_000;
                 MinimalParallelQuickSortBatchSize = 80;
             }
             Console.WriteLine($"{typeof(T)}: {TopDownInsertionSortBatchSize}/{QuickSortNoMedianThreshold}/{MinimalParallelQuickSortBatchSize}");
