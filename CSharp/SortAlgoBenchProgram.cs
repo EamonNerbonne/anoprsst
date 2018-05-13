@@ -8,10 +8,8 @@ using ExpressionToCodeLib;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
-namespace SortAlgoBench
-{
-    static class SortAlgoBenchProgram
-    {
+namespace SortAlgoBench {
+    static class SortAlgoBenchProgram {
         public static readonly int ParallelSplitScale = Helpers.ProcScale();
 
         static void Main() {
@@ -36,10 +34,8 @@ namespace SortAlgoBench
     }
 
     public sealed class SortAlgorithmBench<T, TOrder>
-        where TOrder : struct, IOrdering<T>
-    {
-        public void BenchVariousAlgos()
-        {
+        where TOrder : struct, IOrdering<T> {
+        public void BenchVariousAlgos() {
             Console.WriteLine("Benchmarking array of " + typeof(T).ToCSharpFriendlyTypeName() + " with ordering " + typeof(TOrder).ToCSharpFriendlyTypeName() + " (where relevant)");
             BenchSort(SystemArraySort);
             //BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
@@ -69,16 +65,14 @@ namespace SortAlgoBench
         readonly int TimingTrials;
         readonly int IterationsPerTrial;
 
-        int RefreshData(Random random)
-        {
+        int RefreshData(Random random) {
             var len = random.Next(workspace.Length + 1);
             var offset = random.Next(sourceData.Length - len + 1);
             Array.Copy(sourceData, offset, workspace, 0, len);
             return len;
         }
 
-        public void BenchSort(Action<T[], int> action)
-        {
+        public void BenchSort(Action<T[], int> action) {
             var txt = action.Method.Name + "|" + typeof(T).ToCSharpFriendlyTypeName();
             Validate(action, txt); //also a warmup
             var sizes = new List<int>();
@@ -102,11 +96,10 @@ namespace SortAlgoBench
 
             var msDistrib = MeanVarianceAccumulator.FromSequence(milliseconds.Take(milliseconds.Count >> 1));
             var meanLen = sizes.Average();
-            Console.WriteLine($"{txt}: {Helpers.MSE(msDistrib)} (ms) over {TimingTrials} runs for {sizes.Count} arrays of on average {meanLen:f1} items: {msDistrib.Mean/sizes.Sum()*1000_000:f1}ns/item");
+            Console.WriteLine($"{txt}: {Helpers.MSE(msDistrib)} (ms) over {TimingTrials} runs for {sizes.Count} arrays of on average {meanLen:f1} items: {msDistrib.Mean / sizes.Sum() * 1000_000:f1}ns/item");
         }
 
-        public void Validate(Action<T[], int> action, string txt)
-        {
+        public void Validate(Action<T[], int> action, string txt) {
             var random = new Random(42);
             var sw = new Stopwatch();
             for (var k = 0; k < 10; k++) {
@@ -148,70 +141,55 @@ namespace SortAlgoBench
     }
 
     public abstract class ComparableOrderingAlgorithms<T> : OrderedAlgorithms<T, ComparableOrderingAlgorithms<T>.ComparableOrdering>
-        where T : IComparable<T>
-    {
-        public struct ComparableOrdering : IOrdering<T>
-        {
+        where T : IComparable<T> {
+        public struct ComparableOrdering : IOrdering<T> {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan(T a, T b) => a.CompareTo(b) < 0;
         }
     }
 
-    public abstract class UInt64OrderingAlgorithms : OrderedAlgorithms<ulong, UInt64OrderingAlgorithms.UInt64Ordering>
-    {
-        public struct UInt64Ordering : IOrdering<ulong>
-        {
+    public abstract class UInt64OrderingAlgorithms : OrderedAlgorithms<ulong, UInt64OrderingAlgorithms.UInt64Ordering> {
+        public struct UInt64Ordering : IOrdering<ulong> {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan(ulong a, ulong b) => a < b;
         }
     }
 
-    public abstract class UInt32OrderingAlgorithms : OrderedAlgorithms<uint, UInt32OrderingAlgorithms.UInt32Order>
-    {
-        public struct UInt32Order : IOrdering<uint>
-        {
+    public abstract class UInt32OrderingAlgorithms : OrderedAlgorithms<uint, UInt32OrderingAlgorithms.UInt32Order> {
+        public struct UInt32Order : IOrdering<uint> {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan(uint a, uint b) => a < b;
         }
     }
 
-    public abstract class Int32OrderingAlgorithms : OrderedAlgorithms<int, Int32OrderingAlgorithms.Int32Order>
-    {
-        public struct Int32Order : IOrdering<int>
-        {
+    public abstract class Int32OrderingAlgorithms : OrderedAlgorithms<int, Int32OrderingAlgorithms.Int32Order> {
+        public struct Int32Order : IOrdering<int> {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan(int a, int b) => a < b;
         }
     }
 
-    public abstract class BigStructOrderingAlgorithms : OrderedAlgorithms<(int, long, DateTime, string), BigStructOrderingAlgorithms.Order>
-    {
-        public struct Order : IOrdering<(int, long, DateTime, string)>
-        {
+    public abstract class BigStructOrderingAlgorithms : OrderedAlgorithms<(int, long, DateTime, string), BigStructOrderingAlgorithms.Order> {
+        public struct Order : IOrdering<(int, long, DateTime, string)> {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan((int, long, DateTime, string) a, (int, long, DateTime, string) b) => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
         }
     }
 
-    public abstract class SmallStructOrderingAlgorithms : OrderedAlgorithms<(int, int, int), SmallStructOrderingAlgorithms.Order>
-    {
-        public struct Order : IOrdering<(int, int, int)>
-        {
+    public abstract class SmallStructOrderingAlgorithms : OrderedAlgorithms<(int, int, int), SmallStructOrderingAlgorithms.Order> {
+        public struct Order : IOrdering<(int, int, int)> {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan((int, int, int) a, (int, int, int) b) => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
         }
     }
 
-    public class SampleClass : IComparable<SampleClass>
-    {
+    public class SampleClass : IComparable<SampleClass> {
         public int Value;
         public int CompareTo(SampleClass other) => Value.CompareTo(other.Value);
     }
 
-    public abstract class SampleClassOrderingAlgorithms : OrderedAlgorithms<SampleClass, SampleClassOrderingAlgorithms.Order>
-    {
-        public struct Order : IOrdering<SampleClass>
-        {
+    public abstract class SampleClassOrderingAlgorithms : OrderedAlgorithms<SampleClass, SampleClassOrderingAlgorithms.Order> {
+        public struct Order : IOrdering<SampleClass> {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan(SampleClass a, SampleClass b) => a.Value < b.Value;
         }

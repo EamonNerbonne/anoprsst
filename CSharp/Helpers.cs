@@ -1,15 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using IncrementalMeanVarianceAccumulator;
 
 namespace SortAlgoBench {
-    static class Helpers
-    {
+    static class Helpers {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Swap<T>(this T[] arr, int a, int b) { (arr[a], arr[b]) = (arr[b], arr[a]); }
 
-        public static int ProcScale()
-        {
+        public static int ProcScale() {
             var splitIters = 4;
             var threads = Environment.ProcessorCount;
             while (threads > 0) {
@@ -26,16 +25,14 @@ namespace SortAlgoBench {
         static double StdErr(MeanVarianceAccumulator acc)
             => acc.SampleStandardDeviation / Math.Sqrt(acc.WeightSum);
 
-        public static string MSE(double mean, double stderr)
-        {
+        public static string MSE(double mean, double stderr) {
             var significantDigits = Math.Log10(Math.Abs(mean / stderr));
             var digitsToShow = Math.Max(2, (int)(significantDigits + 1.9));
             var fmtString = "g" + digitsToShow;
             return mean.ToString(fmtString) + "~" + stderr.ToString("g2");
         }
 
-        public static ulong[] RandomizeUInt64(int size)
-        {
+        public static ulong[] RandomizeUInt64(int size) {
             var arr = new ulong[size];
             var r = new Random(37);
             for (var j = 0; j < arr.Length; j++)
@@ -43,74 +40,63 @@ namespace SortAlgoBench {
             return arr;
         }
 
-        public static (int, long, DateTime, string)[] MapToBigStruct(ulong[] data)
-        {
-            var arr = new (int, long, DateTime, string)[data.Length];
+        public static (int, long, DateTime, string)[] MapToBigStruct(ulong[] data) {
+            var arr = new(int, long, DateTime, string)[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = ((int)(data[j] >>48), (long)(data[j] -(data[j] >>48<<48)), new DateTime(2000,1,1)+TimeSpan.FromSeconds((int)data[j]), data[j].ToString("x"));
+                arr[j] = ((int)(data[j] >> 48), (long)(data[j] - (data[j] >> 48 << 48)), new DateTime(2000, 1, 1) + TimeSpan.FromSeconds((int)data[j]), data[j].ToString("x"));
             return arr;
         }
-        public static (int, int, int)[] MapToSmallStruct(ulong[] data)
-        {
-            var arr = new (int, int, int)[data.Length];
+        public static (int, int, int)[] MapToSmallStruct(ulong[] data) {
+            var arr = new(int, int, int)[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = ((int)(data[j] >>32), (int)(data[j] -(data[j] >>32<<32)),  (int)(data[j]*13));
+                arr[j] = ((int)(data[j] >> 32), (int)(data[j] - (data[j] >> 32 << 32)), (int)(data[j] * 13));
             return arr;
         }
 
-        public static int[] MapToInt32(ulong[] data)
-        {
+        public static int[] MapToInt32(ulong[] data) {
             var arr = new int[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = (int)(data[j]>>32);
+                arr[j] = (int)(data[j] >> 32);
             return arr;
         }
 
-        public static SampleClass[] MapToSampleClass(ulong[]data)
-        {
+        public static SampleClass[] MapToSampleClass(ulong[] data) {
             var arr = new SampleClass[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = new SampleClass { Value = (int)(data[j]>>32) };
+                arr[j] = new SampleClass { Value = (int)(data[j] >> 32) };
             return arr;
         }
 
-        public static uint[] MapToUInt32(ulong[]data)
-        {
+        public static uint[] MapToUInt32(ulong[] data) {
             var arr = new uint[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = (uint)(data[j]>>32);
+                arr[j] = (uint)(data[j] >> 32);
             return arr;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool NeedsSort_WithBoundsCheck<T>(T[] array, int firstIdx, int endIdx)
-        {
-            if ((uint)firstIdx > (uint)endIdx || (uint)endIdx > (uint)array.Length)
-            {
+        public static bool NeedsSort_WithBoundsCheck<T>(T[] array, int firstIdx, int endIdx) {
+            if ((uint)firstIdx > (uint)endIdx || (uint)endIdx > (uint)array.Length) {
                 ThrowIndexOutOfRange(array, firstIdx, endIdx);
             }
-            return endIdx-firstIdx >1;
+            return endIdx - firstIdx > 1;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool NeedsSort_WithBoundsCheck<T>(T[] array, int endIdx)
-        {
-            if ((uint)endIdx > (uint)array.Length)
-            {
+        public static bool NeedsSort_WithBoundsCheck<T>(T[] array, int endIdx) {
+            if ((uint)endIdx > (uint)array.Length) {
                 ThrowIndexOutOfRange(array, 0, endIdx);
             }
             return endIdx > 1;
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool NeedsSort_WithBoundsCheck<T>(T[] array)
-        {
+        public static bool NeedsSort_WithBoundsCheck<T>(T[] array) {
             return array.Length > 1;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ThrowIndexOutOfRange<T>(T[] array, int firstIdx, int lastIdx)
-        {
+        public static void ThrowIndexOutOfRange<T>(T[] array, int firstIdx, int lastIdx) {
             throw new IndexOutOfRangeException($"Attempted to sort [{firstIdx}, {lastIdx}), which not entirely within bounds of [0, {array.Length})");
         }
     }
