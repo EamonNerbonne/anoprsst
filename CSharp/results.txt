@@ -4,64 +4,70 @@
         netcoreapp 2.0
 
 
+System.Int32: 64/20000/100
 Benchmarking array of int with ordering Int32OrderingAlgorithms.Int32Order (where relevant)
-SystemArraySort|int: 1.38191~0.00011 (ms) over 400 runs for 500 arrays of on average 126.1 items: 21.9ns/item
-QuickSort|int: 1.15973~9.2e-05 (ms) over 400 runs for 500 arrays of on average 126.1 items: 18.4ns/item
-ParallelQuickSort|int: 1.159~9.3e-05 (ms) over 400 runs for 500 arrays of on average 126.1 items: 18.4ns/item
+SystemArraySort|int: 1.38171~8.9e-05 (ms) over 400 runs for 500 arrays of on average 126.1 items: 21.9ns/item
+QuickSort|int: 1.10359~7.5e-05 (ms) over 400 runs for 500 arrays of on average 126.1 items: 17.5ns/item
+ParallelQuickSort|int: 1.10403~8.7e-05 (ms) over 400 runs for 500 arrays of on average 126.1 items: 17.5ns/item
 
+System.ValueTuple`3[System.Int32,System.Int32,System.Int32]: 26/10000/50
 Benchmarking array of ValueTuple<int, int, int> with ordering SmallStructOrderingAlgorithms.Order (where relevant)
-SystemArraySort|ValueTuple<int, int, int>: 4.92659~0.00028 (ms) over 400 runs for 500 arrays of on average 126.1 items: 78.2ns/item
-QuickSort|ValueTuple<int, int, int>: 2.01164~7.9e-05 (ms) over 400 runs for 500 arrays of on average 126.1 items: 31.9ns/item
-ParallelQuickSort|ValueTuple<int, int, int>: 1.91109~9.3e-05 (ms) over 400 runs for 500 arrays of on average 126.1 items: 30.3ns/item
+SystemArraySort|ValueTuple<int, int, int>: 4.94571~0.00032 (ms) over 400 runs for 500 arrays of on average 126.1 items: 78.5ns/item
+QuickSort|ValueTuple<int, int, int>: 2.00304~8.7e-05 (ms) over 400 runs for 500 arrays of on average 126.1 items: 31.8ns/item
+ParallelQuickSort|ValueTuple<int, int, int>: 2.7227~0.002 (ms) over 400 runs for 500 arrays of on average 126.1 items: 43.2ns/item
 
+SortAlgoBench.SampleClass: 24/16384/64
 Benchmarking array of SampleClass with ordering SampleClassOrderingAlgorithms.Order (where relevant)
-SystemArraySort|SampleClass: 3.72934~0.00021 (ms) over 400 runs for 500 arrays of on average 126.1 items: 59.2ns/item
-QuickSort|SampleClass: 2.07548~7.6e-05 (ms) over 400 runs for 500 arrays of on average 126.1 items: 32.9ns/item
-ParallelQuickSort|SampleClass: 2.07623~7e-05 (ms) over 400 runs for 500 arrays of on average 126.1 items: 32.9ns/item
+SystemArraySort|SampleClass: 3.723~0.00032 (ms) over 400 runs for 500 arrays of on average 126.1 items: 59.1ns/item
+QuickSort|SampleClass: 2.1688~0.00029 (ms) over 400 runs for 500 arrays of on average 126.1 items: 34.4ns/item
+ParallelQuickSort|SampleClass: 2.16309~0.00015 (ms) over 400 runs for 500 arrays of on average 126.1 items: 34.3ns/item
 
+System.ValueTuple`4[System.Int32,System.Int64,System.DateTime,System.String]: 18/10000/50
 Benchmarking array of ValueTuple<int, long, DateTime, string> with ordering BigStructOrderingAlgorithms.Order (where relevant)
-SystemArraySort|ValueTuple<int, long, DateTime, string>: 8.15356~0.0002 (ms) over 400 runs for 500 arrays of on average 126.1 items: 129.4ns/item
-QuickSort|ValueTuple<int, long, DateTime, string>: 3.79627~0.00015 (ms) over 400 runs for 500 arrays of on average 126.1 items: 60.2ns/item
-ParallelQuickSort|ValueTuple<int, long, DateTime, string>: 3.7971~0.00013 (ms) over 400 runs for 500 arrays of on average 126.1 items: 60.2ns/item
-
-
-Benchmarking array of int with ordering Int32OrderingAlgorithms.Int32Order (where relevant)
-SystemArraySort|int: 3.39886~0.00015 (ms) over 200 runs for 250 arrays of on average 498.2 items: 27.3ns/item
-QuickSort|int: 2.95872~0.00018 (ms) over 200 runs for 250 arrays of on average 498.2 items: 23.8ns/item
-ParallelQuickSort|int: 2.4582~0.0014 (ms) over 200 runs for 250 arrays of on average 498.2 items: 19.7ns/item
-
-Benchmarking array of ValueTuple<int, int, int> with ordering SmallStructOrderingAlgorithms.Order (where relevant)
-SystemArraySort|ValueTuple<int, int, int>: 12.567~0.0047 (ms) over 200 runs for 250 arrays of on average 498.2 items: 100.9ns/item
-QuickSort|ValueTuple<int, int, int>: 5.19813~0.00032 (ms) over 200 runs for 250 arrays of on average 498.2 items: 41.7ns/item
-ParallelQuickSort|ValueTuple<int, int, int>: 4.048~0.01 (ms) over 200 runs for 250 arrays of on average 498.2 items: 32.5ns/item
-
-Benchmarking array of SampleClass with ordering SampleClassOrderingAlgorithms.Order (where relevant)
-SystemArraySort|SampleClass: 9.3177~0.0027 (ms) over 200 runs for 250 arrays of on average 498.2 items: 74.8ns/item
-QuickSort|SampleClass: 5.15541~0.0004 (ms) over 200 runs for 250 arrays of on average 498.2 items: 41.4ns/item
-ParallelQuickSort|SampleClass: 3.834~0.0038 (ms) over 200 runs for 250 arrays of on average 498.2 items: 30.8ns/item
-
-Benchmarking array of ValueTuple<int, long, DateTime, string> with ordering BigStructOrderingAlgorithms.Order (where relevant)
-SystemArraySort|ValueTuple<int, long, DateTime, string>: 20.0886~0.0014 (ms) over 200 runs for 250 arrays of on average 498.2 items: 161.3ns/item
-QuickSort|ValueTuple<int, long, DateTime, string>: 9.06032~0.00054 (ms) over 200 runs for 250 arrays of on average 498.2 items: 72.8ns/item
-ParallelQuickSort|ValueTuple<int, long, DateTime, string>: 5.176~0.01 (ms) over 200 runs for 250 arrays of on average 498.2 items: 41.6ns/item
+SystemArraySort|ValueTuple<int, long, DateTime, string>: 7.87232~0.00041 (ms) over 400 runs for 500 arrays of on average 126.1 items: 124.9ns/item
+QuickSort|ValueTuple<int, long, DateTime, string>: 3.66586~0.00011 (ms) over 400 runs for 500 arrays of on average 126.1 items: 58.2ns/item
+ParallelQuickSort|ValueTuple<int, long, DateTime, string>: 4.1876~0.0022 (ms) over 400 runs for 500 arrays of on average 126.1 items: 66.4ns/item
 
 
 Benchmarking array of int with ordering Int32OrderingAlgorithms.Int32Order (where relevant)
-SystemArraySort|int: 20.2158~0.00082 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 40.8ns/item
-QuickSort|int: 18.1306~0.00089 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 36.6ns/item
-ParallelQuickSort|int: 6.47~0.012 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 13.0ns/item
+SystemArraySort|int: 3.40205~0.0002 (ms) over 200 runs for 250 arrays of on average 498.2 items: 27.3ns/item
+QuickSort|int: 2.85523~0.00015 (ms) over 200 runs for 250 arrays of on average 498.2 items: 22.9ns/item
+ParallelQuickSort|int: 2.686~0.0058 (ms) over 200 runs for 250 arrays of on average 498.2 items: 21.6ns/item
 
 Benchmarking array of ValueTuple<int, int, int> with ordering SmallStructOrderingAlgorithms.Order (where relevant)
-SystemArraySort|ValueTuple<int, int, int>: 77.3752~0.0026 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 156.0ns/item
-QuickSort|ValueTuple<int, int, int>: 33.183~0.001 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 66.9ns/item
-ParallelQuickSort|ValueTuple<int, int, int>: 10.17~0.033 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 20.5ns/item
+SystemArraySort|ValueTuple<int, int, int>: 12.5518~0.00058 (ms) over 200 runs for 250 arrays of on average 498.2 items: 100.8ns/item
+QuickSort|ValueTuple<int, int, int>: 5.1627~0.00022 (ms) over 200 runs for 250 arrays of on average 498.2 items: 41.5ns/item
+ParallelQuickSort|ValueTuple<int, int, int>: 3.625~0.0044 (ms) over 200 runs for 250 arrays of on average 498.2 items: 29.1ns/item
 
 Benchmarking array of SampleClass with ordering SampleClassOrderingAlgorithms.Order (where relevant)
-SystemArraySort|SampleClass: 58.842~0.0098 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 118.7ns/item
-QuickSort|SampleClass: 32.326~0.0047 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 65.2ns/item
-ParallelQuickSort|SampleClass: 10.78~0.015 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 21.7ns/item
+SystemArraySort|SampleClass: 9.28392~0.00053 (ms) over 200 runs for 250 arrays of on average 498.2 items: 74.5ns/item
+QuickSort|SampleClass: 5.3048~0.00056 (ms) over 200 runs for 250 arrays of on average 498.2 items: 42.6ns/item
+ParallelQuickSort|SampleClass: 3.811~0.004 (ms) over 200 runs for 250 arrays of on average 498.2 items: 30.6ns/item
 
 Benchmarking array of ValueTuple<int, long, DateTime, string> with ordering BigStructOrderingAlgorithms.Order (where relevant)
-SystemArraySort|ValueTuple<int, long, DateTime, string>: 120.98~0.013 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 244.0ns/item
-QuickSort|ValueTuple<int, long, DateTime, string>: 51.2425~0.0013 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 103.3ns/item
-ParallelQuickSort|ValueTuple<int, long, DateTime, string>: 14.232~0.0084 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 28.7ns/item
+SystemArraySort|ValueTuple<int, long, DateTime, string>: 19.435~0.00064 (ms) over 200 runs for 250 arrays of on average 498.2 items: 156.1ns/item
+QuickSort|ValueTuple<int, long, DateTime, string>: 8.8758~0.0003 (ms) over 200 runs for 250 arrays of on average 498.2 items: 71.3ns/item
+ParallelQuickSort|ValueTuple<int, long, DateTime, string>: 4.82~0.0098 (ms) over 200 runs for 250 arrays of on average 498.2 items: 38.7ns/item
+
+
+Benchmarking array of int with ordering Int32OrderingAlgorithms.Int32Order (where relevant)
+SystemArraySort|int: 20.2325~0.00069 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 40.8ns/item
+QuickSort|int: 17.7727~0.0006 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 35.8ns/item
+ParallelQuickSort|int: 6.638~0.0096 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 13.4ns/item
+
+Benchmarking array of ValueTuple<int, int, int> with ordering SmallStructOrderingAlgorithms.Order (where relevant)
+SystemArraySort|ValueTuple<int, int, int>: 77.3542~0.003 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 156.0ns/item
+QuickSort|ValueTuple<int, int, int>: 29.7114~0.001 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 59.9ns/item
+ParallelQuickSort|ValueTuple<int, int, int>: 10.28~0.013 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 20.7ns/item
+
+Benchmarking array of SampleClass with ordering SampleClassOrderingAlgorithms.Order (where relevant)
+SystemArraySort|SampleClass: 58.745~0.0084 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 118.5ns/item
+QuickSort|SampleClass: 33.121~0.016 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 66.8ns/item
+ParallelQuickSort|SampleClass: 11.49~0.014 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 23.2ns/item
+
+Benchmarking array of ValueTuple<int, long, DateTime, string> with ordering BigStructOrderingAlgorithms.Order (where relevant)
+SystemArraySort|ValueTuple<int, long, DateTime, string>: 119.02~0.021 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 240.0ns/item
+QuickSort|ValueTuple<int, long, DateTime, string>: 52.721~0.0061 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 106.3ns/item
+ParallelQuickSort|ValueTuple<int, long, DateTime, string>: 14.43~0.014 (ms) over 100 runs for 40 arrays of on average 12396.6 items: 29.1ns/item
+
+Press any key to continue . . .

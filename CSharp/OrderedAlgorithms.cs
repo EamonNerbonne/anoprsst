@@ -13,7 +13,7 @@ namespace SortAlgoBench {
     public abstract class OrderedAlgorithms<T, TOrder>
         where TOrder : struct, IOrdering<T> {
         //*
-        const int TopDownInsertionSortBatchSize = 32;
+        static readonly int TopDownInsertionSortBatchSize = 32;
         /*/
         static readonly int TopDownInsertionSortBatchSize = !typeof(T).IsValueType ? 24 
             : Unsafe.SizeOf<T>() > 32 ? 16
@@ -21,9 +21,29 @@ namespace SortAlgoBench {
             : Unsafe.SizeOf<T>() > 4 ? 44
             : 64;
             /**/
-        const int BottomUpInsertionSortBatchSize = 24;
-        const int QuickSortNoMedianThreshold = 16_384;
-        const int MinimalParallelQuickSortBatchSize = 64;
+        static readonly int BottomUpInsertionSortBatchSize = 24;
+        static readonly int QuickSortNoMedianThreshold = 16_384;
+        static readonly int MinimalParallelQuickSortBatchSize = 64;
+
+        static OrderedAlgorithms() {
+            if (!typeof(T).IsValueType) {
+                TopDownInsertionSortBatchSize = 24;
+                BottomUpInsertionSortBatchSize = 16;
+                QuickSortNoMedianThreshold = 16_384;
+                MinimalParallelQuickSortBatchSize = 64;
+            } else if (Unsafe.SizeOf<T>() <= 8) {
+                TopDownInsertionSortBatchSize = 64;
+                BottomUpInsertionSortBatchSize = 40;
+                QuickSortNoMedianThreshold = 20_000;
+                MinimalParallelQuickSortBatchSize = 100;
+            } else {
+                TopDownInsertionSortBatchSize = 2+(16*48)/(16+Unsafe.SizeOf<T>());
+                BottomUpInsertionSortBatchSize = TopDownInsertionSortBatchSize*2/3;
+                QuickSortNoMedianThreshold = 10_000;
+                MinimalParallelQuickSortBatchSize = 50;
+            }
+            Console.WriteLine($"{typeof(T)}: {TopDownInsertionSortBatchSize}/{QuickSortNoMedianThreshold}/{MinimalParallelQuickSortBatchSize}");
+        }
 
         public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr, int TimingTrials, int IterationsPerTrial) => new SortAlgorithmBench<T, TOrder>(arr, TimingTrials, IterationsPerTrial);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
@@ -650,7 +670,7 @@ namespace SortAlgoBench {
 
         static void BottomUpMergeSort(T[] target, T[] scratchSpace, int n) {
             var batchesSortedUpto = 0;
-            const int batchSize = BottomUpInsertionSortBatchSize;
+            var batchSize = BottomUpInsertionSortBatchSize;
 
             while (true)
                 if (batchesSortedUpto + batchSize <= n) {
