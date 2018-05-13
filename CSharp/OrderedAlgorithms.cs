@@ -208,16 +208,17 @@ namespace SortAlgoBench {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void SortFiveIndexes(ref T a, ref T b, ref T c, ref T d, ref T e) {
-            if (default(TOrder).LessThan(e, a)) (e, a) = (a, e);
-            if (default(TOrder).LessThan(d, b)) (d, b) = (b, d);
-            if (default(TOrder).LessThan(c, a)) (c, a) = (a, c);
-            if (default(TOrder).LessThan(e, c)) (e, c) = (c, e);
-            if (default(TOrder).LessThan(b, a)) (b, a) = (a, b);
-            if (default(TOrder).LessThan(d, c)) (d, c) = (c, d);
-            if (default(TOrder).LessThan(e, b)) (e, b) = (b, e);
-            if (default(TOrder).LessThan(c, b)) (c, b) = (b, c);
-            if (default(TOrder).LessThan(e, d)) (e, d) = (d, e);
+        static void SortFiveIndexes(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4) {
+            if (default(TOrder).LessThan(v4, v0)) (v4, v0) = (v0, v4);
+            if (default(TOrder).LessThan(v3, v1)) (v3, v1) = (v1, v3);
+            if (default(TOrder).LessThan(v2, v0)) (v2, v0) = (v0, v2);
+            if (default(TOrder).LessThan(v4, v2)) (v4, v2) = (v2, v4);
+            if (default(TOrder).LessThan(v1, v0)) (v1, v0) = (v0, v1);
+            if (default(TOrder).LessThan(v3, v2)) (v3, v2) = (v2, v3);
+            if (default(TOrder).LessThan(v4, v1)) (v4, v1) = (v1, v4);
+            if (default(TOrder).LessThan(v2, v1)) (v2, v1) = (v1, v2);
+            if (default(TOrder).LessThan(v4, v3)) (v4, v3) = (v3, v4);
+        }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
