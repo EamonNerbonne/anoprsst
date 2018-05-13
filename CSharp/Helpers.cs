@@ -76,16 +76,33 @@ namespace SortAlgoBench {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void BoundsCheck<T>(T[] array, int firstIdx, int lastIdx)
+        public static bool NeedsSort_WithBoundsCheck<T>(T[] array, int firstIdx, int endIdx)
         {
-            if (0 > firstIdx || firstIdx > lastIdx || lastIdx > array.Length)
+            if ((uint)firstIdx > (uint)endIdx || (uint)endIdx > (uint)array.Length)
             {
-                ThrowIndexOutOfRange(array, firstIdx, lastIdx);
+                ThrowIndexOutOfRange(array, firstIdx, endIdx);
             }
+            return endIdx-firstIdx >1;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool NeedsSort_WithBoundsCheck<T>(T[] array, int endIdx)
+        {
+            if ((uint)endIdx > (uint)array.Length)
+            {
+                ThrowIndexOutOfRange(array, 0, endIdx);
+            }
+            return endIdx > 1;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool NeedsSort_WithBoundsCheck<T>(T[] array)
+        {
+            return array.Length > 1;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static void ThrowIndexOutOfRange<T>(T[] array, int firstIdx, int lastIdx)
+        public static void ThrowIndexOutOfRange<T>(T[] array, int firstIdx, int lastIdx)
         {
             throw new IndexOutOfRangeException($"Attempted to sort [{firstIdx}, {lastIdx}), which not entirely within bounds of [0, {array.Length})");
         }

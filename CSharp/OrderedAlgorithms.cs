@@ -27,24 +27,77 @@ namespace SortAlgoBench {
 
         public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr, int TimingTrials, int IterationsPerTrial) => new SortAlgorithmBench<T, TOrder>(arr, TimingTrials, IterationsPerTrial);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
-        public static void TopDownMergeSort(T[] array, int endIdx) => TopDownSplitMerge_toItems(array, 0, endIdx, new T[endIdx]);
-        public static void ParallelTopDownMergeSort(T[] array, int endIdx) => TopDownSplitMerge_toItems_Par(array, 0, endIdx, new T[endIdx]);
-        public static T[] TopDownMergeSort_Copy(T[] array, int endIdx) => CopyingTopDownMergeSort(array, new T[endIdx], endIdx);
-        public static void AltTopDownMergeSort(T[] array, int endIdx) => AltTopDownMergeSort(array, new T[endIdx], endIdx);
-        public static void BottomUpMergeSort(T[] array, int endIdx) => BottomUpMergeSort(array, new T[endIdx], endIdx);
-        public static void BottomUpMergeSort2(T[] array, int endIdx) => BottomUpMergeSort2(array, new T[endIdx], endIdx);
-        public static void QuickSort(T[] array) => QuickSort(array, array.Length - 1);
-        public static void QuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Unsafe(ref array[0], endIdx - 1);
-        public static void QuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Unsafe(ref array[firstIdx], endIdx - firstIdx - 1); }
-        public static void ParallelQuickSort(T[] array) => QuickSort_Inclusive_Parallel(array, 0, array.Length - 1);
-        public static void ParallelQuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
-        public static void ParallelQuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Parallel(array, firstIdx, endIdx - 1); }
-        public static void DualPivotQuickSort(T[] array) => DualPivotQuickSort_Inclusive(array, 0, array.Length - 1);
-        public static void DualPivotQuickSort(T[] array, int endIdx) => DualPivotQuickSort_Inclusive(array, 0, endIdx - 1);
-        public static void DualPivotQuickSort(T[] array, int firstIdx, int endIdx) => DualPivotQuickSort_Inclusive(array, firstIdx, endIdx - 1);
+        public static void TopDownMergeSort(T[] array, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
+                TopDownSplitMerge_toItems(array, 0, endIdx, new T[endIdx]);
+        }
+
+        public static void ParallelTopDownMergeSort(T[] array, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
+                TopDownSplitMerge_toItems_Par(array, 0, endIdx, new T[endIdx]);
+        }
+
+        public static T[] TopDownMergeSort_Copy(T[] array, int endIdx) {
+            return CopyingTopDownMergeSort(array, new T[endIdx], endIdx);
+        }
+
+        public static void AltTopDownMergeSort(T[] array, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
+                AltTopDownMergeSort(array, new T[endIdx], endIdx);
+        }
+
+        public static void BottomUpMergeSort(T[] array, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
+                BottomUpMergeSort(array, new T[endIdx], endIdx);
+        }
+
+        public static void BottomUpMergeSort2(T[] array, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
+                BottomUpMergeSort2(array, new T[endIdx], endIdx);
+        }
+
+        public static void QuickSort(T[] array) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array))
+                QuickSort(array, array.Length - 1);
+        }
+
+        public static void QuickSort(T[] array, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
+                QuickSort_Inclusive_Unsafe(ref array[0], endIdx - 1);
+        }
+        public static void QuickSort(T[] array, int firstIdx, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, firstIdx, endIdx))
+                QuickSort_Inclusive_Unsafe(ref array[firstIdx], endIdx - firstIdx - 1);
+        }
+        public static void ParallelQuickSort(T[] array) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array))
+                QuickSort_Inclusive_Parallel(array, 0, array.Length - 1);
+        }
+
+        public static void ParallelQuickSort(T[] array, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
+                QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
+        }
+        public static void ParallelQuickSort(T[] array, int firstIdx, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, firstIdx, endIdx))
+                QuickSort_Inclusive_Parallel(array, firstIdx, endIdx - 1);
+        }
+        public static void DualPivotQuickSort(T[] array) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array))
+                DualPivotQuickSort_Inclusive(array, 0, array.Length - 1);
+        }
+
+        public static void DualPivotQuickSort(T[] array, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
+                DualPivotQuickSort_Inclusive(array, 0, endIdx - 1);
+        }
+
+        public static void DualPivotQuickSort(T[] array, int firstIdx, int endIdx) {
+            if (Helpers.NeedsSort_WithBoundsCheck(array, firstIdx, endIdx))
+                DualPivotQuickSort_Inclusive(array, firstIdx, endIdx - 1);
+        }
 
         static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx) {
-            Helpers.BoundsCheck(array, firstIdx, lastIdx);
             var countdownEvent = new CountdownEvent(1);
             new QuickSort_Inclusive_ParallelArgs {
                 array = array,
