@@ -187,7 +187,6 @@ namespace SortAlgoBench {
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 1);
             firstPtr = ref Unsafe.Add(ref firstPtr, 1);
             lastOffset = lastOffset - 1;
-            var firstOffset = 1;
             /**/
             while (true) {
                 while (default(TOrder).LessThan(firstPtr, pivotValue)) {
@@ -222,10 +221,10 @@ namespace SortAlgoBench {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void SortThreeIndexes(ref T a, ref T b, ref T c) {
-            if (default(TOrder).LessThan(c, a)) (c, a) = (a, c);
-            if (default(TOrder).LessThan(b, a)) (b, a) = (a, b);
-            if (default(TOrder).LessThan(c, b)) (c, b) = (b, c);
+        static void SortThreeIndexes(ref T v0, ref T v1, ref T v2) {
+            if (default(TOrder).LessThan(v2, v0)) (v2, v0) = (v0, v2);
+            if (default(TOrder).LessThan(v1, v0)) (v1, v0) = (v0, v1);
+            if (default(TOrder).LessThan(v2, v1)) (v2, v1) = (v1, v2);
         }
 
         static void DualPivotQuickSort_Inclusive(T[] array, int firstIdx, int lastIdx) {
