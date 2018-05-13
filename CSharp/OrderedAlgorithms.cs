@@ -22,7 +22,8 @@ namespace SortAlgoBench {
             : 64;
             /**/
         const int BottomUpInsertionSortBatchSize = 24;
-        const int QuickSortNoMedianThreshold = TopDownInsertionSortBatchSize << 9;
+        const int QuickSortNoMedianThreshold = 16_384;
+        const int MinimalParallelQuickSortBatchSize = 64;
 
         public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr) => new SortAlgorithmBench<T, TOrder>(arr);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
@@ -66,7 +67,7 @@ namespace SortAlgoBench {
                     firstIdx = firstIdx,
                     lastIdx = lastIdx,
                     countdownEvent = countdownEvent,
-                    splitAt = Math.Max(lastIdx - firstIdx >> SortAlgoBenchProgram.ParallelSplitScale, TopDownInsertionSortBatchSize << 1)
+                    splitAt = Math.Max(lastIdx - firstIdx >> SortAlgoBenchProgram.ParallelSplitScale, MinimalParallelQuickSortBatchSize)
                 });
             countdownEvent.Wait();
         }
@@ -84,7 +85,7 @@ namespace SortAlgoBench {
                 var lastIdx = args.lastIdx;
                 var countdownEvent = args.countdownEvent;
                 while (lastIdx - firstIdx >= args.splitAt) {
-                    var pivot = PartitionMedian5_Unsafe(ref args.array[firstIdx], lastIdx - firstIdx) + firstIdx;
+                    var pivot = PartitionWithMedian_Unsafe(ref args.array[firstIdx], lastIdx - firstIdx) + firstIdx;
                     countdownEvent.AddCount(1);
                     ThreadPool.UnsafeQueueUserWorkItem(
                         QuickSort_Inclusive_Par2_callback,
@@ -105,7 +106,7 @@ namespace SortAlgoBench {
 
         static void QuickSort_Inclusive_Unsafe(ref T ptr, int lastOffset) {
             while (lastOffset >= QuickSortNoMedianThreshold) {
-                var pivot = PartitionMedian5_Unsafe(ref ptr, lastOffset);
+                var pivot = PartitionWithMedian_Unsafe(ref ptr, lastOffset);
                 QuickSort_Inclusive_Unsafe(ref Unsafe.Add(ref ptr, pivot + 1), lastOffset - (pivot + 1));
                 lastOffset = pivot; //QuickSort_Inclusive_Unsafe(ref ptr, pivot);
             }
@@ -134,10 +135,18 @@ namespace SortAlgoBench {
         /// </summary>
         public static int Partition_Unsafe(ref T firstPtr, int lastOffset) {
             //precondition: 1 <= lastOffset
-            var midpoint = lastOffset >> 1;
             //so midpoint != lastOffset
-            var pivotValue = Unsafe.Add(ref firstPtr, midpoint);
+#if false
+            ref var midPtr = ref Unsafe.Add(ref firstPtr, lastOffset >> 1);
+            SortThreeIndexes(ref firstPtr, ref midPtr, ref Unsafe.Add(ref firstPtr, lastOffset));
+            var pivotValue = midPtr;
+            lastOffset--;
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+            firstPtr = ref Unsafe.Add(ref firstPtr, 1);
+#else
+            var pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
+            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+#endif
             while (true) {
                 //on the first iteration,  the following loop bails at the lastest when it reaches the midpoint, so ref firstPtr < ref lastPtr
                 while (default(TOrder).LessThan(firstPtr, pivotValue)) {
@@ -160,7 +169,7 @@ namespace SortAlgoBench {
             return lastOffset;
         }
 
-        static int PartitionMedian5_Unsafe(ref T firstPtr, int lastOffset) {
+        static int PartitionWithMedian_Unsafe(ref T firstPtr, int lastOffset) {
             var midpoint = lastOffset >> 1;
             ref var midPtr = ref Unsafe.Add(ref firstPtr, midpoint);
 
@@ -180,8 +189,8 @@ namespace SortAlgoBench {
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 2);
             firstPtr = ref Unsafe.Add(ref firstPtr, 2);
             lastOffset = lastOffset - 2;
-#elif false
-            MedianOfSevenIndexes(
+#elif true
+            MedianOf7(
                 ref firstPtr,
                 ref Unsafe.Add(ref firstPtr, 1),
                 ref Unsafe.Add(ref firstPtr, 2),
