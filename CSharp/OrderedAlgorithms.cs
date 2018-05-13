@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,6 +27,7 @@ namespace SortAlgoBench {
         static readonly int MinimalParallelQuickSortBatchSize = 64;
 
         static OrderedAlgorithms() {
+            
             if (!typeof(T).IsValueType) {
                 TopDownInsertionSortBatchSize = 24;
                 BottomUpInsertionSortBatchSize = 16;
@@ -37,7 +39,7 @@ namespace SortAlgoBench {
                 QuickSortNoMedianThreshold = 20_000;
                 MinimalParallelQuickSortBatchSize = 80;
             } else {
-                TopDownInsertionSortBatchSize = 2+(16*48)/(16+Unsafe.SizeOf<T>());
+                TopDownInsertionSortBatchSize = 2+(16*48)/(9+Unsafe.SizeOf<T>());
                 BottomUpInsertionSortBatchSize = TopDownInsertionSortBatchSize*2/3;
                 QuickSortNoMedianThreshold = 10_000;
                 MinimalParallelQuickSortBatchSize = 80;
