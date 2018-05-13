@@ -164,8 +164,11 @@ namespace SortAlgoBench {
             var midpoint = lastOffset >> 1;
             ref var midPtr = ref Unsafe.Add(ref firstPtr, midpoint);
 
-            //*
-            SortFiveIndexes(
+#if true
+            //InsertionSort_InPlace_Unsafe_Inclusive(ref Unsafe.Add(ref firstPtr, midpoint-3),ref Unsafe.Add(ref firstPtr, midpoint+3));
+            //var pivotValue = midPtr;
+            //ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+            MedianOf5(
                 ref firstPtr,
                 ref Unsafe.Add(ref firstPtr, 1),
                 ref midPtr,
@@ -177,7 +180,35 @@ namespace SortAlgoBench {
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 2);
             firstPtr = ref Unsafe.Add(ref firstPtr, 2);
             lastOffset = lastOffset - 2;
-            /*/
+#elif false
+            MedianOfSevenIndexes(
+                ref firstPtr,
+                ref Unsafe.Add(ref firstPtr, 1),
+                ref Unsafe.Add(ref firstPtr, 2),
+                ref midPtr,
+                ref Unsafe.Add(ref firstPtr, lastOffset - 2),
+                ref Unsafe.Add(ref firstPtr, lastOffset - 1),
+                ref Unsafe.Add(ref firstPtr, lastOffset));
+
+            var pivotValue = midPtr;
+
+            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 3);
+            firstPtr = ref Unsafe.Add(ref firstPtr, 3);
+            lastOffset = lastOffset - 3;
+#else 
+            SortThreeIndexes(
+                ref Unsafe.Add(ref firstPtr, 1),
+                ref firstPtr,
+                ref Unsafe.Add(ref firstPtr, 2));
+            SortThreeIndexes(
+                ref Unsafe.Add(ref midPtr, -1),
+                ref midPtr,
+                ref Unsafe.Add(ref firstPtr, 1));
+            SortThreeIndexes(
+                ref Unsafe.Add(ref firstPtr, lastOffset - 2),
+                ref Unsafe.Add(ref firstPtr, lastOffset),
+                ref Unsafe.Add(ref firstPtr, lastOffset - 1));
+
             SortThreeIndexes(
                 ref firstPtr,
                 ref midPtr,
@@ -187,7 +218,7 @@ namespace SortAlgoBench {
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 1);
             firstPtr = ref Unsafe.Add(ref firstPtr, 1);
             lastOffset = lastOffset - 1;
-            /**/
+#endif
             while (true) {
                 while (default(TOrder).LessThan(firstPtr, pivotValue)) {
                     firstPtr = ref Unsafe.Add(ref firstPtr, 1);
@@ -207,7 +238,7 @@ namespace SortAlgoBench {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void SortFiveIndexes(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4) {
+        static void MedianOf5(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4) {
             if (default(TOrder).LessThan(v4, v0)) (v4, v0) = (v0, v4);
             if (default(TOrder).LessThan(v3, v1)) (v3, v1) = (v1, v3);
             if (default(TOrder).LessThan(v2, v0)) (v2, v0) = (v0, v2);
@@ -216,8 +247,97 @@ namespace SortAlgoBench {
             if (default(TOrder).LessThan(v3, v2)) (v3, v2) = (v2, v3);
             if (default(TOrder).LessThan(v4, v1)) (v4, v1) = (v1, v4);
             if (default(TOrder).LessThan(v2, v1)) (v2, v1) = (v1, v2);
+            //if (default(TOrder).LessThan(v4, v3)) (v4, v3) = (v3, v4);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void MedianOf7(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6) {
+            if (default(TOrder).LessThan(v4, v0)) (v4, v0) = (v0, v4);
+            if (default(TOrder).LessThan(v5, v1)) (v5, v1) = (v1, v5);
+            if (default(TOrder).LessThan(v6, v2)) (v6, v2) = (v2, v6);
+            if (default(TOrder).LessThan(v2, v0)) (v2, v0) = (v0, v2);
+            if (default(TOrder).LessThan(v3, v1)) (v3, v1) = (v1, v3);
+            if (default(TOrder).LessThan(v6, v4)) (v6, v4) = (v4, v6);
+            if (default(TOrder).LessThan(v4, v2)) (v4, v2) = (v2, v4);
+            if (default(TOrder).LessThan(v5, v3)) (v5, v3) = (v3, v5);
+            if (default(TOrder).LessThan(v1, v0)) (v1, v0) = (v0, v1);
+            if (default(TOrder).LessThan(v3, v2)) (v3, v2) = (v2, v3);
+            if (default(TOrder).LessThan(v5, v4)) (v5, v4) = (v4, v5);
+            if (default(TOrder).LessThan(v4, v1)) (v4, v1) = (v1, v4);
+            if (default(TOrder).LessThan(v6, v3)) (v6, v3) = (v3, v6);
             if (default(TOrder).LessThan(v4, v3)) (v4, v3) = (v3, v4);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void Sort11Indexes(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6, ref T v7, ref T v8, ref T v9, ref T v10) {
+            if (default(TOrder).LessThan(v1, v0)) (v1, v0) = (v0, v1);
+            if (default(TOrder).LessThan(v3, v2)) (v3, v2) = (v2, v3);
+            if (default(TOrder).LessThan(v5, v4)) (v5, v4) = (v4, v5);
+            if (default(TOrder).LessThan(v7, v6)) (v7, v6) = (v6, v7);
+            if (default(TOrder).LessThan(v9, v8)) (v9, v8) = (v8, v9);
+            if (default(TOrder).LessThan(v3, v1)) (v3, v1) = (v1, v3);
+            if (default(TOrder).LessThan(v7, v5)) (v7, v5) = (v5, v7);
+            if (default(TOrder).LessThan(v2, v0)) (v2, v0) = (v0, v2);
+            if (default(TOrder).LessThan(v6, v4)) (v6, v4) = (v4, v6);
+            if (default(TOrder).LessThan(v10, v8)) (v10, v8) = (v8, v10);
+            if (default(TOrder).LessThan(v2, v1)) (v2, v1) = (v1, v2);
+            if (default(TOrder).LessThan(v6, v5)) (v6, v5) = (v5, v6);
+            if (default(TOrder).LessThan(v10, v9)) (v10, v9) = (v9, v10);
+            if (default(TOrder).LessThan(v4, v0)) (v4, v0) = (v0, v4);
+            if (default(TOrder).LessThan(v7, v3)) (v7, v3) = (v3, v7);
+            if (default(TOrder).LessThan(v5, v1)) (v5, v1) = (v1, v5);
+            if (default(TOrder).LessThan(v10, v6)) (v10, v6) = (v6, v10);
+            if (default(TOrder).LessThan(v8, v4)) (v8, v4) = (v4, v8);
+            if (default(TOrder).LessThan(v9, v5)) (v9, v5) = (v5, v9);
+            if (default(TOrder).LessThan(v6, v2)) (v6, v2) = (v2, v6);
+            if (default(TOrder).LessThan(v4, v0)) (v4, v0) = (v0, v4);
+            if (default(TOrder).LessThan(v8, v3)) (v8, v3) = (v3, v8);
+            if (default(TOrder).LessThan(v5, v1)) (v5, v1) = (v1, v5);
+            if (default(TOrder).LessThan(v10, v6)) (v10, v6) = (v6, v10);
+            if (default(TOrder).LessThan(v3, v2)) (v3, v2) = (v2, v3);
+            if (default(TOrder).LessThan(v9, v8)) (v9, v8) = (v8, v9);
+            if (default(TOrder).LessThan(v4, v1)) (v4, v1) = (v1, v4);
+            if (default(TOrder).LessThan(v10, v7)) (v10, v7) = (v7, v10);
+            if (default(TOrder).LessThan(v5, v3)) (v5, v3) = (v3, v5);
+            if (default(TOrder).LessThan(v8, v6)) (v8, v6) = (v6, v8);
+            if (default(TOrder).LessThan(v4, v2)) (v4, v2) = (v2, v4);
+            if (default(TOrder).LessThan(v9, v7)) (v9, v7) = (v7, v9);
+            if (default(TOrder).LessThan(v6, v5)) (v6, v5) = (v5, v6);
+            if (default(TOrder).LessThan(v4, v3)) (v4, v3) = (v3, v4);
+            if (default(TOrder).LessThan(v8, v7)) (v8, v7) = (v7, v8);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void MedianOf11(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6, ref T v7, ref T v8, ref T v9, ref T v10) {
+            if (default(TOrder).LessThan(v1, v0)) (v1, v0) = (v0, v1);
+            if (default(TOrder).LessThan(v3, v2)) (v3, v2) = (v2, v3);
+            if (default(TOrder).LessThan(v5, v4)) (v5, v4) = (v4, v5);
+            if (default(TOrder).LessThan(v7, v6)) (v7, v6) = (v6, v7);
+            if (default(TOrder).LessThan(v9, v8)) (v9, v8) = (v8, v9);
+            if (default(TOrder).LessThan(v3, v1)) (v3, v1) = (v1, v3);
+            if (default(TOrder).LessThan(v7, v5)) (v7, v5) = (v5, v7);
+            if (default(TOrder).LessThan(v2, v0)) (v2, v0) = (v0, v2);
+            if (default(TOrder).LessThan(v6, v4)) (v6, v4) = (v4, v6);
+            if (default(TOrder).LessThan(v10, v8)) (v10, v8) = (v8, v10);
+            if (default(TOrder).LessThan(v2, v1)) (v2, v1) = (v1, v2);
+            if (default(TOrder).LessThan(v6, v5)) (v6, v5) = (v5, v6);
+            if (default(TOrder).LessThan(v10, v9)) (v10, v9) = (v9, v10);
+            if (default(TOrder).LessThan(v4, v0)) (v4, v0) = (v0, v4);
+            if (default(TOrder).LessThan(v7, v3)) (v7, v3) = (v3, v7);
+            if (default(TOrder).LessThan(v5, v1)) (v5, v1) = (v1, v5);
+            if (default(TOrder).LessThan(v10, v6)) (v10, v6) = (v6, v10);
+            if (default(TOrder).LessThan(v8, v4)) (v8, v4) = (v4, v8);
+            if (default(TOrder).LessThan(v9, v5)) (v9, v5) = (v5, v9);
+            if (default(TOrder).LessThan(v6, v2)) (v6, v2) = (v2, v6);
+            if (default(TOrder).LessThan(v8, v3)) (v8, v3) = (v3, v8);
+            if (default(TOrder).LessThan(v5, v1)) (v5, v1) = (v1, v5);
+            if (default(TOrder).LessThan(v10, v6)) (v10, v6) = (v6, v10);
+            if (default(TOrder).LessThan(v3, v2)) (v3, v2) = (v2, v3);
+            if (default(TOrder).LessThan(v9, v8)) (v9, v8) = (v8, v9);
+            if (default(TOrder).LessThan(v5, v3)) (v5, v3) = (v3, v5);
+            if (default(TOrder).LessThan(v8, v6)) (v8, v6) = (v6, v8);
+            if (default(TOrder).LessThan(v6, v5)) (v6, v5) = (v5, v6);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
