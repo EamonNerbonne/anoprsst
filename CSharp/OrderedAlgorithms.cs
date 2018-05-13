@@ -10,7 +10,7 @@ namespace SortAlgoBench {
         bool LessThan(T a, T b);
     }
 
-    abstract class OrderedAlgorithms<T, TOrder>
+    public abstract class OrderedAlgorithms<T, TOrder>
         where TOrder : struct, IOrdering<T> {
         //*
         const int TopDownInsertionSortBatchSize = 32;
@@ -22,7 +22,7 @@ namespace SortAlgoBench {
             : 64;
             /**/
         const int BottomUpInsertionSortBatchSize = 24;
-
+        const int QuickSortNoMedianThreshold = TopDownInsertionSortBatchSize << 9;
 
         public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr) => new SortAlgorithmBench<T, TOrder>(arr);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
@@ -53,9 +53,9 @@ namespace SortAlgoBench {
         public static void ParallelQuickSort(T[] array) => QuickSort_Inclusive_Parallel(array, 0, array.Length - 1);
         public static void ParallelQuickSort(T[] array, int endIdx) => QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
         public static void ParallelQuickSort(T[] array, int firstIdx, int endIdx) { QuickSort_Inclusive_Parallel(array, firstIdx, endIdx - 1); }
-        public static void ParallelDualPivotQuickSort(T[] array) => DualPivotQuickSort_Inclusive(array, 0, array.Length - 1);
-        public static void ParallelDualPivotQuickSort(T[] array, int endIdx) => DualPivotQuickSort_Inclusive(array, 0, endIdx - 1);
-        public static void ParallelDualPivotQuickSort(T[] array, int firstIdx, int endIdx) => DualPivotQuickSort_Inclusive(array, firstIdx, endIdx - 1);
+        public static void DualPivotQuickSort(T[] array) => DualPivotQuickSort_Inclusive(array, 0, array.Length - 1);
+        public static void DualPivotQuickSort(T[] array, int endIdx) => DualPivotQuickSort_Inclusive(array, 0, endIdx - 1);
+        public static void DualPivotQuickSort(T[] array, int firstIdx, int endIdx) => DualPivotQuickSort_Inclusive(array, firstIdx, endIdx - 1);
 
         static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx) {
             Helpers.BoundsCheck(array, firstIdx, lastIdx);
@@ -104,7 +104,7 @@ namespace SortAlgoBench {
         }
 
         static void QuickSort_Inclusive_Unsafe(ref T ptr, int lastOffset) {
-            while (lastOffset >= TopDownInsertionSortBatchSize << 9) {
+            while (lastOffset >= QuickSortNoMedianThreshold) {
                 var pivot = PartitionMedian5_Unsafe(ref ptr, lastOffset);
                 QuickSort_Inclusive_Unsafe(ref Unsafe.Add(ref ptr, pivot + 1), lastOffset - (pivot + 1));
                 lastOffset = pivot; //QuickSort_Inclusive_Unsafe(ref ptr, pivot);
@@ -112,32 +112,49 @@ namespace SortAlgoBench {
             QuickSort_Inclusive_Small_Unsafe(ref ptr, lastOffset);
         }
 
+
+        /// <summary>
+        /// precondition:memory in range [firstPtr, firstPtr+lastOffset] can be mutated, also implying lastOffset >= 0
+        /// </summary>
         static void QuickSort_Inclusive_Small_Unsafe(ref T firstPtr, int lastOffset) {
             while (lastOffset >= TopDownInsertionSortBatchSize) {
+                //invariant: lastOffset >= 1
                 var pivotIdx = Partition_Unsafe(ref firstPtr, lastOffset);
+                //invariant: pivotIdx in [0, lastOffset-1]
                 QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - (pivotIdx + 1));
                 lastOffset = pivotIdx; //QuickSort(array, firstIdx, pivot);
             }
             InsertionSort_InPlace_Unsafe_Inclusive(ref firstPtr, ref Unsafe.Add(ref firstPtr, lastOffset));
         }
 
-        static int Partition_Unsafe(ref T firstPtr, int lastOffset) {
+
+        /// <summary>
+        /// Precondition: memory in range [firstPtr, firstPtr+lastOffset] can be mutated, and lastOffset >= 1
+        /// Postcondition: returnvalue in range [0, lastOffset-1]
+        /// </summary>
+        public static int Partition_Unsafe(ref T firstPtr, int lastOffset) {
+            //precondition: 1 <= lastOffset
             var midpoint = lastOffset >> 1;
+            //so midpoint != lastOffset
             var pivotValue = Unsafe.Add(ref firstPtr, midpoint);
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
             while (true) {
+                //on the first iteration,  the following loop bails at the lastest when it reaches the midpoint, so ref firstPtr < ref lastPtr
                 while (default(TOrder).LessThan(firstPtr, pivotValue)) {
                     firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                 }
+                //on the first iteration, the following loop either succeeds at least once (decrementing lastOffset), or it bails immediately
                 while (default(TOrder).LessThan(pivotValue, lastPtr)) {
                     lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
                     lastOffset--;
                 }
+                //on the first iteration, either lastOffset has been decremented, OR ref lastPtr > ref firstPtr; so if we break here, then lastOffset was decremented
                 if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr))
                     break;// TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
                 (firstPtr, lastPtr) = (lastPtr, firstPtr);
                 firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                 lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
+                //on the first iteration lastOffset was decremented at least once.
                 lastOffset--;
             }
             return lastOffset;
@@ -146,6 +163,7 @@ namespace SortAlgoBench {
         static int PartitionMedian5_Unsafe(ref T firstPtr, int lastOffset) {
             var midpoint = lastOffset >> 1;
             ref var midPtr = ref Unsafe.Add(ref firstPtr, midpoint);
+
             //*
             SortFiveIndexes(
                 ref firstPtr,
@@ -211,16 +229,15 @@ namespace SortAlgoBench {
 
         static void DualPivotQuickSort_Inclusive(T[] array, int firstIdx, int lastIdx) {
             if (lastIdx - firstIdx < 400) {
-                QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx - firstIdx);
+                if (lastIdx > firstIdx)
+                    QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx - firstIdx);
                 //InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
             } else {
                 // lp means left pivot, and rp means right pivot.
                 var (lowPivot, highPivot) = DualPivotPartition(array, firstIdx, lastIdx);
-                var a = Task.Run(() => DualPivotQuickSort_Inclusive(array, firstIdx, lowPivot - 1));
-                var b = Task.Run(() => DualPivotQuickSort_Inclusive(array, lowPivot + 1, highPivot - 1));
+                DualPivotQuickSort_Inclusive(array, firstIdx, lowPivot - 1);
+                DualPivotQuickSort_Inclusive(array, lowPivot + 1, highPivot - 1);
                 DualPivotQuickSort_Inclusive(array, highPivot + 1, lastIdx);
-                a.Wait();
-                b.Wait();
             }
         }
 
@@ -228,7 +245,6 @@ namespace SortAlgoBench {
             if (default(TOrder).LessThan(arr[lastIdx], arr[firstIdx]))
                 arr.Swap(firstIdx, lastIdx);
 
-            // p is the left pivot, and q is the right pivot.
             var lowPivot = firstIdx + 1;
             var highPivot = lastIdx - 1;
             var betweenPivots = firstIdx + 1;
