@@ -1,29 +1,19 @@
-﻿        public const int MaxArraySize = 1 << 15 << 3;
-        public const int TimingTrials = 200;
+﻿        public const int MaxArraySize = 1 << 17 << 3;
+        public const int TimingTrials = 100;
         public const int IterationsPerTrial = 40;
         netcoreapp 2.0
 
 
 Benchmarking array of int with ordering Int32OrderingAlgorithms.Int32Order (where relevant)
-QuickSort|int: 18.0275~0.0009 (ms) for 40 arrays of on average 12396.6 items
-ParallelQuickSort|int: 6.464~0.0074 (ms) for 40 arrays of on average 12396.6 items
-
-Benchmarking array of ulong with ordering UInt64OrderingAlgorithms.UInt64Ordering (where relevant)
-QuickSort|ulong: 18.233~0.00084 (ms) for 40 arrays of on average 12396.6 items
-ParallelQuickSort|ulong: 6.649~0.0077 (ms) for 40 arrays of on average 12396.6 items
+QuickSort|int: 83.8856~0.0047 (ms) for 40 arrays of on average 49586.6 items
+ParallelQuickSort|int: 23.201~0.013 (ms) for 40 arrays of on average 49586.6 items
 
 Benchmarking array of SampleClass with ordering SampleClassOrderingAlgorithms.Order (where relevant)
-QuickSort|SampleClass: 31.2876~0.0023 (ms) for 40 arrays of on average 12396.6 items
-ParallelQuickSort|SampleClass: 11.19~0.013 (ms) for 40 arrays of on average 12396.6 items
+QuickSort|SampleClass: 154.34~0.014 (ms) for 40 arrays of on average 49586.6 items
+ParallelQuickSort|SampleClass: 43.129~0.023 (ms) for 40 arrays of on average 49586.6 items
 
 Benchmarking array of ValueTuple<int, long, DateTime, string> with ordering BigStructOrderingAlgorithms.Order (where relevant)
-QuickSort|ValueTuple<int, long, DateTime, string>: 49.5095~0.0021 (ms) for 40 arrays of on average 12396.6 items
-ParallelQuickSort|ValueTuple<int, long, DateTime, string>: 15.267~0.01 (ms) for 40 arrays of on average 12396.6 items
+QuickSort|ValueTuple<int, long, DateTime, string>: 228.49~0.025 (ms) for 40 arrays of on average 49586.6 items
+ParallelQuickSort|ValueTuple<int, long, DateTime, string>: 56.605~0.022 (ms) for 40 arrays of on average 49586.6 items
 
-Benchmarking array of int with ordering ComparableOrderingAlgorithms<int>.ComparableOrdering (where relevant)
-QuickSort|int: 18.267~0.0024 (ms) for 40 arrays of on average 12396.6 items
-ParallelQuickSort|int: 6.706~0.0066 (ms) for 40 arrays of on average 12396.6 items
-
-Benchmarking array of uint with ordering UInt32OrderingAlgorithms.UInt32Order (where relevant)
-QuickSort|uint: 17.9635~0.00055 (ms) for 40 arrays of on average 12396.6 items
-ParallelQuickSort|uint: 6.578~0.0074 (ms) for 40 arrays of on average 12396.6 items
+Press any key to continue . . .
