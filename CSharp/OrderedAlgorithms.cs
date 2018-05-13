@@ -39,7 +39,7 @@ namespace SortAlgoBench {
                 QuickSortNoMedianThreshold = 20_000;
                 MinimalParallelQuickSortBatchSize = 80;
             } else {
-                TopDownInsertionSortBatchSize = 2+(16*48)/(9+Unsafe.SizeOf<T>());
+                TopDownInsertionSortBatchSize = Math.Max(8, 550/(Unsafe.SizeOf<T>()));
                 BottomUpInsertionSortBatchSize = TopDownInsertionSortBatchSize*2/3;
                 QuickSortNoMedianThreshold = 10_000;
                 MinimalParallelQuickSortBatchSize = 80;
