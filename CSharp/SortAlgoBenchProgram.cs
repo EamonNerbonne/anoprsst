@@ -30,7 +30,7 @@ namespace SortAlgoBench
         }
     }
 
-    sealed class SortAlgorithmBench<T, TOrder>
+    public sealed class SortAlgorithmBench<T, TOrder>
         where TOrder : struct, IOrdering<T>
     {
         public void BenchVariousAlgos()
@@ -138,7 +138,7 @@ namespace SortAlgoBench
         }
     }
 
-    abstract class ComparableOrderingAlgorithms<T> : OrderedAlgorithms<T, ComparableOrderingAlgorithms<T>.ComparableOrdering>
+    public abstract class ComparableOrderingAlgorithms<T> : OrderedAlgorithms<T, ComparableOrderingAlgorithms<T>.ComparableOrdering>
         where T : IComparable<T>
     {
         public struct ComparableOrdering : IOrdering<T>
@@ -148,7 +148,7 @@ namespace SortAlgoBench
         }
     }
 
-    abstract class UInt64OrderingAlgorithms : OrderedAlgorithms<ulong, UInt64OrderingAlgorithms.UInt64Ordering>
+    public abstract class UInt64OrderingAlgorithms : OrderedAlgorithms<ulong, UInt64OrderingAlgorithms.UInt64Ordering>
     {
         public struct UInt64Ordering : IOrdering<ulong>
         {
@@ -157,7 +157,7 @@ namespace SortAlgoBench
         }
     }
 
-    abstract class UInt32OrderingAlgorithms : OrderedAlgorithms<uint, UInt32OrderingAlgorithms.UInt32Order>
+    public abstract class UInt32OrderingAlgorithms : OrderedAlgorithms<uint, UInt32OrderingAlgorithms.UInt32Order>
     {
         public struct UInt32Order : IOrdering<uint>
         {
@@ -166,7 +166,7 @@ namespace SortAlgoBench
         }
     }
 
-    abstract class Int32OrderingAlgorithms : OrderedAlgorithms<int, Int32OrderingAlgorithms.Int32Order>
+    public abstract class Int32OrderingAlgorithms : OrderedAlgorithms<int, Int32OrderingAlgorithms.Int32Order>
     {
         public struct Int32Order : IOrdering<int>
         {
@@ -175,7 +175,7 @@ namespace SortAlgoBench
         }
     }
 
-    abstract class BigStructOrderingAlgorithms : OrderedAlgorithms<(int, long, DateTime, string), BigStructOrderingAlgorithms.Order>
+    public abstract class BigStructOrderingAlgorithms : OrderedAlgorithms<(int, long, DateTime, string), BigStructOrderingAlgorithms.Order>
     {
         public struct Order : IOrdering<(int, long, DateTime, string)>
         {
@@ -184,13 +184,13 @@ namespace SortAlgoBench
         }
     }
 
-    class SampleClass : IComparable<SampleClass>
+    public class SampleClass : IComparable<SampleClass>
     {
         public int Value;
         public int CompareTo(SampleClass other) => Value.CompareTo(other.Value);
     }
 
-    abstract class SampleClassOrderingAlgorithms : OrderedAlgorithms<SampleClass, SampleClassOrderingAlgorithms.Order>
+    public abstract class SampleClassOrderingAlgorithms : OrderedAlgorithms<SampleClass, SampleClassOrderingAlgorithms.Order>
     {
         public struct Order : IOrdering<SampleClass>
         {
