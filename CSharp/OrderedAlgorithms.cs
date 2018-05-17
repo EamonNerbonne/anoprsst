@@ -663,51 +663,51 @@ namespace SortAlgoBench {
                 Array.Copy(A, target, n);
         }
 
-        public static void BottomUpMergeSort2(T[] a, T[] b, int n) {
-            var s = (GetPassCount(n) & 1) != 0 ? 32 : 16;
+        public static void BottomUpMergeSort2(T[] target, T[] scratchSpace, int n) {
+            var batchSize = (GetPassCount(n) & 1) != 0 ? 32 : 16;
             { // insertion sort
                 int r;
                 for (var l = 0; l < n; l = r) {
-                    r = l + s;
+                    r = l + batchSize;
                     if (r > n) r = n;
                     l--;
                     int j;
                     for (j = l + 2; j < r; j++) {
-                        var t = a[j];
+                        var t = target[j];
                         var i = j - 1;
-                        while (i != l && default(TOrder).LessThan(t, a[i])) {
-                            a[i + 1] = a[i];
+                        while (i != l && default(TOrder).LessThan(t, target[i])) {
+                            target[i + 1] = target[i];
                             i--;
                         }
 
-                        a[i + 1] = t;
+                        target[i + 1] = t;
                     }
                 }
             }
 
-            while (s < n) { // while not done
+            while (batchSize < n) { // while not done
                 var ee = 0; // reset end index
                 while (ee < n) { // merge pairs of runs
                     var ll = ee;
-                    var rr = ll + s;
+                    var rr = ll + batchSize;
                     if (rr >= n) { // if only left run
                         rr = n; //   copy left run
                         while (ll < rr) {
-                            b[ll] = a[ll];
+                            scratchSpace[ll] = target[ll];
                             ll++;
                         }
 
                         break; //   end of pass
                     }
 
-                    ee = rr + s; // ee = end of right run
+                    ee = rr + batchSize; // ee = end of right run
                     if (ee > n)
                         ee = n;
-                    Merge(a, ll, rr, ee, b);
+                    Merge(target, ll, rr, ee, scratchSpace);
                 }
 
-                (a, b) = (b, a);
-                s <<= 1; // double the run size
+                (target, scratchSpace) = (scratchSpace, target);
+                batchSize <<= 1; // double the run size
             }
         }
 
