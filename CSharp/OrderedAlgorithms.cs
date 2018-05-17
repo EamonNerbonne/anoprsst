@@ -598,10 +598,11 @@ namespace SortAlgoBench {
 
         static void BottomUpMergeSort(T[] target, T[] scratchSpace, int n) {
             var mergeCount = 0;
-            for (var s = TopDownInsertionSortBatchSize; s < n; s <<= 1)
+            int defaultBatchSize = TopDownInsertionSortBatchSize & ~1;
+            for (var s = defaultBatchSize; s < n; s <<= 1)
                 mergeCount++;
 
-            var width = (mergeCount & 1) == 0 ? TopDownInsertionSortBatchSize : (TopDownInsertionSortBatchSize>>1);
+            var width = (mergeCount & 1) == 0 ? defaultBatchSize : (defaultBatchSize>>1);
             var batchesSortedUpto = 0;
 
             while (true)
