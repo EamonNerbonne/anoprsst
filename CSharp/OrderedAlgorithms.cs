@@ -73,11 +73,6 @@ namespace SortAlgoBench {
                 BottomUpMergeSort(array, new T[endIdx], endIdx);
         }
 
-        public static void BottomUpMergeSort2(T[] array, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
-                BottomUpMergeSort2(array, new T[endIdx], endIdx);
-        }
-
         public static void QuickSort(T[] array) {
             if (Helpers.NeedsSort_WithBoundsCheck(array))
                 QuickSort(array, array.Length - 1);
@@ -656,51 +651,10 @@ namespace SortAlgoBench {
                 if (i + width < n)
                     Merge(target, i, i + width, n, scratchSpace);
                 else if (i < n)
-
-        public static void BottomUpMergeSort2(T[] target, T[] scratchSpace, int n) {
-            var mergeCount = 0;
-            for (var s = TopDownInsertionSortBatchSize; s < n; s <<= 1)
-                mergeCount++;
-
-            var batchSize = (mergeCount & 1) == 0 ? TopDownInsertionSortBatchSize : (TopDownInsertionSortBatchSize>>1);
-            var batchesSortedUpto = 0;
-
-            while (true)
-                if (batchesSortedUpto + batchSize <= n) {
-                    InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[batchesSortedUpto + batchSize - 1]);
-                    batchesSortedUpto += batchSize;
-                } else {
-                    if (n - batchesSortedUpto >= 2)
-                        InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[n - 1]);
-                    break;
-                }
-
-            while (batchSize < n) { // while not done
-                var ee = 0; // reset end index
-                while (ee < n) { // merge pairs of runs
-                    var ll = ee;
-                    var rr = ll + batchSize;
-                    if (rr >= n) { // if only left run
-                        rr = n; //   copy left run
-                        while (ll < rr) {
-                            scratchSpace[ll] = target[ll];
-                            ll++;
-                        }
-
-                        break; //   end of pass
-                    }
-
-                    ee = rr + batchSize; // ee = end of right run
-                    if (ee > n)
-                        ee = n;
-                    Merge(target, ll, rr, ee, scratchSpace);
-                }
-
+                    CopyInclusiveRefRange_Unsafe(ref target[i], ref target[n - 1], ref scratchSpace[i]);
                 (target, scratchSpace) = (scratchSpace, target);
-                batchSize <<= 1; // double the run size
             }
         }
-
 
         static void CopyInclusiveRefRange_Unsafe(ref T readPtr, ref T readUntil, ref T writePtr) {
             while (true) {
