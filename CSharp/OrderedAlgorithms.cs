@@ -27,7 +27,7 @@ namespace SortAlgoBench {
         static readonly int MinimalParallelQuickSortBatchSize = 64;
 
         static OrderedAlgorithms() {
-            
+
             if (!typeof(T).IsValueType) {
                 TopDownInsertionSortBatchSize = 24;
                 BottomUpInsertionSortBatchSize = 16;
@@ -39,8 +39,8 @@ namespace SortAlgoBench {
                 QuickSortNoMedianThreshold = 16_000;
                 MinimalParallelQuickSortBatchSize = 80;
             } else {
-                TopDownInsertionSortBatchSize = Math.Max(8, 550/(Unsafe.SizeOf<T>()));
-                BottomUpInsertionSortBatchSize = TopDownInsertionSortBatchSize*2/3;
+                TopDownInsertionSortBatchSize = Math.Max(8, 550 / (Unsafe.SizeOf<T>()));
+                BottomUpInsertionSortBatchSize = TopDownInsertionSortBatchSize * 2 / 3;
                 QuickSortNoMedianThreshold = 16_000;
                 MinimalParallelQuickSortBatchSize = 80;
             }
@@ -120,8 +120,8 @@ namespace SortAlgoBench {
         }
 
         static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx) {
-            if(lastIdx - firstIdx < MinimalParallelQuickSortBatchSize<<2) {
-                QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx-firstIdx);
+            if (lastIdx - firstIdx < MinimalParallelQuickSortBatchSize << 2) {
+                QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx - firstIdx);
                 return;
             }
             var countdownEvent = new CountdownEvent(1);
