@@ -664,7 +664,7 @@ namespace SortAlgoBench {
         }
 
         public static void BottomUpMergeSort2(T[] a, T[] b, int n) {
-            var s = (GetPassCount(n) & 1) != 0 ? 32 : 64;
+            var s = (GetPassCount(n) & 1) != 0 ? 32 : 16;
             { // insertion sort
                 int r;
                 for (var l = 0; l < n; l = r) {
