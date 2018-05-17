@@ -59,6 +59,12 @@ namespace SortAlgoBench {
                 arr[j] = (int)(data[j] >> 32);
             return arr;
         }
+        public static uint[] MapToUInt32(ulong[] data) {
+            var arr = new uint[data.Length];
+            for (var j = 0; j < arr.Length; j++)
+                arr[j] = (uint)(data[j] >> 32);
+            return arr;
+        }
 
         public static SampleClass[] MapToSampleClass(ulong[] data) {
             var arr = new SampleClass[data.Length];
@@ -67,10 +73,10 @@ namespace SortAlgoBench {
             return arr;
         }
 
-        public static uint[] MapToUInt32(ulong[] data) {
-            var arr = new uint[data.Length];
+        public static double[] MapToDouble(ulong[] data) {
+            var arr = new double[data.Length];
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = (uint)(data[j] >> 32);
+                arr[j] = (long)data[j]/(double)(1L<<31);
             return arr;
         }
 
@@ -95,22 +101,30 @@ namespace SortAlgoBench {
             return array.Length > 1;
         }
 
+        public static void Sort<TOrder, T>(this TOrder order, T[] arr)
+            where TOrder : struct, IOrdering<T>
+            => OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr);
+
+        public static void FastSort<T,TOrder>(this T[] arr, TOrder order)
+            where TOrder : struct, IOrdering<T>
+            => OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr);
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void ThrowIndexOutOfRange<T>(T[] array, int firstIdx, int lastIdx) {
             throw new IndexOutOfRangeException($"Attempted to sort [{firstIdx}, {lastIdx}), which not entirely within bounds of [0, {array.Length})");
         }
 
-        public static IComparer<T> ComparerFor<T, TOrder>() 
-            where TOrder : IOrdering<T> 
-            => OrderComparer<T,TOrder>.Instance;
+        public static IComparer<T> ComparerFor<T, TOrder>()
+            where TOrder : IOrdering<T>
+            => OrderComparer<T, TOrder>.Instance;
 
         class OrderComparer<T, TOrder> : IComparer<T>
             where TOrder : IOrdering<T> {
-            public static  IComparer<T> Instance = new OrderComparer<T,TOrder>();
+            public static IComparer<T> Instance = new OrderComparer<T, TOrder>();
             public int Compare(T x, T y)
-                => default(TOrder).LessThan(x,y) ? -1
-                :default(TOrder).LessThan(y,x) ? 1
-                :0;
+                => default(TOrder).LessThan(x, y) ? -1
+                : default(TOrder).LessThan(y, x) ? 1
+                : 0;
         }
     }
 }

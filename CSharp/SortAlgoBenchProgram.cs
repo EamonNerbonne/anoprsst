@@ -13,23 +13,25 @@ namespace SortAlgoBench {
         public static readonly int ParallelSplitScale = Helpers.ProcScale();
 
         static void Main() {
+            const int quality = 1;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            BenchSize(1 << 7 << 4, 400, 500);
+            BenchSize(1 << 9 << 4, 40*quality, 80*quality);
             Console.WriteLine();
-            BenchSize(1 << 9 << 4, 200, 250);
+            BenchSize(1 << 7 << 4, 80*quality, 200*quality);
             Console.WriteLine();
-            BenchSize(1 << 14 << 4, 100, 40);
+            BenchSize(1 << 14 << 4, 20*quality, 10*quality);
         }
 
         private static void BenchSize(int MaxArraySize, int TimingTrials, int IterationsPerTrial) {
             var data = Helpers.RandomizeUInt64(MaxArraySize);
-            Int32OrderingAlgorithms.BencherFor(Helpers.MapToInt32(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
+            DoubleOrderingAlgorithms.BencherFor(Helpers.MapToDouble(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos();
+            Int32OrderingAlgorithms.BencherFor(Helpers.MapToInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos();
             SmallStructOrderingAlgorithms.BencherFor(Helpers.MapToSmallStruct(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
-            //UInt64OrderingAlgorithms.BencherFor(data).BenchVariousAlgos();
-            SampleClassOrderingAlgorithms.BencherFor(Helpers.MapToSampleClass(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
-            BigStructOrderingAlgorithms.BencherFor(Helpers.MapToBigStruct(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
-            //ComparableOrderingAlgorithms<int>.BencherFor(Helpers.MapToInt32(data)).BenchVariousAlgos();
-            //UInt32OrderingAlgorithms.BencherFor(Helpers.MapToUInt32(data)).BenchVariousAlgos();
+            SampleClassOrderingAlgorithms.BencherFor(Helpers.MapToSampleClass(data), TimingTrials * 2 / 3, IterationsPerTrial).BenchVariousAlgos();
+            UInt64OrderingAlgorithms.BencherFor(data, TimingTrials, IterationsPerTrial).BenchVariousAlgos();
+            BigStructOrderingAlgorithms.BencherFor(Helpers.MapToBigStruct(data), TimingTrials / 2, IterationsPerTrial).BenchVariousAlgos();
+            UInt32OrderingAlgorithms.BencherFor(Helpers.MapToUInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos();
+            ComparableOrderingAlgorithms<int>.BencherFor(Helpers.MapToInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos();
         }
     }
 
@@ -38,14 +40,14 @@ namespace SortAlgoBench {
         public void BenchVariousAlgos() {
             Console.WriteLine("Benchmarking array of " + typeof(T).ToCSharpFriendlyTypeName() + " with ordering " + typeof(TOrder).ToCSharpFriendlyTypeName() + " (where relevant)");
             BenchSort(SystemArraySort);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
             BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
             BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.TopDownMergeSort);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
-            //BenchSort(OrderedAlgorithms<T, TOrder>.ParallelTopDownMergeSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2);
+            BenchSort(OrderedAlgorithms<T, TOrder>.TopDownMergeSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
+            BenchSort(OrderedAlgorithms<T, TOrder>.ParallelTopDownMergeSort);
 
             Console.WriteLine();
         }
@@ -168,6 +170,13 @@ namespace SortAlgoBench {
         public struct Int32Order : IOrdering<int> {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool LessThan(int a, int b) => a < b;
+        }
+    }
+
+    public abstract class DoubleOrderingAlgorithms : OrderedAlgorithms<double, DoubleOrderingAlgorithms.Order> {
+        public struct Order : IOrdering<double> {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool LessThan(double a, double b) =>  a<b || !(a>=b);
         }
     }
 
