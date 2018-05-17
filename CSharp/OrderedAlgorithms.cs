@@ -664,11 +664,11 @@ namespace SortAlgoBench {
         }
 
         public static void BottomUpMergeSort2(T[] target, T[] scratchSpace, int n) {
-            var passCount = 0;
-            for (var s = 1; s < n; s <<= 1)
-                passCount++;
+            var mergeCount = 0;
+            for (var s = TopDownInsertionSortBatchSize; s < n; s <<= 1)
+                mergeCount++;
 
-            var batchSize = (passCount & 1) != 0 ? 32 : 16;
+            var batchSize = (mergeCount & 1) == 0 ? TopDownInsertionSortBatchSize : (TopDownInsertionSortBatchSize>>1);
             var batchesSortedUpto = 0;
 
             while (true)
