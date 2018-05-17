@@ -510,7 +510,7 @@ namespace SortAlgoBench {
         }
 
         static void AltTopDownMergeSort(T[] items, T[] scratch, int n) {
-            CopyArray(items, 0, n, scratch);
+            Array.Copy(items, scratch, n);
             AltTopDownSplitMerge(items, 0, n, scratch);
         }
 
@@ -537,7 +537,7 @@ namespace SortAlgoBench {
         static void CopyingTopDownSplitMerge(T[] src, T[] items, T[] scratch, int firstIdx, int endIdx) {
             if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
                 if (firstIdx < endIdx - 1) {
-                    CopyArray(src, firstIdx, endIdx, items);
+                    CopyInclusiveRefRange_Unsafe(ref src[firstIdx], ref src[endIdx - 1], ref items[firstIdx]);
                     InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
                 } else if (firstIdx == endIdx - 1) {
                     items[firstIdx] = src[firstIdx];
@@ -594,7 +594,7 @@ namespace SortAlgoBench {
         static void TopDownSplitMerge_toScratch(T[] items, int firstIdx, int endIdx, T[] scratch) {
             if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
                 if (firstIdx < endIdx - 1) {
-                    CopyArray(items, firstIdx, endIdx, scratch);
+                    CopyInclusiveRefRange_Unsafe(ref items[firstIdx], ref items[endIdx - 1], ref scratch[firstIdx]);
                     InsertionSort_InPlace_Unsafe_Inclusive(ref scratch[firstIdx], ref scratch[endIdx - 1]);
                 } else if (firstIdx == endIdx - 1) {
                     scratch[firstIdx] = items[firstIdx];
@@ -654,13 +654,13 @@ namespace SortAlgoBench {
 
                 if (i + width < n)
                     Merge(A, i, i + width, n, B);
-                else
-                    CopyArray(A, i, n, B);
+                else if (i < n)
+                    CopyInclusiveRefRange_Unsafe(ref A[i], ref A[n - 1], ref B[i]);
                 (A, B) = (B, A);
             }
 
             if (target != A)
-                CopyArray(A, 0, n, target);
+                Array.Copy(A, target, n);
         }
 
         public static void BottomUpMergeSort2(T[] a, T[] b, int n) {
@@ -719,9 +719,15 @@ namespace SortAlgoBench {
             return i;
         }
 
-        public static void CopyArray(T[] source, int firstIdx, int endIdx, T[] target) {
-            for (var k = firstIdx; k < endIdx; k++)
-                target[k] = source[k];
+        static void CopyInclusiveRefRange_Unsafe(ref T readPtr, ref T readUntil, ref T writePtr) {
+            while (true) {
+                writePtr = readPtr;
+                if (Unsafe.AreSame(ref readPtr, ref readUntil)) {
+                    break;
+                }
+                readPtr = ref Unsafe.Add(ref readPtr, 1);
+                writePtr = ref Unsafe.Add(ref writePtr, 1);
+            }
         }
     }
 }
