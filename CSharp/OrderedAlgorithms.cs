@@ -517,7 +517,7 @@ namespace SortAlgoBench {
                 return;
             }
 
-            var middleIdx = (endIdx + firstIdx) / 2;
+            var middleIdx = endIdx + firstIdx >> 1;
             AltTopDownSplitMerge(scratch, firstIdx, middleIdx, items);
             AltTopDownSplitMerge(scratch, middleIdx, endIdx, items);
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
