@@ -629,39 +629,33 @@ namespace SortAlgoBench {
         }
 
         static void BottomUpMergeSort(T[] target, T[] scratchSpace, int n) {
-            var batchSize = BottomUpInsertionSortBatchSize;
+            var mergeCount = 0;
+            for (var s = TopDownInsertionSortBatchSize; s < n; s <<= 1)
+                mergeCount++;
+
+            var width = (mergeCount & 1) == 0 ? TopDownInsertionSortBatchSize : (TopDownInsertionSortBatchSize>>1);
             var batchesSortedUpto = 0;
 
             while (true)
-                if (batchesSortedUpto + batchSize <= n) {
-                    InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[batchesSortedUpto + batchSize - 1]);
-                    batchesSortedUpto += batchSize;
+                if (batchesSortedUpto + width <= n) {
+                    InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[batchesSortedUpto + width - 1]);
+                    batchesSortedUpto += width;
                 } else {
                     if (n - batchesSortedUpto >= 2)
                         InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[n - 1]);
                     break;
                 }
 
-            var A = target;
-            var B = scratchSpace;
-
-            for (var width = batchSize; width < n; width = width << 1) {
+            for (; width < n; width = width << 1) {
                 var i = 0;
                 while (i + width + width <= n) {
-                    Merge(A, i, i + width, i + width + width, B);
+                    Merge(target, i, i + width, i + width + width, scratchSpace);
                     i = i + width + width;
                 }
 
                 if (i + width < n)
-                    Merge(A, i, i + width, n, B);
+                    Merge(target, i, i + width, n, scratchSpace);
                 else if (i < n)
-                    CopyInclusiveRefRange_Unsafe(ref A[i], ref A[n - 1], ref B[i]);
-                (A, B) = (B, A);
-            }
-
-            if (target != A)
-                Array.Copy(A, target, n);
-        }
 
         public static void BottomUpMergeSort2(T[] target, T[] scratchSpace, int n) {
             var mergeCount = 0;
