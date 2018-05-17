@@ -629,8 +629,8 @@ namespace SortAlgoBench {
         }
 
         static void BottomUpMergeSort(T[] target, T[] scratchSpace, int n) {
-            var batchesSortedUpto = 0;
             var batchSize = BottomUpInsertionSortBatchSize;
+            var batchesSortedUpto = 0;
 
             while (true)
                 if (batchesSortedUpto + batchSize <= n) {
@@ -665,25 +665,17 @@ namespace SortAlgoBench {
 
         public static void BottomUpMergeSort2(T[] target, T[] scratchSpace, int n) {
             var batchSize = (GetPassCount(n) & 1) != 0 ? 32 : 16;
-            { // insertion sort
-                int r;
-                for (var l = 0; l < n; l = r) {
-                    r = l + batchSize;
-                    if (r > n) r = n;
-                    l--;
-                    int j;
-                    for (j = l + 2; j < r; j++) {
-                        var t = target[j];
-                        var i = j - 1;
-                        while (i != l && default(TOrder).LessThan(t, target[i])) {
-                            target[i + 1] = target[i];
-                            i--;
-                        }
+            var batchesSortedUpto = 0;
 
-                        target[i + 1] = t;
-                    }
+            while (true)
+                if (batchesSortedUpto + batchSize <= n) {
+                    InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[batchesSortedUpto + batchSize - 1]);
+                    batchesSortedUpto += batchSize;
+                } else {
+                    if (n - batchesSortedUpto >= 2)
+                        InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[n - 1]);
+                    break;
                 }
-            }
 
             while (batchSize < n) { // while not done
                 var ee = 0; // reset end index
