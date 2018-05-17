@@ -641,15 +641,15 @@ namespace SortAlgoBench {
                     break;
                 }
 
-            for (; width < n; width = width << 1) {
+            while (width < n) {
                 var leftIdx = 0;
-                var midIdx = leftIdx + width;
-                var endIdx = midIdx + width;
+                var midIdx = width;
+                var endIdx = width = width << 1;
                 while (endIdx <= n) {
                     Merge(target, leftIdx, midIdx, endIdx, scratchSpace);
-                    leftIdx += width << 1;
-                    midIdx += width << 1;
-                    endIdx += width << 1;
+                    leftIdx += width;
+                    midIdx += width;
+                    endIdx += width;
                 }
 
                 if (midIdx < n)
