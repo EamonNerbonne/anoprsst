@@ -509,23 +509,6 @@ namespace SortAlgoBench {
             }
         }
 
-        public static void InsertionSort_Copy(T[] source, int firstIdx, int idxEnd, T[] target) {
-            var readIdx = firstIdx;
-            var writeIdx = firstIdx;
-
-            while (readIdx < idxEnd) {
-                var x = source[readIdx];
-                //writeIdx == readIdx -1;
-                while (writeIdx > firstIdx && default(TOrder).LessThan(x, target[writeIdx - 1])) {
-                    target[writeIdx] = target[writeIdx - 1];
-                    writeIdx--;
-                }
-
-                target[writeIdx] = x;
-                readIdx = writeIdx = readIdx + 1;
-            }
-        }
-
         static void AltTopDownMergeSort(T[] items, T[] scratch, int n) {
             CopyArray(items, 0, n, scratch);
             AltTopDownSplitMerge(items, 0, n, scratch);
@@ -553,7 +536,12 @@ namespace SortAlgoBench {
 
         static void CopyingTopDownSplitMerge(T[] src, T[] items, T[] scratch, int firstIdx, int endIdx) {
             if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                InsertionSort_Copy(src, firstIdx, endIdx, items);
+                if (firstIdx < endIdx - 1) {
+                    CopyArray(src, firstIdx, endIdx, items);
+                    InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
+                } else if (firstIdx == endIdx - 1) {
+                    items[firstIdx] = src[firstIdx];
+                }
                 return;
             }
 
@@ -605,7 +593,12 @@ namespace SortAlgoBench {
 
         static void TopDownSplitMerge_toScratch(T[] items, int firstIdx, int endIdx, T[] scratch) {
             if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                InsertionSort_Copy(items, firstIdx, endIdx, scratch);
+                if (firstIdx < endIdx - 1) {
+                    CopyArray(items, firstIdx, endIdx, scratch);
+                    InsertionSort_InPlace_Unsafe_Inclusive(ref scratch[firstIdx], ref scratch[endIdx - 1]);
+                } else if (firstIdx == endIdx - 1) {
+                    scratch[firstIdx] = items[firstIdx];
+                }
                 return;
             }
 
