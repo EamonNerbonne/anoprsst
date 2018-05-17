@@ -59,10 +59,6 @@ namespace SortAlgoBench {
                 TopDownSplitMerge_toItems_Par(array, 0, endIdx, new T[endIdx]);
         }
 
-        public static T[] TopDownMergeSort_Copy(T[] array, int endIdx) {
-            return CopyingTopDownMergeSort(array, new T[endIdx], endIdx);
-        }
-
         public static void AltTopDownMergeSort(T[] array, int endIdx) {
             if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
                 AltTopDownMergeSort(array, new T[endIdx], endIdx);
@@ -520,29 +516,6 @@ namespace SortAlgoBench {
             var middleIdx = endIdx + firstIdx >> 1;
             AltTopDownSplitMerge(scratch, firstIdx, middleIdx, items);
             AltTopDownSplitMerge(scratch, middleIdx, endIdx, items);
-            Merge(scratch, firstIdx, middleIdx, endIdx, items);
-        }
-
-        static T[] CopyingTopDownMergeSort(T[] items, T[] scratch, int n) {
-            var retval = new T[n];
-            CopyingTopDownSplitMerge(items, retval, scratch, 0, n);
-            return retval;
-        }
-
-        static void CopyingTopDownSplitMerge(T[] src, T[] items, T[] scratch, int firstIdx, int endIdx) {
-            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                if (firstIdx < endIdx - 1) {
-                    CopyInclusiveRefRange_Unsafe(ref src[firstIdx], ref src[endIdx - 1], ref items[firstIdx]);
-                    InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
-                } else if (firstIdx == endIdx - 1) {
-                    items[firstIdx] = src[firstIdx];
-                }
-                return;
-            }
-
-            var middleIdx = (endIdx + firstIdx) / 2;
-            CopyingTopDownSplitMerge(src, scratch, items, firstIdx, middleIdx);
-            CopyingTopDownSplitMerge(src, scratch, items, middleIdx, endIdx);
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
         }
 
