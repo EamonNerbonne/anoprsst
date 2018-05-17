@@ -664,7 +664,11 @@ namespace SortAlgoBench {
         }
 
         public static void BottomUpMergeSort2(T[] target, T[] scratchSpace, int n) {
-            var batchSize = (GetPassCount(n) & 1) != 0 ? 32 : 16;
+            var passCount = 0;
+            for (var s = 1; s < n; s <<= 1)
+                passCount++;
+
+            var batchSize = (passCount & 1) != 0 ? 32 : 16;
             var batchesSortedUpto = 0;
 
             while (true)
@@ -703,13 +707,6 @@ namespace SortAlgoBench {
             }
         }
 
-        static int GetPassCount(int n) // return # passes
-        {
-            var i = 0;
-            for (var s = 1; s < n; s <<= 1)
-                i++;
-            return i;
-        }
 
         static void CopyInclusiveRefRange_Unsafe(ref T readPtr, ref T readUntil, ref T writePtr) {
             while (true) {
