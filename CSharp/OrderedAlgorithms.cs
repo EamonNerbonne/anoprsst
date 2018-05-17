@@ -552,7 +552,7 @@ namespace SortAlgoBench {
                 return;
             }
 
-            var middleIdx = (endIdx + firstIdx) / 2;
+            var middleIdx = endIdx + firstIdx >> 1;
             var t = Task.Run(() => TopDownSplitMerge_toScratch_Par(items, firstIdx, middleIdx, scratch));
             TopDownSplitMerge_toScratch_Par(items, middleIdx, endIdx, scratch);
             t.Wait();
@@ -565,7 +565,7 @@ namespace SortAlgoBench {
                 return;
             }
 
-            var middleIdx = (endIdx + firstIdx) / 2;
+            var middleIdx = endIdx + firstIdx >> 1;
             var t = Task.Run(() => TopDownSplitMerge_toItems_Par(items, firstIdx, middleIdx, scratch));
             TopDownSplitMerge_toItems_Par(items, middleIdx, endIdx, scratch);
             t.Wait();
@@ -580,7 +580,7 @@ namespace SortAlgoBench {
                 return;
             }
 
-            var middleIdx = (endIdx + firstIdx) / 2;
+            var middleIdx = endIdx + firstIdx >> 1;
             TopDownSplitMerge_toScratch(items, firstIdx, middleIdx, scratch);
             TopDownSplitMerge_toScratch(items, middleIdx, endIdx, scratch);
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
@@ -597,7 +597,7 @@ namespace SortAlgoBench {
                 return;
             }
 
-            var middleIdx = (endIdx + firstIdx) / 2;
+            var middleIdx = endIdx + firstIdx >> 1;
             TopDownSplitMerge_toItems(items, firstIdx, middleIdx, scratch);
             TopDownSplitMerge_toItems(items, middleIdx, endIdx, scratch);
             Merge(items, firstIdx, middleIdx, endIdx, scratch);
