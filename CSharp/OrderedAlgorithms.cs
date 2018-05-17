@@ -478,27 +478,6 @@ namespace SortAlgoBench {
                 }
         }
 
-        public static void InsertionSort_InPlace(T[] array, int firstIdx, int idxEnd) {
-            var writeIdx = firstIdx;
-            var readIdx = writeIdx + 1;
-            while (readIdx < idxEnd) {
-                if (default(TOrder).LessThan(array[readIdx], array[writeIdx])) {
-                    var readValue = array[readIdx];
-                    while (true) {
-                        array[writeIdx + 1] = array[writeIdx];
-                        if (writeIdx > firstIdx && default(TOrder).LessThan(readValue, array[writeIdx - 1])) {
-                            writeIdx--;
-                        } else {
-                            array[writeIdx] = readValue;
-                            break;
-                        }
-                    }
-                }
-                writeIdx = readIdx;
-                readIdx = readIdx + 1;
-            }
-        }
-
         static void InsertionSort_InPlace_Unsafe_Inclusive(ref T firstPtr, ref T lastPtr) {
             if (Unsafe.AreSame(ref firstPtr, ref lastPtr))
                 return;
@@ -530,24 +509,6 @@ namespace SortAlgoBench {
             }
         }
 
-        public static void SelectionSort_InPlace(T[] a, int firstIdx, int idxEnd) {
-            var lastIdx = idxEnd - 1;
-            for (var j = firstIdx; j < lastIdx; j++) {
-                var iMin = j;
-                var minVal = a[iMin];
-                for (var i = j + 1; i < idxEnd; i++)
-                    if (default(TOrder).LessThan(a[i], minVal)) {
-                        iMin = i;
-                        minVal = a[i];
-                    }
-
-                if (iMin != j) {
-                    a[iMin] = a[j];
-                    a[j] = minVal;
-                }
-            }
-        }
-
         public static void InsertionSort_Copy(T[] source, int firstIdx, int idxEnd, T[] target) {
             var readIdx = firstIdx;
             var writeIdx = firstIdx;
@@ -572,7 +533,9 @@ namespace SortAlgoBench {
 
         static void AltTopDownSplitMerge(T[] items, int firstIdx, int endIdx, T[] scratch) {
             if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                InsertionSort_InPlace(items, firstIdx, endIdx);
+                if (firstIdx < endIdx - 1) {
+                    InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
+                }
                 return;
             }
 
@@ -628,7 +591,9 @@ namespace SortAlgoBench {
 
         static void TopDownSplitMerge_toItems(T[] items, int firstIdx, int endIdx, T[] scratch) {
             if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                InsertionSort_InPlace(items, firstIdx, endIdx);
+                if (firstIdx < endIdx - 1) {
+                    InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
+                }
                 return;
             }
 
@@ -676,11 +641,11 @@ namespace SortAlgoBench {
 
             while (true)
                 if (batchesSortedUpto + batchSize <= n) {
-                    InsertionSort_InPlace(target, batchesSortedUpto, batchesSortedUpto + batchSize);
+                    InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[batchesSortedUpto + batchSize - 1]);
                     batchesSortedUpto += batchSize;
                 } else {
                     if (n - batchesSortedUpto >= 2)
-                        InsertionSort_InPlace(target, batchesSortedUpto, n);
+                        InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[n - 1]);
                     break;
                 }
 
