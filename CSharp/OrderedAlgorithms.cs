@@ -609,7 +609,7 @@ namespace SortAlgoBench {
                     InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[batchesSortedUpto + width - 1]);
                     batchesSortedUpto += width;
                 } else {
-                    if (n - batchesSortedUpto >= 2)
+                    if (batchesSortedUpto < n -1)
                         InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[n - 1]);
                     break;
                 }
