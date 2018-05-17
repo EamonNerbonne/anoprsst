@@ -15,39 +15,54 @@ namespace SortAlgoBench {
         static void Main() {
             const int quality = 1;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            BenchSize(1 << 9 << 4, 40*quality, 80*quality);
+            var large = BenchSize(1 << 14 << 4, 20*quality, 10*quality);
             Console.WriteLine();
-            BenchSize(1 << 7 << 4, 80*quality, 200*quality);
+            var med=BenchSize(1 << 9 << 4, 50*quality, 80*quality);
             Console.WriteLine();
-            BenchSize(1 << 14 << 4, 20*quality, 10*quality);
+            var small =BenchSize(1 << 7 << 4, 100*quality, 200*quality);
+            var all = new []{small, med,large }.SelectMany(x=>x).ToArray();
+
+            Console.WriteLine();
+            foreach(var byType in all.GroupBy(o=>o.type))
+                Console.WriteLine($"{byType.Key.ToCSharpFriendlyTypeName()}: {byType.Average(o=>o.nsPerArrayItem):f1}ns/item");
+
+            Console.WriteLine();
+            foreach(var byMethod in all.GroupBy(o=>o.method))
+                Console.WriteLine($"{byMethod.Key}: {byMethod.Average(o=>o.nsPerArrayItem):f1}ns/item");
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine($"OVERALL: {all.Average(o=>o.nsPerArrayItem):f1}ns/item");
         }
 
-        private static void BenchSize(int MaxArraySize, int TimingTrials, int IterationsPerTrial) {
+        private static (string method, Type type, double nsPerArrayItem)[] BenchSize(int MaxArraySize, int TimingTrials, int IterationsPerTrial) {
             var data = Helpers.RandomizeUInt64(MaxArraySize);
-            DoubleOrderingAlgorithms.BencherFor(Helpers.MapToDouble(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos();
-            Int32OrderingAlgorithms.BencherFor(Helpers.MapToInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos();
-            SmallStructOrderingAlgorithms.BencherFor(Helpers.MapToSmallStruct(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos();
-            SampleClassOrderingAlgorithms.BencherFor(Helpers.MapToSampleClass(data), TimingTrials * 2 / 3, IterationsPerTrial).BenchVariousAlgos();
-            UInt64OrderingAlgorithms.BencherFor(data, TimingTrials, IterationsPerTrial).BenchVariousAlgos();
-            BigStructOrderingAlgorithms.BencherFor(Helpers.MapToBigStruct(data), TimingTrials / 2, IterationsPerTrial).BenchVariousAlgos();
-            UInt32OrderingAlgorithms.BencherFor(Helpers.MapToUInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos();
-            ComparableOrderingAlgorithms<int>.BencherFor(Helpers.MapToInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos();
+            return new []{
+                DoubleOrderingAlgorithms.BencherFor(Helpers.MapToDouble(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos(),
+                Int32OrderingAlgorithms.BencherFor(Helpers.MapToInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos(),
+                SmallStructOrderingAlgorithms.BencherFor(Helpers.MapToSmallStruct(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos(),
+                SampleClassOrderingAlgorithms.BencherFor(Helpers.MapToSampleClass(data), TimingTrials * 2 / 3, IterationsPerTrial).BenchVariousAlgos(),
+                UInt64OrderingAlgorithms.BencherFor(data, TimingTrials, IterationsPerTrial).BenchVariousAlgos(),
+                BigStructOrderingAlgorithms.BencherFor(Helpers.MapToBigStruct(data), TimingTrials / 2, IterationsPerTrial).BenchVariousAlgos(),
+                UInt32OrderingAlgorithms.BencherFor(Helpers.MapToUInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos(),
+                ComparableOrderingAlgorithms<int>.BencherFor(Helpers.MapToInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos(),
+            }.SelectMany(r=>r).ToArray();
         }
     }
 
     public sealed class SortAlgorithmBench<T, TOrder>
         where TOrder : struct, IOrdering<T> {
-        public void BenchVariousAlgos() {
+        public IEnumerable<(string method, Type type, double nsPerArrayItem)> BenchVariousAlgos() {
             Console.WriteLine("Benchmarking array of " + typeof(T).ToCSharpFriendlyTypeName() + " with ordering " + typeof(TOrder).ToCSharpFriendlyTypeName() + " (where relevant)");
-            BenchSort(SystemArraySort);
-            BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
-            BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
-            BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
-            BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
-            BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2);
-            BenchSort(OrderedAlgorithms<T, TOrder>.TopDownMergeSort);
-            BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
-            BenchSort(OrderedAlgorithms<T, TOrder>.ParallelTopDownMergeSort);
+            yield return BenchSort(SystemArraySort);
+            yield return BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
+            yield return BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
+            yield return BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
+            yield return BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
+            yield return BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort2);
+            yield return BenchSort(OrderedAlgorithms<T, TOrder>.TopDownMergeSort);
+            yield return BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
+            yield return BenchSort(OrderedAlgorithms<T, TOrder>.ParallelTopDownMergeSort);
 
             Console.WriteLine();
         }
@@ -76,7 +91,7 @@ namespace SortAlgoBench {
             return len;
         }
 
-        public void BenchSort(Action<T[], int> action) {
+        public (string method, Type type, double nsPerArrayItem) BenchSort(Action<T[], int> action) {
             var txt = action.Method.Name + "|" + typeof(T).ToCSharpFriendlyTypeName();
             Validate(action, txt); //also a warmup
             var sizes = new List<int>();
@@ -100,7 +115,9 @@ namespace SortAlgoBench {
 
             var msDistrib = MeanVarianceAccumulator.FromSequence(milliseconds.Take(milliseconds.Count >> 1));
             var meanLen = sizes.Average();
-            Console.WriteLine($"{txt}: {Helpers.MSE(msDistrib)} (ms) over {TimingTrials} runs for {sizes.Count} arrays of on average {meanLen:f1} items: {msDistrib.Mean / sizes.Sum() * 1000_000:f1}ns/item");
+            double nsPerArrayItem = msDistrib.Mean / sizes.Sum() * 1000_000;
+            Console.WriteLine($"{txt}: {Helpers.MSE(msDistrib)} (ms) over {TimingTrials} runs for {sizes.Count} arrays of on average {meanLen:f1} items: {nsPerArrayItem:f1}ns/item");
+            return (action.Method.Name.StartsWith("ArraySort_") ? "ArraySort" : action.Method.Name, typeof(T), nsPerArrayItem);
         }
 
         public void Validate(Action<T[], int> action, string txt) {
