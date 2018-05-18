@@ -536,7 +536,7 @@ namespace SortAlgoBench {
         }
 
         static void TopDownSplitMerge_toScratch_Par(T[] items, int firstIdx, int endIdx, T[] scratch) {
-            if (endIdx - firstIdx < 400) {
+            if (endIdx - firstIdx < 600) {
                 TopDownSplitMerge_toScratch(items, firstIdx, endIdx, scratch);
                 return;
             }
@@ -622,7 +622,10 @@ namespace SortAlgoBench {
             }
         }
 
-        static void BottomUpMergeSort(T[] target, T[] scratchSpace, int n) {
+        static void BottomUpMergeSort(T[] targetArr, T[] scratchArr, int n) {
+            ref var targetPtr = ref targetArr[0];
+            ref var scratchPtr = ref scratchArr[0];
+
             var mergeCount = 0;
             int defaultBatchSize = TopDownInsertionSortBatchSize & ~1;
             for (var s = defaultBatchSize; s < n; s <<= 1)
@@ -633,11 +636,11 @@ namespace SortAlgoBench {
 
             while (true)
                 if (batchesSortedUpto + width <= n) {
-                    InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[batchesSortedUpto + width - 1]);
+                    InsertionSort_InPlace_Unsafe_Inclusive(ref Unsafe.Add(ref targetPtr, batchesSortedUpto), ref Unsafe.Add(ref targetPtr, batchesSortedUpto + width - 1));
                     batchesSortedUpto += width;
                 } else {
                     if (batchesSortedUpto < n - 1)
-                        InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[n - 1]);
+                        InsertionSort_InPlace_Unsafe_Inclusive(ref Unsafe.Add(ref targetPtr, batchesSortedUpto), ref Unsafe.Add(ref targetPtr, n - 1));
                     break;
                 }
 
@@ -646,17 +649,19 @@ namespace SortAlgoBench {
                 var middleIdx = width;
                 var endIdx = width = width << 1;
                 while (endIdx <= n) {
-                    Merge_Unsafe(ref target[firstIdx], ref target[middleIdx - 1], ref target[middleIdx], ref target[endIdx - 1], ref scratchSpace[firstIdx]);
+                    Merge_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, middleIdx - 1), ref Unsafe.Add(ref targetPtr, middleIdx), ref Unsafe.Add(ref targetPtr, endIdx - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
                     firstIdx += width;
                     middleIdx += width;
                     endIdx += width;
                 }
 
                 if (middleIdx < n)
-                    Merge_Unsafe(ref target[firstIdx], ref target[middleIdx - 1], ref target[middleIdx], ref target[n - 1], ref scratchSpace[firstIdx]);
+                    Merge_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, middleIdx - 1), ref Unsafe.Add(ref targetPtr, middleIdx), ref Unsafe.Add(ref targetPtr, n - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
                 else if (firstIdx < n)
-                    CopyInclusiveRefRange_Unsafe(ref target[firstIdx], ref target[n - 1], ref scratchSpace[firstIdx]);
-                (target, scratchSpace) = (scratchSpace, target);
+                    CopyInclusiveRefRange_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, n - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
+                ref var tmp = ref scratchPtr;
+                scratchPtr = ref targetPtr;
+                targetPtr = ref tmp;
             }
         }
 
