@@ -592,11 +592,12 @@ namespace SortAlgoBench {
                     } else {
                         while (true) {
                             writePtr = readPtrB;
-                            if (Unsafe.AreSame(ref readPtrB, ref lastPtrB)) {
-                                break;
+                            if (!Unsafe.AreSame(ref readPtrB, ref lastPtrB)) {
+                                readPtrB = ref Unsafe.Add(ref readPtrB, 1);
+                                writePtr = ref Unsafe.Add(ref writePtr, 1);
+                                continue;
                             }
-                            readPtrB = ref Unsafe.Add(ref readPtrB, 1);
-                            writePtr = ref Unsafe.Add(ref writePtr, 1);
+                            break;
                         }
                         break;
                     }
@@ -608,11 +609,12 @@ namespace SortAlgoBench {
                     } else {
                         while (true) {
                             writePtr = readPtrA;
-                            if (Unsafe.AreSame(ref readPtrA, ref lastPtrA)) {
-                                break;
+                            if (!Unsafe.AreSame(ref readPtrA, ref lastPtrA)) {
+                                writePtr = ref Unsafe.Add(ref writePtr, 1);
+                                readPtrA = ref Unsafe.Add(ref readPtrA, 1);
+                                continue;
                             }
-                            writePtr = ref Unsafe.Add(ref writePtr, 1);
-                            readPtrA = ref Unsafe.Add(ref readPtrA, 1);
+                            break;
                         }
                         break;
                     }
