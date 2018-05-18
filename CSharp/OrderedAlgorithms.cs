@@ -518,7 +518,6 @@ namespace SortAlgoBench {
             ref var scratchPtr = ref scratch[0];
 
             AltTopDownSplitMerge_Unsafe(ref itemsPtr, ref Unsafe.Add(ref itemsPtr, n - 1), ref scratchPtr, ref Unsafe.Add(ref scratchPtr, n - 1), n, mergeCount);
-            //AltTopDownSplitMerge(items, 0, n, scratch, mergeCount);
         }
 
         static void AltTopDownSplitMerge_Unsafe(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length, int mergeCount) {
