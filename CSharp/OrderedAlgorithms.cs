@@ -584,14 +584,14 @@ namespace SortAlgoBench {
                     if (i == middleIdx) {
                         while (j < endIdx)
                             target[k++] = source[j++];
-                        return;
+                        break;
                     }
                 } else {
                     target[k++] = source[j++];
                     if (j == endIdx) {
                         while (i < middleIdx)
                             target[k++] = source[i++];
-                        return;
+                        break;
                     }
                 }
         }
