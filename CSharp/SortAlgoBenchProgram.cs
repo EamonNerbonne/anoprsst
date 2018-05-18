@@ -61,7 +61,6 @@ namespace SortAlgoBench {
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.TopDownMergeSort);
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
-            yield return BenchSort(OrderedAlgorithms<T, TOrder>.ParallelTopDownMergeSort);
 
             Console.WriteLine();
         }

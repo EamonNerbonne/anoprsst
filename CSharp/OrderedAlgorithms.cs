@@ -54,11 +54,6 @@ namespace SortAlgoBench {
                 TopDownSplitMerge_toItems(array, 0, endIdx, new T[endIdx]);
         }
 
-        public static void ParallelTopDownMergeSort(T[] array, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
-                TopDownSplitMerge_toItems_Par(array, 0, endIdx, new T[endIdx]);
-        }
-
         public static void BottomUpMergeSort(T[] array, int endIdx) {
             if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
                 BottomUpMergeSort(array, new T[endIdx], endIdx);
@@ -543,33 +538,6 @@ namespace SortAlgoBench {
                 AltTopDownSplitMerge_Unsafe(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), firstHalfLength, mergeCount - 1);
             }
             Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), ref middleScratchPtr, ref lastScratchPtr, ref firstItemsPtr);
-        }
-
-        //ref T readPtrA, ref T lastPtrA
-        static void TopDownSplitMerge_toItems_Par(T[] items, int firstIdx, int endIdx, T[] scratch) {
-            if (endIdx - firstIdx < 400) {
-                TopDownSplitMerge_toItems(items, firstIdx, endIdx, scratch);
-                return;
-            }
-
-            var middleIdx = endIdx + firstIdx >> 1;
-            var t = Task.Run(() => TopDownSplitMerge_toScratch_Par(items, firstIdx, middleIdx, scratch));
-            TopDownSplitMerge_toScratch_Par(items, middleIdx, endIdx, scratch);
-            t.Wait();
-            Merge_Unsafe(ref scratch[firstIdx], ref scratch[middleIdx - 1], ref scratch[middleIdx], ref scratch[endIdx - 1], ref items[firstIdx]);
-        }
-
-        static void TopDownSplitMerge_toScratch_Par(T[] items, int firstIdx, int endIdx, T[] scratch) {
-            if (endIdx - firstIdx < 600) {
-                TopDownSplitMerge_toScratch(items, firstIdx, endIdx, scratch);
-                return;
-            }
-
-            var middleIdx = endIdx + firstIdx >> 1;
-            var t = Task.Run(() => TopDownSplitMerge_toItems_Par(items, firstIdx, middleIdx, scratch));
-            TopDownSplitMerge_toItems_Par(items, middleIdx, endIdx, scratch);
-            t.Wait();
-            Merge_Unsafe(ref items[firstIdx], ref items[middleIdx - 1], ref items[middleIdx], ref items[endIdx - 1], ref scratch[firstIdx]);
         }
 
         static void TopDownSplitMerge_toItems(T[] items, int firstIdx, int endIdx, T[] scratch) {
