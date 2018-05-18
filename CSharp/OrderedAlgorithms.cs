@@ -579,13 +579,12 @@ namespace SortAlgoBench {
             Merge(items, firstIdx, middleIdx, endIdx, scratch);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void Merge(T[] source, int firstIdx, int middleIdx, int endIdx, T[] target) {
-            ref var readPtrA = ref source[firstIdx];
-            ref var lastPtrA = ref source[middleIdx - 1];
-            ref var readPtrB = ref source[middleIdx];
-            ref var lastPtrB = ref source[endIdx - 1];
-            ref var writePtr = ref target[firstIdx];
+            Merge_Unsafe(ref source[firstIdx], ref source[middleIdx - 1], ref source[middleIdx], ref source[endIdx - 1], ref target[firstIdx]);
+        }
 
+        static void Merge_Unsafe(ref T readPtrA, ref T lastPtrA, ref T readPtrB, ref T lastPtrB, ref T writePtr) {
             while (true) {
                 if (!default(TOrder).LessThan(readPtrB, readPtrA)) {
                     writePtr = readPtrA;
@@ -618,29 +617,6 @@ namespace SortAlgoBench {
                             }
                             return;
                         }
-                    }
-                }
-            }
-        }
-
-        static void Merge_Safe(T[] source, int firstIdx, int middleIdx, int endIdx, T[] target) {
-            int readIdxA = firstIdx, readIdxB = middleIdx, writeIdx = firstIdx;
-            while (true) {
-                if (!default(TOrder).LessThan(source[readIdxB], source[readIdxA])) {
-                    target[writeIdx++] = source[readIdxA++];
-                    if (readIdxA == middleIdx) {
-                        do {
-                            target[writeIdx++] = source[readIdxB++];
-                        } while (readIdxB < endIdx);
-                        break;
-                    }
-                } else {
-                    target[writeIdx++] = source[readIdxB++];
-                    if (readIdxB == endIdx) {
-                        do {
-                            target[writeIdx++] = source[readIdxA++];
-                        } while (readIdxA < middleIdx);
-                        break;
                     }
                 }
             }
