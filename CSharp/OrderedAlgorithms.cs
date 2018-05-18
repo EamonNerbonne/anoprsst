@@ -577,6 +577,44 @@ namespace SortAlgoBench {
         }
 
         static void Merge(T[] source, int firstIdx, int middleIdx, int endIdx, T[] target) {
+            ref var middlePtr = ref source[middleIdx];
+            ref var lastPtr = ref source[endIdx - 1];
+            ref var readPtrA = ref source[firstIdx];
+            ref var readPtrB = ref middlePtr;
+            ref var writePtr = ref target[firstIdx];
+
+            while (true) {
+                if (!default(TOrder).LessThan(readPtrB, readPtrA)) {
+                    writePtr = readPtrA;
+                    writePtr = ref Unsafe.Add(ref writePtr, 1);
+                    readPtrA = ref Unsafe.Add(ref readPtrA, 1);
+
+                    if (Unsafe.AreSame(ref readPtrA, ref middlePtr)) {
+                        while (!Unsafe.IsAddressGreaterThan(ref readPtrB, ref lastPtr)) {
+                            writePtr = readPtrB;
+                            readPtrB = ref Unsafe.Add(ref readPtrB, 1);
+                            writePtr = ref Unsafe.Add(ref writePtr, 1);
+                        }
+                        return;
+                    }
+                } else {
+                    writePtr = readPtrB;
+                    writePtr = ref Unsafe.Add(ref writePtr, 1);
+                    if (Unsafe.IsAddressLessThan(ref readPtrB, ref lastPtr)) {
+                        readPtrB = ref Unsafe.Add(ref readPtrB, 1);
+                    } else {
+                        while (Unsafe.IsAddressLessThan(ref readPtrA, ref middlePtr)) {
+                            writePtr = readPtrA;
+                            writePtr = ref Unsafe.Add(ref writePtr, 1);
+                            readPtrA = ref Unsafe.Add(ref readPtrA, 1);
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+
+        static void Merge_Safe(T[] source, int firstIdx, int middleIdx, int endIdx, T[] target) {
             int readIdxA = firstIdx, readIdxB = middleIdx, writeIdx = firstIdx;
             while (true) {
                 if (!default(TOrder).LessThan(source[readIdxB], source[readIdxA])) {
