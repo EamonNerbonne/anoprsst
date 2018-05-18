@@ -53,6 +53,10 @@ namespace SortAlgoBench {
             if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx)) {
                 ref var firstItemsPtr = ref array[0];
                 ref var lastItemsPtr = ref Unsafe.Add(ref firstItemsPtr, endIdx - 1);
+                if (endIdx <= TopDownInsertionSortBatchSize) {
+                    InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref lastItemsPtr);
+                    return;
+                }
                 var scratch = new T[endIdx];
                 ref var firstScratchPtr = ref scratch[0];
                 ref var lastScratchPtr = ref Unsafe.Add(ref firstScratchPtr, endIdx - 1);
@@ -547,10 +551,6 @@ namespace SortAlgoBench {
         }
 
         static void TopDownSplitMerge_toItems(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length) {
-            if (length <= TopDownInsertionSortBatchSize) {
-                InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref lastItemsPtr);
-                return;
-            }
             var firstHalfLength = length >> 1;
             var secondHalfLength = length - firstHalfLength;
             ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
@@ -574,8 +574,13 @@ namespace SortAlgoBench {
             ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
             ref var middleScratchPtr = ref Unsafe.Add(ref firstScratchPtr, firstHalfLength);
 
-            TopDownSplitMerge_toItems(ref middleItemsPtr, ref lastItemsPtr, ref middleScratchPtr, ref lastScratchPtr, secondHalfLength);
-            TopDownSplitMerge_toItems(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), firstHalfLength);
+            if(firstHalfLength < TopDownInsertionSortBatchSize) {
+                InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1));
+                InsertionSort_InPlace_Unsafe_Inclusive(ref middleItemsPtr, ref lastItemsPtr);
+            } else {
+                TopDownSplitMerge_toItems(ref middleItemsPtr, ref lastItemsPtr, ref middleScratchPtr, ref lastScratchPtr, secondHalfLength);
+                TopDownSplitMerge_toItems(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), firstHalfLength);
+            }
 
             Merge_Unsafe(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ref middleItemsPtr, ref lastItemsPtr, ref firstScratchPtr);
         }
