@@ -50,8 +50,14 @@ namespace SortAlgoBench {
         public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr, int TimingTrials, int IterationsPerTrial) => new SortAlgorithmBench<T, TOrder>(arr, TimingTrials, IterationsPerTrial);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
         public static void TopDownMergeSort(T[] array, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
-                TopDownSplitMerge_toItems(array, 0, endIdx, new T[endIdx]);
+            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx)) {
+                ref var firstItemsPtr = ref array[0];
+                ref var lastItemsPtr = ref Unsafe.Add(ref firstItemsPtr, endIdx - 1);
+                var scratch = new T[endIdx];
+                ref var firstScratchPtr = ref scratch[0];
+                ref var lastScratchPtr = ref Unsafe.Add(ref firstScratchPtr, endIdx - 1);
+                TopDownSplitMerge_toItems(ref firstItemsPtr, ref lastItemsPtr, ref firstScratchPtr, ref lastScratchPtr, endIdx);
+            }
         }
 
         public static void BottomUpMergeSort(T[] array, int endIdx) {
@@ -494,7 +500,7 @@ namespace SortAlgoBench {
             if (!Helpers.NeedsSort_WithBoundsCheck(items, n))
                 return;
 
-            if(n < TopDownInsertionSortBatchSize) {
+            if (n < TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref items[0], ref items[n - 1]);
                 return;
             }
@@ -530,7 +536,7 @@ namespace SortAlgoBench {
             var secondHalfLength = length - firstHalfLength;
             ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
             ref var middleScratchPtr = ref Unsafe.Add(ref firstScratchPtr, firstHalfLength);
-            if(mergeCount == 1) {
+            if (mergeCount == 1) {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref middleScratchPtr, ref lastScratchPtr);
                 InsertionSort_InPlace_Unsafe_Inclusive(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1));
             } else {
@@ -540,29 +546,38 @@ namespace SortAlgoBench {
             Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), ref middleScratchPtr, ref lastScratchPtr, ref firstItemsPtr);
         }
 
-        static void TopDownSplitMerge_toItems(T[] items, int firstIdx, int endIdx, T[] scratch) {
-            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
+        static void TopDownSplitMerge_toItems(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length) {
+            if (length <= TopDownInsertionSortBatchSize) {
+                InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref lastItemsPtr);
                 return;
             }
+            var firstHalfLength = length >> 1;
+            var secondHalfLength = length - firstHalfLength;
+            ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
+            ref var middleScratchPtr = ref Unsafe.Add(ref firstScratchPtr, firstHalfLength);
 
-            var middleIdx = endIdx + firstIdx >> 1;
-            TopDownSplitMerge_toScratch(items, firstIdx, middleIdx, scratch);
-            TopDownSplitMerge_toScratch(items, middleIdx, endIdx, scratch);
-            Merge_Unsafe(ref scratch[firstIdx], ref scratch[middleIdx - 1], ref scratch[middleIdx], ref scratch[endIdx - 1], ref items[firstIdx]);
+            TopDownSplitMerge_toScratch(ref middleItemsPtr, ref lastItemsPtr, ref middleScratchPtr, ref lastScratchPtr, secondHalfLength);
+            TopDownSplitMerge_toScratch(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), firstHalfLength);
+
+            Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), ref middleScratchPtr, ref lastScratchPtr, ref firstItemsPtr);
         }
 
-        static void TopDownSplitMerge_toScratch(T[] items, int firstIdx, int endIdx, T[] scratch) {
-            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
-                CopyInclusiveRefRange_Unsafe(ref items[firstIdx], ref items[endIdx - 1], ref scratch[firstIdx]);
+        static void TopDownSplitMerge_toScratch(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length) {
+            if (length <= TopDownInsertionSortBatchSize) {
+                InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref lastItemsPtr);
+                CopyInclusiveRefRange_Unsafe(ref firstItemsPtr, ref lastItemsPtr, ref firstScratchPtr);
                 return;
             }
 
-            var middleIdx = endIdx + firstIdx >> 1;
-            TopDownSplitMerge_toItems(items, firstIdx, middleIdx, scratch);
-            TopDownSplitMerge_toItems(items, middleIdx, endIdx, scratch);
-            Merge_Unsafe(ref items[firstIdx], ref items[middleIdx - 1], ref items[middleIdx], ref items[endIdx - 1], ref scratch[firstIdx]);
+            var firstHalfLength = length >> 1;
+            var secondHalfLength = length - firstHalfLength;
+            ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
+            ref var middleScratchPtr = ref Unsafe.Add(ref firstScratchPtr, firstHalfLength);
+
+            TopDownSplitMerge_toItems(ref middleItemsPtr, ref lastItemsPtr, ref middleScratchPtr, ref lastScratchPtr, secondHalfLength);
+            TopDownSplitMerge_toItems(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), firstHalfLength);
+
+            Merge_Unsafe(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ref middleItemsPtr, ref lastItemsPtr, ref firstScratchPtr);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
