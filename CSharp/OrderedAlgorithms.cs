@@ -519,7 +519,7 @@ namespace SortAlgoBench {
             var middleIdx = endIdx + firstIdx >> 1;
             AltTopDownSplitMerge(scratch, firstIdx, middleIdx, items, mergeCount - 1);
             AltTopDownSplitMerge(scratch, middleIdx, endIdx, items, mergeCount - 1);
-            Merge(scratch, firstIdx, middleIdx, endIdx, items);
+            Merge_Unsafe(ref scratch[firstIdx], ref scratch[middleIdx - 1], ref scratch[middleIdx], ref scratch[endIdx - 1], ref items[firstIdx]);
         }
 
         static void TopDownSplitMerge_toItems_Par(T[] items, int firstIdx, int endIdx, T[] scratch) {
@@ -532,7 +532,7 @@ namespace SortAlgoBench {
             var t = Task.Run(() => TopDownSplitMerge_toScratch_Par(items, firstIdx, middleIdx, scratch));
             TopDownSplitMerge_toScratch_Par(items, middleIdx, endIdx, scratch);
             t.Wait();
-            Merge(scratch, firstIdx, middleIdx, endIdx, items);
+            Merge_Unsafe(ref scratch[firstIdx], ref scratch[middleIdx - 1], ref scratch[middleIdx], ref scratch[endIdx - 1], ref items[firstIdx]);
         }
 
         static void TopDownSplitMerge_toScratch_Par(T[] items, int firstIdx, int endIdx, T[] scratch) {
@@ -545,7 +545,7 @@ namespace SortAlgoBench {
             var t = Task.Run(() => TopDownSplitMerge_toItems_Par(items, firstIdx, middleIdx, scratch));
             TopDownSplitMerge_toItems_Par(items, middleIdx, endIdx, scratch);
             t.Wait();
-            Merge(items, firstIdx, middleIdx, endIdx, scratch);
+            Merge_Unsafe(ref items[firstIdx], ref items[middleIdx - 1], ref items[middleIdx], ref items[endIdx - 1], ref scratch[firstIdx]);
         }
 
         static void TopDownSplitMerge_toItems(T[] items, int firstIdx, int endIdx, T[] scratch) {
@@ -559,7 +559,7 @@ namespace SortAlgoBench {
             var middleIdx = endIdx + firstIdx >> 1;
             TopDownSplitMerge_toScratch(items, firstIdx, middleIdx, scratch);
             TopDownSplitMerge_toScratch(items, middleIdx, endIdx, scratch);
-            Merge(scratch, firstIdx, middleIdx, endIdx, items);
+            Merge_Unsafe(ref scratch[firstIdx], ref scratch[middleIdx - 1], ref scratch[middleIdx], ref scratch[endIdx - 1], ref items[firstIdx]);
         }
 
         static void TopDownSplitMerge_toScratch(T[] items, int firstIdx, int endIdx, T[] scratch) {
@@ -576,7 +576,7 @@ namespace SortAlgoBench {
             var middleIdx = endIdx + firstIdx >> 1;
             TopDownSplitMerge_toItems(items, firstIdx, middleIdx, scratch);
             TopDownSplitMerge_toItems(items, middleIdx, endIdx, scratch);
-            Merge(items, firstIdx, middleIdx, endIdx, scratch);
+            Merge_Unsafe(ref items[firstIdx], ref items[middleIdx - 1], ref items[middleIdx], ref items[endIdx - 1], ref scratch[firstIdx]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
