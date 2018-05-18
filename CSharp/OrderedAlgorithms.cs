@@ -590,11 +590,11 @@ namespace SortAlgoBench {
                     readPtrA = ref Unsafe.Add(ref readPtrA, 1);
 
                     if (Unsafe.AreSame(ref readPtrA, ref middlePtr)) {
-                        while (!Unsafe.IsAddressGreaterThan(ref readPtrB, ref lastPtr)) {
+                        do {
                             writePtr = readPtrB;
                             readPtrB = ref Unsafe.Add(ref readPtrB, 1);
                             writePtr = ref Unsafe.Add(ref writePtr, 1);
-                        }
+                        } while (!Unsafe.IsAddressGreaterThan(ref readPtrB, ref lastPtr));
                         break;
                     }
                 } else {
@@ -603,11 +603,11 @@ namespace SortAlgoBench {
                     if (Unsafe.IsAddressLessThan(ref readPtrB, ref lastPtr)) {
                         readPtrB = ref Unsafe.Add(ref readPtrB, 1);
                     } else {
-                        while (Unsafe.IsAddressLessThan(ref readPtrA, ref middlePtr)) {
+                        do {
                             writePtr = readPtrA;
                             writePtr = ref Unsafe.Add(ref writePtr, 1);
                             readPtrA = ref Unsafe.Add(ref readPtrA, 1);
-                        }
+                        } while (Unsafe.IsAddressLessThan(ref readPtrA, ref middlePtr));
                         break;
                     }
                 }
