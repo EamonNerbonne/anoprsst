@@ -577,20 +577,20 @@ namespace SortAlgoBench {
         }
 
         static void Merge(T[] source, int firstIdx, int middleIdx, int endIdx, T[] target) {
-            int i = firstIdx, j = middleIdx, k = firstIdx;
+            int readIdxA = firstIdx, readIdxB = middleIdx, writeIdx = firstIdx;
             while (true)
-                if (!default(TOrder).LessThan(source[j], source[i])) {
-                    target[k++] = source[i++];
-                    if (i == middleIdx) {
-                        while (j < endIdx)
-                            target[k++] = source[j++];
+                if (!default(TOrder).LessThan(source[readIdxB], source[readIdxA])) {
+                    target[writeIdx++] = source[readIdxA++];
+                    if (readIdxA == middleIdx) {
+                        while (readIdxB < endIdx)
+                            target[writeIdx++] = source[readIdxB++];
                         break;
                     }
                 } else {
-                    target[k++] = source[j++];
-                    if (j == endIdx) {
-                        while (i < middleIdx)
-                            target[k++] = source[i++];
+                    target[writeIdx++] = source[readIdxB++];
+                    if (readIdxB == endIdx) {
+                        while (readIdxA < middleIdx)
+                            target[writeIdx++] = source[readIdxA++];
                         break;
                     }
                 }
