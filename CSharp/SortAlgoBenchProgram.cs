@@ -15,9 +15,9 @@ namespace SortAlgoBench {
         static void Main() {
             const int quality = 2;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            var large = BenchSize(1 << 14 << 4, 20*quality, 10*quality);
+            var large = BenchSize(1 << 14 << 4, 20 * quality, 10 * quality);
             Console.WriteLine();
-            var med=BenchSize(1 << 9 << 4, 50*quality, 80*quality);
+            var med = BenchSize(1 << 9 << 4, 50 * quality, 80 * quality);
             Console.WriteLine();
             var small =BenchSize(1 << 7 << 4, 100*quality, 200*quality);
             var all = new []{small, med,large }.SelectMany(x=>x).ToArray();
