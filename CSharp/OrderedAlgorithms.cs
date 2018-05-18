@@ -642,20 +642,20 @@ namespace SortAlgoBench {
                 }
 
             while (width < n) {
-                var leftIdx = 0;
-                var midIdx = width;
+                var firstIdx = 0;
+                var middleIdx = width;
                 var endIdx = width = width << 1;
                 while (endIdx <= n) {
-                    Merge(target, leftIdx, midIdx, endIdx, scratchSpace);
-                    leftIdx += width;
-                    midIdx += width;
+                    Merge_Unsafe(ref target[firstIdx], ref target[middleIdx - 1], ref target[middleIdx], ref target[endIdx - 1], ref scratchSpace[firstIdx]);
+                    firstIdx += width;
+                    middleIdx += width;
                     endIdx += width;
                 }
 
-                if (midIdx < n)
-                    Merge(target, leftIdx, midIdx, n, scratchSpace);
-                else if (leftIdx < n)
-                    CopyInclusiveRefRange_Unsafe(ref target[leftIdx], ref target[n - 1], ref scratchSpace[leftIdx]);
+                if (middleIdx < n)
+                    Merge_Unsafe(ref target[firstIdx], ref target[middleIdx - 1], ref target[middleIdx], ref target[n - 1], ref scratchSpace[firstIdx]);
+                else if (firstIdx < n)
+                    CopyInclusiveRefRange_Unsafe(ref target[firstIdx], ref target[n - 1], ref scratchSpace[firstIdx]);
                 (target, scratchSpace) = (scratchSpace, target);
             }
         }
