@@ -552,14 +552,9 @@ namespace SortAlgoBench {
 
         static void TopDownSplitMerge_toItems(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length) {
             var firstHalfLength = length >> 1;
-            var secondHalfLength = length - firstHalfLength;
-            ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
-            ref var middleScratchPtr = ref Unsafe.Add(ref firstScratchPtr, firstHalfLength);
-
-            TopDownSplitMerge_toScratch(ref middleItemsPtr, ref lastItemsPtr, ref middleScratchPtr, ref lastScratchPtr, secondHalfLength);
-            TopDownSplitMerge_toScratch(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), firstHalfLength);
-
-            Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), ref middleScratchPtr, ref lastScratchPtr, ref firstItemsPtr);
+            TopDownSplitMerge_toScratch(ref Unsafe.Add(ref firstItemsPtr, firstHalfLength), ref lastItemsPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength), ref lastScratchPtr, length - firstHalfLength);
+            TopDownSplitMerge_toScratch(ref firstItemsPtr, ref Unsafe.Add(ref firstItemsPtr, firstHalfLength - 1), ref firstScratchPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength - 1), firstHalfLength);
+            Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength - 1), ref Unsafe.Add(ref firstScratchPtr, firstHalfLength), ref lastScratchPtr, ref firstItemsPtr);
         }
 
         static void TopDownSplitMerge_toScratch(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length) {
@@ -574,7 +569,7 @@ namespace SortAlgoBench {
             ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
             ref var middleScratchPtr = ref Unsafe.Add(ref firstScratchPtr, firstHalfLength);
 
-            if(firstHalfLength < TopDownInsertionSortBatchSize) {
+            if (firstHalfLength < TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1));
                 InsertionSort_InPlace_Unsafe_Inclusive(ref middleItemsPtr, ref lastItemsPtr);
             } else {
