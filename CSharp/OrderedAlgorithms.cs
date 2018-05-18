@@ -582,17 +582,17 @@ namespace SortAlgoBench {
                 if (!default(TOrder).LessThan(source[readIdxB], source[readIdxA])) {
                     target[writeIdx++] = source[readIdxA++];
                     if (readIdxA == middleIdx) {
-                        while (readIdxB < endIdx) {
+                        do {
                             target[writeIdx++] = source[readIdxB++];
-                        }
+                        } while (readIdxB < endIdx);
                         break;
                     }
                 } else {
                     target[writeIdx++] = source[readIdxB++];
                     if (readIdxB == endIdx) {
-                        while (readIdxA < middleIdx) {
+                        do {
                             target[writeIdx++] = source[readIdxA++];
-                        }
+                        } while (readIdxA < middleIdx);
                         break;
                     }
                 }
