@@ -59,11 +59,6 @@ namespace SortAlgoBench {
                 TopDownSplitMerge_toItems_Par(array, 0, endIdx, new T[endIdx]);
         }
 
-        public static void AltTopDownMergeSort(T[] array, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
-                AltTopDownMergeSort(array, new T[endIdx], endIdx);
-        }
-
         public static void BottomUpMergeSort(T[] array, int endIdx) {
             if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
                 BottomUpMergeSort(array, new T[endIdx], endIdx);
@@ -500,12 +495,25 @@ namespace SortAlgoBench {
             }
         }
 
-        static void AltTopDownMergeSort(T[] items, T[] scratch, int n) {
-            var mergeCount = 0;
-            for (var s = (uint)TopDownInsertionSortBatchSize +((uint)TopDownInsertionSortBatchSize >>1); s < (uint)n; s <<= 2)
-                mergeCount+=2;
+        public static void AltTopDownMergeSort(T[] items, int n) {
+            if (!Helpers.NeedsSort_WithBoundsCheck(items, n))
+                return;
 
-            AltTopDownSplitMerge(items, 0, n, scratch, mergeCount);
+            if(n < TopDownInsertionSortBatchSize) {
+                InsertionSort_InPlace_Unsafe_Inclusive(ref items[0], ref items[n - 1]);
+                return;
+            }
+
+            var mergeCount = 2;
+            for (var s = (uint)TopDownInsertionSortBatchSize << 2; s < (uint)n; s <<= 2)
+                mergeCount += 2;
+
+            ref var itemsPtr = ref items[0];
+            var scratch = new T[n];
+            ref var scratchPtr = ref scratch[0];
+
+            AltTopDownSplitMerge_Unsafe(ref itemsPtr, ref Unsafe.Add(ref itemsPtr, n - 1), ref scratchPtr, ref Unsafe.Add(ref scratchPtr, n - 1), n, mergeCount);
+            //AltTopDownSplitMerge(items, 0, n, scratch, mergeCount);
         }
 
         static void AltTopDownSplitMerge(T[] items, int firstIdx, int endIdx, T[] scratch, int mergeCount) {
@@ -522,6 +530,22 @@ namespace SortAlgoBench {
             Merge_Unsafe(ref scratch[firstIdx], ref scratch[middleIdx - 1], ref scratch[middleIdx], ref scratch[endIdx - 1], ref items[firstIdx]);
         }
 
+        static void AltTopDownSplitMerge_Unsafe(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length, int mergeCount) {
+            var firstHalfLength = length >> 1;
+            var secondHalfLength = length - firstHalfLength;
+            ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
+            ref var middleScratchPtr = ref Unsafe.Add(ref firstScratchPtr, firstHalfLength);
+            if(mergeCount == 1) {
+                InsertionSort_InPlace_Unsafe_Inclusive(ref middleScratchPtr, ref lastScratchPtr);
+                InsertionSort_InPlace_Unsafe_Inclusive(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1));
+            } else {
+                AltTopDownSplitMerge_Unsafe(ref middleScratchPtr, ref lastScratchPtr, ref middleItemsPtr, ref lastItemsPtr, secondHalfLength, mergeCount - 1);
+                AltTopDownSplitMerge_Unsafe(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), firstHalfLength, mergeCount - 1);
+            }
+            Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), ref middleScratchPtr, ref lastScratchPtr, ref firstItemsPtr);
+        }
+
+        //ref T readPtrA, ref T lastPtrA
         static void TopDownSplitMerge_toItems_Par(T[] items, int firstIdx, int endIdx, T[] scratch) {
             if (endIdx - firstIdx < 400) {
                 TopDownSplitMerge_toItems(items, firstIdx, endIdx, scratch);
