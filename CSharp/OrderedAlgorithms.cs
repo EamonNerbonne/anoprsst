@@ -532,7 +532,7 @@ namespace SortAlgoBench {
             var middleIdx = endIdx + firstIdx >> 1;
             AltTopDownSplitMerge(scratch, firstIdx, middleIdx, items, mergeCount - 1);
             AltTopDownSplitMerge(scratch, middleIdx, endIdx, items, mergeCount - 1);
-            Merge_Unsafe(ref scratch[firstIdx], ref scratch[middleIdx - 1], ref scratch[middleIdx], ref scratch[endIdx - 1], ref items[firstIdx]);
+            Merge_Unsafe(ref scratch[firstIdx], ref scratch[middleIdx], ref scratch[endIdx - 1], ref items[firstIdx]);
         }
 
         static void AltTopDownSplitMerge_Unsafe(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length, int mergeCount) {
@@ -547,14 +547,14 @@ namespace SortAlgoBench {
                 AltTopDownSplitMerge_Unsafe(ref middleScratchPtr, ref lastScratchPtr, ref middleItemsPtr, ref lastItemsPtr, secondHalfLength, mergeCount - 1);
                 AltTopDownSplitMerge_Unsafe(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), firstHalfLength, mergeCount - 1);
             }
-            Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), ref middleScratchPtr, ref lastScratchPtr, ref firstItemsPtr);
+            Merge_Unsafe(ref firstScratchPtr, ref middleScratchPtr, ref lastScratchPtr, ref firstItemsPtr);
         }
 
         static void TopDownSplitMerge_toItems(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length) {
             var firstHalfLength = length >> 1;
             TopDownSplitMerge_toScratch(ref Unsafe.Add(ref firstItemsPtr, firstHalfLength), ref lastItemsPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength), ref lastScratchPtr, length - firstHalfLength);
             TopDownSplitMerge_toScratch(ref firstItemsPtr, ref Unsafe.Add(ref firstItemsPtr, firstHalfLength - 1), ref firstScratchPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength - 1), firstHalfLength);
-            Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength - 1), ref Unsafe.Add(ref firstScratchPtr, firstHalfLength), ref lastScratchPtr, ref firstItemsPtr);
+            Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength), ref lastScratchPtr, ref firstItemsPtr);
         }
 
         static void TopDownSplitMerge_toScratch(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length) {
@@ -577,15 +577,16 @@ namespace SortAlgoBench {
                 TopDownSplitMerge_toItems(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), firstHalfLength);
             }
 
-            Merge_Unsafe(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ref middleItemsPtr, ref lastItemsPtr, ref firstScratchPtr);
+            Merge_Unsafe(ref firstItemsPtr, ref middleItemsPtr, ref lastItemsPtr, ref firstScratchPtr);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void Merge(T[] source, int firstIdx, int middleIdx, int endIdx, T[] target) {
-            Merge_Unsafe(ref source[firstIdx], ref source[middleIdx - 1], ref source[middleIdx], ref source[endIdx - 1], ref target[firstIdx]);
+            Merge_Unsafe(ref source[firstIdx], ref source[middleIdx], ref source[endIdx - 1], ref target[firstIdx]);
         }
 
-        static void Merge_Unsafe(ref T readPtrA, ref T lastPtrA, ref T readPtrB, ref T lastPtrB, ref T writePtr) {
+        static void Merge_Unsafe(ref T readPtrA, ref T readPtrB, ref T lastPtrB, ref T writePtr) {
+            ref var lastPtrA = ref Unsafe.Subtract(ref readPtrB, 1);
             while (true) {
                 if (!default(TOrder).LessThan(readPtrB, readPtrA)) {
                     writePtr = readPtrA;
@@ -650,14 +651,14 @@ namespace SortAlgoBench {
                 var middleIdx = width;
                 var endIdx = width = width << 1;
                 while (endIdx <= n) {
-                    Merge_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, middleIdx - 1), ref Unsafe.Add(ref targetPtr, middleIdx), ref Unsafe.Add(ref targetPtr, endIdx - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
+                    Merge_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, middleIdx), ref Unsafe.Add(ref targetPtr, endIdx - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
                     firstIdx += width;
                     middleIdx += width;
                     endIdx += width;
                 }
 
                 if (middleIdx < n)
-                    Merge_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, middleIdx - 1), ref Unsafe.Add(ref targetPtr, middleIdx), ref Unsafe.Add(ref targetPtr, n - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
+                    Merge_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, middleIdx), ref Unsafe.Add(ref targetPtr, n - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
                 else if (firstIdx < n)
                     CopyInclusiveRefRange_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, n - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
                 ref var tmp = ref scratchPtr;
