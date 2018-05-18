@@ -521,20 +521,6 @@ namespace SortAlgoBench {
             //AltTopDownSplitMerge(items, 0, n, scratch, mergeCount);
         }
 
-        static void AltTopDownSplitMerge(T[] items, int firstIdx, int endIdx, T[] scratch, int mergeCount) {
-            if (mergeCount == 0) {
-                if (firstIdx < endIdx - 1) {
-                    InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
-                }
-                return;
-            }
-
-            var middleIdx = endIdx + firstIdx >> 1;
-            AltTopDownSplitMerge(scratch, firstIdx, middleIdx, items, mergeCount - 1);
-            AltTopDownSplitMerge(scratch, middleIdx, endIdx, items, mergeCount - 1);
-            Merge_Unsafe(ref scratch[firstIdx], ref scratch[middleIdx], ref scratch[endIdx - 1], ref items[firstIdx]);
-        }
-
         static void AltTopDownSplitMerge_Unsafe(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length, int mergeCount) {
             var firstHalfLength = length >> 1;
             var secondHalfLength = length - firstHalfLength;
