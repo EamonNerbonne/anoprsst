@@ -578,22 +578,25 @@ namespace SortAlgoBench {
 
         static void Merge(T[] source, int firstIdx, int middleIdx, int endIdx, T[] target) {
             int readIdxA = firstIdx, readIdxB = middleIdx, writeIdx = firstIdx;
-            while (true)
+            while (true) {
                 if (!default(TOrder).LessThan(source[readIdxB], source[readIdxA])) {
                     target[writeIdx++] = source[readIdxA++];
                     if (readIdxA == middleIdx) {
-                        while (readIdxB < endIdx)
+                        while (readIdxB < endIdx) {
                             target[writeIdx++] = source[readIdxB++];
+                        }
                         break;
                     }
                 } else {
                     target[writeIdx++] = source[readIdxB++];
                     if (readIdxB == endIdx) {
-                        while (readIdxA < middleIdx)
+                        while (readIdxA < middleIdx) {
                             target[writeIdx++] = source[readIdxA++];
+                        }
                         break;
                     }
                 }
+            }
         }
 
         static void BottomUpMergeSort(T[] target, T[] scratchSpace, int n) {
@@ -602,7 +605,7 @@ namespace SortAlgoBench {
             for (var s = defaultBatchSize; s < n; s <<= 1)
                 mergeCount++;
 
-            var width = (mergeCount & 1) == 0 ? defaultBatchSize : (defaultBatchSize>>1);
+            var width = (mergeCount & 1) == 0 ? defaultBatchSize : (defaultBatchSize >> 1);
             var batchesSortedUpto = 0;
 
             while (true)
@@ -610,7 +613,7 @@ namespace SortAlgoBench {
                     InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[batchesSortedUpto + width - 1]);
                     batchesSortedUpto += width;
                 } else {
-                    if (batchesSortedUpto < n -1)
+                    if (batchesSortedUpto < n - 1)
                         InsertionSort_InPlace_Unsafe_Inclusive(ref target[batchesSortedUpto], ref target[n - 1]);
                     break;
                 }
