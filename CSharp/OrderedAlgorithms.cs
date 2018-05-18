@@ -577,37 +577,43 @@ namespace SortAlgoBench {
         }
 
         static void Merge(T[] source, int firstIdx, int middleIdx, int endIdx, T[] target) {
-            ref var middlePtr = ref source[middleIdx];
-            ref var lastPtr = ref source[endIdx - 1];
             ref var readPtrA = ref source[firstIdx];
-            ref var readPtrB = ref middlePtr;
+            ref var lastPtrA = ref source[middleIdx - 1];
+            ref var readPtrB = ref source[middleIdx];
+            ref var lastPtrB = ref source[endIdx - 1];
             ref var writePtr = ref target[firstIdx];
 
             while (true) {
                 if (!default(TOrder).LessThan(readPtrB, readPtrA)) {
                     writePtr = readPtrA;
                     writePtr = ref Unsafe.Add(ref writePtr, 1);
-                    readPtrA = ref Unsafe.Add(ref readPtrA, 1);
-
-                    if (Unsafe.AreSame(ref readPtrA, ref middlePtr)) {
-                        do {
+                    if (Unsafe.IsAddressLessThan(ref readPtrA, ref lastPtrA)) {
+                        readPtrA = ref Unsafe.Add(ref readPtrA, 1);
+                    } else {
+                        while (true) {
                             writePtr = readPtrB;
+                            if (Unsafe.AreSame(ref readPtrB, ref lastPtrB)) {
+                                break;
+                            }
                             readPtrB = ref Unsafe.Add(ref readPtrB, 1);
                             writePtr = ref Unsafe.Add(ref writePtr, 1);
-                        } while (!Unsafe.IsAddressGreaterThan(ref readPtrB, ref lastPtr));
+                        }
                         break;
                     }
                 } else {
                     writePtr = readPtrB;
                     writePtr = ref Unsafe.Add(ref writePtr, 1);
-                    if (Unsafe.IsAddressLessThan(ref readPtrB, ref lastPtr)) {
+                    if (Unsafe.IsAddressLessThan(ref readPtrB, ref lastPtrB)) {
                         readPtrB = ref Unsafe.Add(ref readPtrB, 1);
                     } else {
-                        do {
+                        while (true) {
                             writePtr = readPtrA;
+                            if (Unsafe.AreSame(ref readPtrA, ref lastPtrA)) {
+                                break;
+                            }
                             writePtr = ref Unsafe.Add(ref writePtr, 1);
                             readPtrA = ref Unsafe.Add(ref readPtrA, 1);
-                        } while (Unsafe.IsAddressLessThan(ref readPtrA, ref middlePtr));
+                        }
                         break;
                     }
                 }
