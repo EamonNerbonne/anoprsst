@@ -597,9 +597,8 @@ namespace SortAlgoBench {
                                 writePtr = ref Unsafe.Add(ref writePtr, 1);
                                 continue;
                             }
-                            break;
+                            return;
                         }
-                        break;
                     }
                 } else {
                     writePtr = readPtrB;
@@ -614,9 +613,8 @@ namespace SortAlgoBench {
                                 readPtrA = ref Unsafe.Add(ref readPtrA, 1);
                                 continue;
                             }
-                            break;
+                            return;
                         }
-                        break;
                     }
                 }
             }
