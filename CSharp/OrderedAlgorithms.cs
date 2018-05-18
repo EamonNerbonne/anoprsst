@@ -574,9 +574,7 @@ namespace SortAlgoBench {
 
         static void TopDownSplitMerge_toItems(T[] items, int firstIdx, int endIdx, T[] scratch) {
             if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                if (firstIdx < endIdx - 1) {
-                    InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
-                }
+                InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
                 return;
             }
 
@@ -588,12 +586,8 @@ namespace SortAlgoBench {
 
         static void TopDownSplitMerge_toScratch(T[] items, int firstIdx, int endIdx, T[] scratch) {
             if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
-                if (firstIdx < endIdx - 1) {
-                    InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
-                    CopyInclusiveRefRange_Unsafe(ref items[firstIdx], ref items[endIdx - 1], ref scratch[firstIdx]);
-                } else if (firstIdx == endIdx - 1) {
-                    scratch[firstIdx] = items[firstIdx];
-                }
+                InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
+                CopyInclusiveRefRange_Unsafe(ref items[firstIdx], ref items[endIdx - 1], ref scratch[firstIdx]);
                 return;
             }
 

@@ -1,19 +1,19 @@
 ﻿double: 30.7ns/item
-int: 25.5ns/item
-ValueTuple<int, int, int>: 44.5ns/item
-SampleClass: 52.4ns/item
-ulong: 26.1ns/item
-ValueTuple<int, long, DateTime, string>: 79.8ns/item
-uint: 25.9ns/item
+int: 26.0ns/item
+ValueTuple<int, int, int>: 45.1ns/item
+SampleClass: 53.1ns/item
+ulong: 26.0ns/item
+ValueTuple<int, long, DateTime, string>: 79.6ns/item
+uint: 25.8ns/item
 
-ArraySort: 52.8ns/item
-DualPivotQuickSort: 39.6ns/item
-QuickSort: 36.8ns/item
-ParallelQuickSort: 23.5ns/item
-BottomUpMergeSort: 43.4ns/item
-TopDownMergeSort: 43.8ns/item
-AltTopDownMergeSort: 43.2ns/item
+ArraySort: 52.6ns/item
+DualPivotQuickSort: 40.0ns/item
+QuickSort: 37.2ns/item
+ParallelQuickSort: 23.7ns/item
+BottomUpMergeSort: 43.8ns/item
+TopDownMergeSort: 44.1ns/item
+AltTopDownMergeSort: 43.6ns/item
 ParallelTopDownMergeSort: 27.4ns/item
 
 
-OVERALL: 38.8ns/item
+OVERALL: 39.1ns/item
