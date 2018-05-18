@@ -501,12 +501,15 @@ namespace SortAlgoBench {
         }
 
         static void AltTopDownMergeSort(T[] items, T[] scratch, int n) {
-            Array.Copy(items, scratch, n);
-            AltTopDownSplitMerge(items, 0, n, scratch);
+            var mergeCount = 0;
+            for (var s = (uint)TopDownInsertionSortBatchSize +((uint)TopDownInsertionSortBatchSize >>1); s < (uint)n; s <<= 2)
+                mergeCount+=2;
+
+            AltTopDownSplitMerge(items, 0, n, scratch, mergeCount);
         }
 
-        static void AltTopDownSplitMerge(T[] items, int firstIdx, int endIdx, T[] scratch) {
-            if (endIdx - firstIdx < TopDownInsertionSortBatchSize) {
+        static void AltTopDownSplitMerge(T[] items, int firstIdx, int endIdx, T[] scratch, int mergeCount) {
+            if (mergeCount == 0) {
                 if (firstIdx < endIdx - 1) {
                     InsertionSort_InPlace_Unsafe_Inclusive(ref items[firstIdx], ref items[endIdx - 1]);
                 }
@@ -514,8 +517,8 @@ namespace SortAlgoBench {
             }
 
             var middleIdx = endIdx + firstIdx >> 1;
-            AltTopDownSplitMerge(scratch, firstIdx, middleIdx, items);
-            AltTopDownSplitMerge(scratch, middleIdx, endIdx, items);
+            AltTopDownSplitMerge(scratch, firstIdx, middleIdx, items, mergeCount - 1);
+            AltTopDownSplitMerge(scratch, middleIdx, endIdx, items, mergeCount - 1);
             Merge(scratch, firstIdx, middleIdx, endIdx, items);
         }
 
