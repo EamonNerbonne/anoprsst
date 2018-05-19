@@ -23,21 +23,21 @@ namespace SortAlgoBench {
             var all = new []{small, med,large }.SelectMany(x=>x).ToArray();
 
             Console.WriteLine();
-            foreach(var byType in all.GroupBy(o=>o.type))
-                Console.WriteLine($"{byType.Key.ToCSharpFriendlyTypeName()}: {byType.Average(o=>o.nsPerArrayItem):f1}ns/item");
+            foreach (var byType in all.GroupBy(o => o.type))
+                Console.WriteLine($"{byType.Key.ToCSharpFriendlyTypeName()}: {byType.Average(o => o.nsPerArrayItem):f1}ns/item");
 
             Console.WriteLine();
-            foreach(var byMethod in all.GroupBy(o=>o.method))
-                Console.WriteLine($"{byMethod.Key}: {byMethod.Average(o=>o.nsPerArrayItem):f1}ns/item");
+            foreach (var byMethod in all.GroupBy(o => o.method))
+                Console.WriteLine($"{byMethod.Key}: {byMethod.Average(o => o.nsPerArrayItem):f1}ns/item");
 
             Console.WriteLine();
             Console.WriteLine();
-            Console.WriteLine($"OVERALL: {all.Average(o=>o.nsPerArrayItem):f1}ns/item");
+            Console.WriteLine($"OVERALL: {all.Average(o => o.nsPerArrayItem):f1}ns/item");
         }
 
         private static (string method, Type type, double nsPerArrayItem)[] BenchSize(int MaxArraySize, int TimingTrials, int IterationsPerTrial) {
             var data = Helpers.RandomizeUInt64(MaxArraySize);
-            return new []{
+            return new[]{
                 DoubleOrderingAlgorithms.BencherFor(Helpers.MapToDouble(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos(),
                 Int32OrderingAlgorithms.BencherFor(Helpers.MapToInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos(),
                 SmallStructOrderingAlgorithms.BencherFor(Helpers.MapToSmallStruct(data), TimingTrials, IterationsPerTrial).BenchVariousAlgos(),
@@ -46,7 +46,7 @@ namespace SortAlgoBench {
                 BigStructOrderingAlgorithms.BencherFor(Helpers.MapToBigStruct(data), TimingTrials / 2, IterationsPerTrial).BenchVariousAlgos(),
                 UInt32OrderingAlgorithms.BencherFor(Helpers.MapToUInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos(),
                 ComparableOrderingAlgorithms<int>.BencherFor(Helpers.MapToInt32(data), TimingTrials * 3 / 2, IterationsPerTrial).BenchVariousAlgos(),
-            }.SelectMany(r=>r).ToArray();
+            }.SelectMany(r => r).ToArray();
         }
     }
 
@@ -191,7 +191,7 @@ namespace SortAlgoBench {
     public abstract class DoubleOrderingAlgorithms : OrderedAlgorithms<double, DoubleOrderingAlgorithms.Order> {
         public struct Order : IOrdering<double> {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool LessThan(double a, double b) =>  a<b || !(a>=b);
+            public bool LessThan(double a, double b) => a < b || !(a >= b);
         }
     }
 
