@@ -13,14 +13,16 @@ namespace SortAlgoBench {
         public static readonly int ParallelSplitScale = Helpers.ProcScale();
 
         static void Main() {
-            const int quality = 2;
+            const int quality = 8;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
+            var small = BenchSize(1 << 7 << 4, 100 * quality, 240 * quality);
+            Console.WriteLine();
+            var med = BenchSize(1 << 10 << 4, 40 * quality, 60 * quality);
+            Console.WriteLine();
             var large = BenchSize(1 << 14 << 4, 20 * quality, 10 * quality);
             Console.WriteLine();
-            var med = BenchSize(1 << 9 << 4, 50 * quality, 80 * quality);
-            Console.WriteLine();
-            var small =BenchSize(1 << 7 << 4, 100*quality, 200*quality);
-            var all = new []{small, med,large }.SelectMany(x=>x).ToArray();
+            var xlarge = BenchSize(1 << 19 << 4,  Math.Max(10, 5*quality), Math.Max(7, quality * 4 ) );
+            var all = new[] { small, med, large, xlarge, }.SelectMany(x => x).ToArray();
 
             Console.WriteLine();
             foreach (var byType in all.GroupBy(o => o.type))
@@ -61,6 +63,7 @@ namespace SortAlgoBench {
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.TopDownMergeSort);
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
+            yield return BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort2);
 
             Console.WriteLine();
         }
