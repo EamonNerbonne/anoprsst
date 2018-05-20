@@ -1,19 +1,350 @@
-﻿double: 40.4ns/item
+﻿System.Double: 64/16000/80
+System.Int32: 64/16000/80
+System.ValueTuple`3[System.Int32,System.Int32,System.Int32]: 34/16000/80
+SortAlgoBench.SampleClass: 24/16000/80
+System.UInt64: 64/16000/80
+System.ValueTuple`4[System.Int32,System.Int64,System.DateTime,System.String]: 17/16000/80
+System.UInt32: 64/16000/80
+System.Int32: 64/16000/80
+Benchmarking 7245682 double[127.9]
+    ArraySort_Primitive: mean 28.601~0.0066 ns/item; median 27.4; overhead: 18.5%
+     DualPivotQuickSort: mean 20.402~0.005 ns/item; median 19.5; overhead: 24.0%
+              QuickSort: mean 20.386~0.005 ns/item; median 19.5; overhead: 23.9%
+      ParallelQuickSort: mean 20.365~0.005 ns/item; median 19.5; overhead: 23.9%
+      BottomUpMergeSort: mean 21.79~0.0054 ns/item; median 21.1; overhead: 22.8%
+       TopDownMergeSort: mean 21.451~0.0053 ns/item; median 21.1; overhead: 23.0%
+    AltTopDownMergeSort: mean 21.243~0.0053 ns/item; median 20.3; overhead: 23.1%
+   AltTopDownMergeSort2: mean 21.743~0.0054 ns/item; median 21.1; overhead: 22.7%
+
+Benchmarking 7245682 int[127.9]
+    ArraySort_Primitive: mean 21.817~0.0051 ns/item; median 21.1; overhead: 19.9%
+     DualPivotQuickSort: mean 17.631~0.0043 ns/item; median 17.2; overhead: 23.3%
+              QuickSort: mean 17.584~0.0043 ns/item; median 17.2; overhead: 23.3%
+      ParallelQuickSort: mean 17.601~0.0043 ns/item; median 17.2; overhead: 23.4%
+      BottomUpMergeSort: mean 18.827~0.0046 ns/item; median 18.0; overhead: 22.2%
+       TopDownMergeSort: mean 18.529~0.0046 ns/item; median 18.0; overhead: 22.2%
+    AltTopDownMergeSort: mean 18.504~0.0046 ns/item; median 17.2; overhead: 22.5%
+   AltTopDownMergeSort2: mean 20.232~0.005 ns/item; median 19.5; overhead: 20.9%
+
+Benchmarking 4830455 ValueTuple<int, int, int>[127.9]
+ArraySort_OrderComparer: mean 55.442~0.016 ns/item; median 53.2; overhead: 19.3%
+     DualPivotQuickSort: mean 31.216~0.0093 ns/item; median 29.7; overhead: 29.8%
+              QuickSort: mean 31.204~0.0093 ns/item; median 29.7; overhead: 29.7%
+      ParallelQuickSort: mean 31.168~0.0093 ns/item; median 29.7; overhead: 29.6%
+      BottomUpMergeSort: mean 31.356~0.0093 ns/item; median 29.7; overhead: 29.7%
+       TopDownMergeSort: mean 31.156~0.0093 ns/item; median 29.7; overhead: 29.7%
+    AltTopDownMergeSort: mean 31.683~0.0095 ns/item; median 28.9; overhead: 29.3%
+   AltTopDownMergeSort2: mean 31.634~0.0094 ns/item; median 30.5; overhead: 29.4%
+
+Benchmarking 3220303 SampleClass[127.9]
+ArraySort_OrderComparer: mean 51.863~0.018 ns/item; median 50.0; overhead: 15.6%
+     DualPivotQuickSort: mean 34.801~0.012 ns/item; median 33.6; overhead: 21.4%
+              QuickSort: mean 34.767~0.012 ns/item; median 33.6; overhead: 21.4%
+      ParallelQuickSort: mean 34.723~0.012 ns/item; median 33.6; overhead: 21.4%
+      BottomUpMergeSort: mean 38.837~0.014 ns/item; median 37.5; overhead: 19.7%
+       TopDownMergeSort: mean 39.581~0.014 ns/item; median 39.9; overhead: 19.4%
+    AltTopDownMergeSort: mean 38.397~0.014 ns/item; median 38.3; overhead: 19.8%
+   AltTopDownMergeSort2: mean 43.277~0.015 ns/item; median 43.0; overhead: 18.0%
+
+Benchmarking 4830455 ulong[127.9]
+    ArraySort_Primitive: mean 23.531~0.0067 ns/item; median 22.7; overhead: 18.9%
+     DualPivotQuickSort: mean 17.468~0.0052 ns/item; median 17.2; overhead: 23.9%
+              QuickSort: mean 17.497~0.0052 ns/item; median 17.2; overhead: 23.7%
+      ParallelQuickSort: mean 17.474~0.0052 ns/item; median 17.2; overhead: 24.0%
+      BottomUpMergeSort: mean 18.921~0.0057 ns/item; median 18.8; overhead: 22.3%
+       TopDownMergeSort: mean 18.567~0.0056 ns/item; median 18.0; overhead: 22.6%
+    AltTopDownMergeSort: mean 18.601~0.0056 ns/item; median 18.0; overhead: 22.8%
+   AltTopDownMergeSort2: mean 20.132~0.0061 ns/item; median 19.5; overhead: 21.2%
+
+Benchmarking 2415227 ValueTuple<int, long, DateTime, string>[128.0]
+ArraySort_OrderComparer: mean 83.579~0.033 ns/item; median 81.3; overhead: 38.8%
+     DualPivotQuickSort: mean 55.798~0.023 ns/item; median 53.9; overhead: 48.6%
+              QuickSort: mean 55.766~0.023 ns/item; median 53.9; overhead: 48.6%
+      ParallelQuickSort: mean 55.851~0.023 ns/item; median 54.7; overhead: 48.6%
+      BottomUpMergeSort: mean 63.347~0.026 ns/item; median 61.0; overhead: 45.6%
+       TopDownMergeSort: mean 63.222~0.025 ns/item; median 66.4; overhead: 45.6%
+    AltTopDownMergeSort: mean 61.78~0.025 ns/item; median 59.4; overhead: 46.2%
+   AltTopDownMergeSort2: mean 70.569~0.028 ns/item; median 73.5; overhead: 42.9%
+
+Benchmarking 7245682 uint[127.9]
+    ArraySort_Primitive: mean 24.157~0.0056 ns/item; median 23.5; overhead: 18.2%
+     DualPivotQuickSort: mean 17.666~0.0043 ns/item; median 17.2; overhead: 23.2%
+              QuickSort: mean 17.604~0.0042 ns/item; median 17.2; overhead: 23.3%
+      ParallelQuickSort: mean 17.612~0.0043 ns/item; median 17.2; overhead: 23.2%
+      BottomUpMergeSort: mean 20.112~0.005 ns/item; median 18.8; overhead: 21.1%
+       TopDownMergeSort: mean 18.462~0.0045 ns/item; median 18.0; overhead: 22.4%
+    AltTopDownMergeSort: mean 18.477~0.0045 ns/item; median 17.2; overhead: 22.3%
+   AltTopDownMergeSort2: mean 20.562~0.005 ns/item; median 20.3; overhead: 20.7%
+
+Benchmarking 7245682 int[127.9]
+    ArraySort_Primitive: mean 21.811~0.0051 ns/item; median 21.1; overhead: 21.0%
+     DualPivotQuickSort: mean 17.894~0.0043 ns/item; median 17.2; overhead: 24.4%
+              QuickSort: mean 17.894~0.0043 ns/item; median 17.2; overhead: 24.4%
+      ParallelQuickSort: mean 17.889~0.0043 ns/item; median 17.2; overhead: 24.4%
+      BottomUpMergeSort: mean 18.96~0.0046 ns/item; median 18.8; overhead: 23.4%
+       TopDownMergeSort: mean 18.739~0.0046 ns/item; median 18.0; overhead: 23.5%
+    AltTopDownMergeSort: mean 18.466~0.0045 ns/item; median 17.2; overhead: 23.9%
+   AltTopDownMergeSort2: mean 18.723~0.0046 ns/item; median 18.0; overhead: 23.5%
+
+
+Benchmarking 634002 double[1024.1]
+    ArraySort_Primitive: mean 38.65~0.03  ns/item; median 37.9; overhead: 11.9%
+     DualPivotQuickSort: mean 31.636~0.025 ns/item; median 30.8; overhead: 14.1%
+              QuickSort: mean 30.257~0.024 ns/item; median 29.6; overhead: 14.7%
+      ParallelQuickSort: mean 20.299~0.012 ns/item; median 20.8; overhead: 29.0%
+      BottomUpMergeSort: mean 33.027~0.026 ns/item; median 32.8; overhead: 13.7%
+       TopDownMergeSort: mean 33.62~0.027 ns/item; median 32.8; overhead: 13.6%
+    AltTopDownMergeSort: mean 33.423~0.026 ns/item; median 33.7; overhead: 13.6%
+   AltTopDownMergeSort2: mean 34.04~0.027 ns/item; median 33.4; overhead: 13.4%
+
+Benchmarking 634002 int[1024.1]
+    ArraySort_Primitive: mean 30.049~0.023 ns/item; median 29.5; overhead: 12.2%
+     DualPivotQuickSort: mean 26.884~0.021 ns/item; median 26.2; overhead: 13.5%
+              QuickSort: mean 25.704~0.02 ns/item; median 25.1; overhead: 14.0%
+      ParallelQuickSort: mean 19.264~0.012 ns/item; median 20.0; overhead: 21.7%
+      BottomUpMergeSort: mean 28.77~0.022 ns/item; median 28.8; overhead: 12.7%
+       TopDownMergeSort: mean 29.12~0.023 ns/item; median 28.5; overhead: 12.6%
+    AltTopDownMergeSort: mean 29.116~0.023 ns/item; median 29.4; overhead: 12.6%
+   AltTopDownMergeSort2: mean 30.95~0.025 ns/item; median 30.4; overhead: 11.9%
+
+Benchmarking 422668 ValueTuple<int, int, int>[1023.9]
+ArraySort_OrderComparer: mean 77.29~0.073 ns/item; median 75.7; overhead: 13.4%
+     DualPivotQuickSort: mean 46.66~0.045 ns/item; median 45.7; overhead: 20.4%
+              QuickSort: mean 42.78~0.041 ns/item; median 41.9; overhead: 21.8%
+      ParallelQuickSort: mean 28.84~0.023 ns/item; median 28.8; overhead: 40.9%
+      BottomUpMergeSort: mean 43.61~0.041 ns/item; median 42.9; overhead: 21.6%
+       TopDownMergeSort: mean 43.6~0.041  ns/item; median 43.4; overhead: 21.6%
+    AltTopDownMergeSort: mean 43.78~0.041 ns/item; median 43.2; overhead: 21.5%
+   AltTopDownMergeSort2: mean 45.15~0.043 ns/item; median 45.0; overhead: 21.0%
+
+Benchmarking 281778 SampleClass[1023.9]
+ArraySort_OrderComparer: mean 69.81~0.081 ns/item; median 68.2; overhead: 10.7%
+     DualPivotQuickSort: mean 51.16~0.06  ns/item; median 49.8; overhead: 14.1%
+              QuickSort: mean 47.06~0.054 ns/item; median 46.1; overhead: 15.1%
+      ParallelQuickSort: mean 28.76~0.026 ns/item; median 28.9; overhead: 31.1%
+      BottomUpMergeSort: mean 56.6~0.067  ns/item; median 55.1; overhead: 12.9%
+       TopDownMergeSort: mean 57.46~0.069 ns/item; median 53.9; overhead: 12.7%
+    AltTopDownMergeSort: mean 56.83~0.068 ns/item; median 53.6; overhead: 12.8%
+   AltTopDownMergeSort2: mean 64.02~0.076 ns/item; median 60.9; overhead: 11.6%
+
+Benchmarking 422668 ulong[1023.9]
+    ArraySort_Primitive: mean 32.35~0.03  ns/item; median 31.7; overhead: 11.6%
+     DualPivotQuickSort: mean 26.89~0.026 ns/item; median 26.3; overhead: 13.8%
+              QuickSort: mean 25.72~0.025 ns/item; median 25.2; overhead: 14.2%
+      ParallelQuickSort: mean 19.09~0.014 ns/item; median 19.6; overhead: 23.5%
+      BottomUpMergeSort: mean 28.92~0.028 ns/item; median 28.8; overhead: 13.0%
+       TopDownMergeSort: mean 29.41~0.029 ns/item; median 28.8; overhead: 12.8%
+    AltTopDownMergeSort: mean 29.52~0.028 ns/item; median 30.0; overhead: 12.8%
+   AltTopDownMergeSort2: mean 30.71~0.03  ns/item; median 30.4; overhead: 12.3%
+
+Benchmarking 211334 ValueTuple<int, long, DateTime, string>[1023.9]
+ArraySort_OrderComparer: mean 108.3~0.14  ns/item; median 106.4; overhead: 33.1%
+     DualPivotQuickSort: mean 80.14~0.11  ns/item; median 78.3; overhead: 40.0%
+              QuickSort: mean 74.87~0.099 ns/item; median 73.4; overhead: 41.7%
+      ParallelQuickSort: mean 44.34~0.041 ns/item; median 46.7; overhead: 62.0%
+      BottomUpMergeSort: mean 88.14~0.12  ns/item; median 89.7; overhead: 38.0%
+       TopDownMergeSort: mean 92.43~0.13  ns/item; median 86.2; overhead: 36.9%
+    AltTopDownMergeSort: mean 88.97~0.12  ns/item; median 86.1; overhead: 37.7%
+   AltTopDownMergeSort2: mean 102.3~0.14  ns/item; median 97.5; overhead: 34.5%
+
+Benchmarking 634002 uint[1024.1]
+    ArraySort_Primitive: mean 32.489~0.025 ns/item; median 31.8; overhead: 11.4%
+     DualPivotQuickSort: mean 27.392~0.022 ns/item; median 26.8; overhead: 13.3%
+              QuickSort: mean 25.701~0.02 ns/item; median 25.1; overhead: 14.0%
+      ParallelQuickSort: mean 19.002~0.011 ns/item; median 19.6; overhead: 22.0%
+      BottomUpMergeSort: mean 29.049~0.022 ns/item; median 29.2; overhead: 12.6%
+       TopDownMergeSort: mean 29.02~0.023 ns/item; median 28.4; overhead: 12.6%
+    AltTopDownMergeSort: mean 28.957~0.023 ns/item; median 29.2; overhead: 12.7%
+   AltTopDownMergeSort2: mean 30.988~0.025 ns/item; median 30.5; overhead: 11.9%
+
+Benchmarking 634002 int[1024.1]
+    ArraySort_Primitive: mean 30.051~0.023 ns/item; median 29.5; overhead: 13.4%
+     DualPivotQuickSort: mean 27.773~0.022 ns/item; median 27.0; overhead: 14.3%
+              QuickSort: mean 25.959~0.02 ns/item; median 25.4; overhead: 15.1%
+      ParallelQuickSort: mean 19.318~0.011 ns/item; median 19.9; overhead: 23.4%
+      BottomUpMergeSort: mean 28.2~0.022  ns/item; median 28.0; overhead: 14.1%
+       TopDownMergeSort: mean 28.75~0.023 ns/item; median 28.1; overhead: 13.9%
+    AltTopDownMergeSort: mean 28.68~0.023 ns/item; median 28.9; overhead: 13.9%
+   AltTopDownMergeSort2: mean 29.47~0.023 ns/item; median 28.7; overhead: 13.6%
+
+
+Benchmarking 28308 double[16426.0]
+    ArraySort_Primitive: mean 52.41~0.19  ns/item; median 51.7; overhead: 9.1%
+     DualPivotQuickSort: mean 46.77~0.17  ns/item; median 45.9; overhead: 10.2%
+              QuickSort: mean 43.3~0.15   ns/item; median 42.6; overhead: 10.8%
+      ParallelQuickSort: mean 15.08~0.045 ns/item; median 15.2; overhead: 32.6%
+      BottomUpMergeSort: mean 50.74~0.18  ns/item; median 50.6; overhead: 9.5%
+       TopDownMergeSort: mean 51.5~0.19   ns/item; median 50.8; overhead: 9.3%
+    AltTopDownMergeSort: mean 51.35~0.18  ns/item; median 51.7; overhead: 9.3%
+   AltTopDownMergeSort2: mean 52.04~0.19  ns/item; median 51.2; overhead: 9.2%
+
+Benchmarking 28308 int[16426.0]
+    ArraySort_Primitive: mean 41.37~0.15  ns/item; median 40.8; overhead: 9.0%
+     DualPivotQuickSort: mean 39.3~0.14   ns/item; median 38.6; overhead: 9.4%
+              QuickSort: mean 36.53~0.13  ns/item; median 36.0; overhead: 10.0%
+      ParallelQuickSort: mean 13.64~0.04  ns/item; median 13.9; overhead: 26.6%
+      BottomUpMergeSort: mean 42.78~0.15  ns/item; median 42.4; overhead: 8.8%
+       TopDownMergeSort: mean 43.49~0.16  ns/item; median 42.4; overhead: 8.6%
+    AltTopDownMergeSort: mean 43.51~0.16  ns/item; median 43.4; overhead: 8.6%
+   AltTopDownMergeSort2: mean 45.08~0.16  ns/item; median 44.2; overhead: 8.3%
+
+Benchmarking 18872 ValueTuple<int, int, int>[16442.3]
+ArraySort_OrderComparer: mean 108.4~0.47  ns/item; median 107.3; overhead: 10.1%
+     DualPivotQuickSort: mean 67.58~0.3   ns/item; median 66.7; overhead: 15.2%
+              QuickSort: mean 59.88~0.26  ns/item; median 59.3; overhead: 16.8%
+      ParallelQuickSort: mean 19.42~0.073 ns/item; median 19.4; overhead: 42.3%
+      BottomUpMergeSort: mean 67.13~0.29  ns/item; median 66.6; overhead: 15.5%
+       TopDownMergeSort: mean 67.18~0.29  ns/item; median 66.9; overhead: 15.5%
+    AltTopDownMergeSort: mean 67.43~0.29  ns/item; median 67.0; overhead: 15.4%
+   AltTopDownMergeSort2: mean 69.26~0.3   ns/item; median 69.2; overhead: 15.1%
+
+Benchmarking 12581 SampleClass[16398.8]
+ArraySort_OrderComparer: mean 101.4~0.55  ns/item; median 99.5; overhead: 8.9%
+     DualPivotQuickSort: mean 77.19~0.42  ns/item; median 75.5; overhead: 11.3%
+              QuickSort: mean 67.05~0.36  ns/item; median 66.1; overhead: 12.7%
+      ParallelQuickSort: mean 20.9~0.1    ns/item; median 20.9; overhead: 36.4%
+      BottomUpMergeSort: mean 88.03~0.48  ns/item; median 86.1; overhead: 10.1%
+       TopDownMergeSort: mean 86.99~0.48  ns/item; median 83.0; overhead: 10.2%
+    AltTopDownMergeSort: mean 86.55~0.48  ns/item; median 83.0; overhead: 10.3%
+   AltTopDownMergeSort2: mean 97.01~0.53  ns/item; median 93.7; overhead: 9.3%
+
+Benchmarking 18872 ulong[16442.3]
+    ArraySort_Primitive: mean 44.38~0.19  ns/item; median 44.0; overhead: 8.8%
+     DualPivotQuickSort: mean 39.47~0.17  ns/item; median 38.9; overhead: 9.9%
+              QuickSort: mean 36.58~0.16  ns/item; median 36.2; overhead: 10.6%
+      ParallelQuickSort: mean 12.66~0.047 ns/item; median 12.8; overhead: 29.1%
+      BottomUpMergeSort: mean 44.7~0.2    ns/item; median 45.0; overhead: 8.9%
+       TopDownMergeSort: mean 45.28~0.2   ns/item; median 44.9; overhead: 8.7%
+    AltTopDownMergeSort: mean 45.43~0.2   ns/item; median 46.1; overhead: 8.7%
+   AltTopDownMergeSort2: mean 46.31~0.2   ns/item; median 45.9; overhead: 8.6%
+
+Benchmarking 9436 ValueTuple<int, long, DateTime, string>[16330.5]
+ArraySort_OrderComparer: mean 149.1~0.92  ns/item; median 146.7; overhead: 30.7%
+     DualPivotQuickSort: mean 116.4~0.73  ns/item; median 113.9; overhead: 36.2%
+              QuickSort: mean 102~0.63    ns/item; median 100.4; overhead: 39.3%
+      ParallelQuickSort: mean 28.15~0.15  ns/item; median 28.0; overhead: 71.3%
+      BottomUpMergeSort: mean 132~0.81    ns/item; median 133.2; overhead: 34.3%
+       TopDownMergeSort: mean 136.7~0.85  ns/item; median 130.9; overhead: 33.5%
+    AltTopDownMergeSort: mean 133.3~0.82  ns/item; median 130.9; overhead: 34.1%
+   AltTopDownMergeSort2: mean 151~0.94    ns/item; median 146.7; overhead: 31.4%
+
+Benchmarking 28308 uint[16426.0]
+    ArraySort_Primitive: mean 44.52~0.16  ns/item; median 43.9; overhead: 8.4%
+     DualPivotQuickSort: mean 39.97~0.14  ns/item; median 39.3; overhead: 9.3%
+              QuickSort: mean 36.52~0.13  ns/item; median 35.9; overhead: 10.1%
+      ParallelQuickSort: mean 13.41~0.04  ns/item; median 13.6; overhead: 26.9%
+      BottomUpMergeSort: mean 42.5~0.15   ns/item; median 42.1; overhead: 8.8%
+       TopDownMergeSort: mean 43.21~0.16  ns/item; median 42.1; overhead: 8.7%
+    AltTopDownMergeSort: mean 43.11~0.16  ns/item; median 43.0; overhead: 8.7%
+   AltTopDownMergeSort2: mean 45.09~0.16  ns/item; median 44.2; overhead: 8.3%
+
+Benchmarking 28308 int[16426.0]
+    ArraySort_Primitive: mean 41.4~0.15   ns/item; median 40.8; overhead: 9.9%
+     DualPivotQuickSort: mean 41.47~0.15  ns/item; median 40.7; overhead: 10.0%
+              QuickSort: mean 36.9~0.13   ns/item; median 36.3; overhead: 11.0%
+      ParallelQuickSort: mean 13.53~0.04  ns/item; median 13.7; overhead: 28.6%
+      BottomUpMergeSort: mean 42.03~0.15  ns/item; median 41.6; overhead: 9.8%
+       TopDownMergeSort: mean 42.81~0.16  ns/item; median 41.7; overhead: 9.6%
+    AltTopDownMergeSort: mean 42.77~0.15  ns/item; median 42.7; overhead: 9.6%
+   AltTopDownMergeSort2: mean 44.27~0.16  ns/item; median 43.1; overhead: 9.3%
+
+
+Benchmarking 655 double[505588.4]
+    ArraySort_Primitive: mean 69.1~1.7    ns/item; median 65.5; overhead: 7.6%
+     DualPivotQuickSort: mean 65.5~1.6    ns/item; median 62.1; overhead: 8.1%
+              QuickSort: mean 59.6~1.5    ns/item; median 56.6; overhead: 8.8%
+      ParallelQuickSort: mean 14.6~0.35   ns/item; median 14.0; overhead: 28.4%
+      BottomUpMergeSort: mean 73.7~1.9    ns/item; median 68.4; overhead: 7.3%
+       TopDownMergeSort: mean 71.5~1.8    ns/item; median 68.2; overhead: 7.6%
+    AltTopDownMergeSort: mean 71.7~1.8    ns/item; median 67.9; overhead: 7.6%
+   AltTopDownMergeSort2: mean 72.5~1.8    ns/item; median 69.4; overhead: 7.3%
+
+Benchmarking 655 int[505588.4]
+    ArraySort_Primitive: mean 55.1~1.3    ns/item; median 52.3; overhead: 7.2%
+     DualPivotQuickSort: mean 54.2~1.3    ns/item; median 51.4; overhead: 7.3%
+              QuickSort: mean 50.4~1.2    ns/item; median 47.7; overhead: 7.9%
+      ParallelQuickSort: mean 12.3~0.29   ns/item; median 11.9; overhead: 25.9%
+      BottomUpMergeSort: mean 61.1~1.5    ns/item; median 57.2; overhead: 6.6%
+       TopDownMergeSort: mean 61.6~1.5    ns/item; median 58.7; overhead: 6.6%
+    AltTopDownMergeSort: mean 61.1~1.5    ns/item; median 57.3; overhead: 6.6%
+   AltTopDownMergeSort2: mean 62.5~1.5    ns/item; median 59.9; overhead: 6.4%
+
+Benchmarking 437 ValueTuple<int, int, int>[508207.7]
+ArraySort_OrderComparer: mean 149~4.5     ns/item; median 144.4; overhead: 8.5%
+     DualPivotQuickSort: mean 97.8~2.9    ns/item; median 94.6; overhead: 12.3%
+              QuickSort: mean 86.3~2.6    ns/item; median 83.6; overhead: 13.7%
+      ParallelQuickSort: mean 21.5~0.63   ns/item; median 20.8; overhead: 39.4%
+      BottomUpMergeSort: mean 108~3.3     ns/item; median 105.1; overhead: 11.3%
+       TopDownMergeSort: mean 99.4~3      ns/item; median 97.3; overhead: 12.2%
+    AltTopDownMergeSort: mean 98.9~3      ns/item; median 95.5; overhead: 12.2%
+   AltTopDownMergeSort2: mean 100~3       ns/item; median 96.2; overhead: 12.0%
+
+Benchmarking 291 SampleClass[501164.3]
+ArraySort_OrderComparer: mean 214~9.2     ns/item; median 194.0; overhead: 16.0%
+     DualPivotQuickSort: mean 186~8.2     ns/item; median 171.7; overhead: 17.7%
+              QuickSort: mean 164~7.3     ns/item; median 148.0; overhead: 19.4%
+      ParallelQuickSort: mean 46.3~2      ns/item; median 42.2; overhead: 46.9%
+      BottomUpMergeSort: mean 218~9.1     ns/item; median 216.4; overhead: 15.5%
+       TopDownMergeSort: mean 162~6.5     ns/item; median 154.4; overhead: 19.9%
+    AltTopDownMergeSort: mean 159~6.4     ns/item; median 155.0; overhead: 20.0%
+   AltTopDownMergeSort2: mean 174~7       ns/item; median 164.4; overhead: 18.6%
+
+Benchmarking 437 ulong[508207.7]
+    ArraySort_Primitive: mean 58.9~1.8    ns/item; median 57.0; overhead: 7.6%
+     DualPivotQuickSort: mean 55~1.7      ns/item; median 53.2; overhead: 8.1%
+              QuickSort: mean 50.3~1.5    ns/item; median 48.8; overhead: 8.7%
+      ParallelQuickSort: mean 12.3~0.36   ns/item; median 12.1; overhead: 28.2%
+      BottomUpMergeSort: mean 65.8~2      ns/item; median 63.1; overhead: 6.9%
+       TopDownMergeSort: mean 63~1.9      ns/item; median 61.5; overhead: 7.1%
+    AltTopDownMergeSort: mean 63~1.9      ns/item; median 61.2; overhead: 7.1%
+   AltTopDownMergeSort2: mean 64.3~1.9    ns/item; median 63.0; overhead: 7.0%
+
+Benchmarking 218 ValueTuple<int, long, DateTime, string>[508171.3]
+ArraySort_OrderComparer: mean 206~8.6     ns/item; median 212.1; overhead: 40.9%
+     DualPivotQuickSort: mean 170~7.1     ns/item; median 173.3; overhead: 45.8%
+              QuickSort: mean 145~6.1     ns/item; median 149.2; overhead: 49.6%
+      ParallelQuickSort: mean 34.1~1.4    ns/item; median 34.6; overhead: 81.6%
+      BottomUpMergeSort: mean 205~8.5     ns/item; median 213.8; overhead: 41.7%
+       TopDownMergeSort: mean 186~7.8     ns/item; median 192.4; overhead: 44.1%
+    AltTopDownMergeSort: mean 184~7.7     ns/item; median 185.8; overhead: 44.5%
+   AltTopDownMergeSort2: mean 207~8.6     ns/item; median 214.4; overhead: 41.5%
+
+Benchmarking 655 uint[505588.4]
+    ArraySort_Primitive: mean 59.1~1.4    ns/item; median 56.0; overhead: 6.8%
+     DualPivotQuickSort: mean 55.2~1.4    ns/item; median 52.3; overhead: 7.2%
+              QuickSort: mean 49.8~1.2    ns/item; median 47.3; overhead: 7.9%
+      ParallelQuickSort: mean 12.2~0.29   ns/item; median 11.8; overhead: 26.0%
+      BottomUpMergeSort: mean 60.6~1.5    ns/item; median 56.5; overhead: 6.6%
+       TopDownMergeSort: mean 60.6~1.5    ns/item; median 58.0; overhead: 6.6%
+    AltTopDownMergeSort: mean 60~1.5      ns/item; median 56.9; overhead: 6.7%
+   AltTopDownMergeSort2: mean 62.4~1.5    ns/item; median 59.9; overhead: 6.4%
+
+Benchmarking 655 int[505588.4]
+    ArraySort_Primitive: mean 55.2~1.4    ns/item; median 52.3; overhead: 8.0%
+     DualPivotQuickSort: mean 58.2~1.4    ns/item; median 55.1; overhead: 7.6%
+              QuickSort: mean 50.5~1.2    ns/item; median 47.9; overhead: 8.6%
+      ParallelQuickSort: mean 12.3~0.29   ns/item; median 11.9; overhead: 28.0%
+      BottomUpMergeSort: mean 60.1~1.5    ns/item; median 56.2; overhead: 7.4%
+       TopDownMergeSort: mean 59.6~1.5    ns/item; median 57.1; overhead: 7.4%
+    AltTopDownMergeSort: mean 59.7~1.5    ns/item; median 56.2; overhead: 7.4%
+   AltTopDownMergeSort2: mean 62.2~1.5    ns/item; median 59.0; overhead: 7.1%
+
+
+double: 40.4ns/item
 int: 34.2ns/item
 ValueTuple<int, int, int>: 60.4ns/item
-SampleClass: 82.4ns/item
-ulong: 34.9ns/item
-ValueTuple<int, long, DateTime, string>: 107.0ns/item
-uint: 34.1ns/item
+SampleClass: 84.3ns/item
+ulong: 35.1ns/item
+ValueTuple<int, long, DateTime, string>: 108.6ns/item
+uint: 34.5ns/item
 
-ArraySort: 67.6ns/item
-DualPivotQuickSort: 53.8ns/item
-QuickSort: 49.3ns/item
-ParallelQuickSort: 21.4ns/item
-BottomUpMergeSort: 59.8ns/item
-TopDownMergeSort: 57.6ns/item
-AltTopDownMergeSort: 57.2ns/item
-AltTopDownMergeSort2: 60.9ns/item
+ArraySort: 68.1ns/item
+DualPivotQuickSort: 54.4ns/item
+QuickSort: 49.5ns/item
+ParallelQuickSort: 22.3ns/item
+BottomUpMergeSort: 60.3ns/item
+TopDownMergeSort: 57.9ns/item
+AltTopDownMergeSort: 57.4ns/item
+AltTopDownMergeSort2: 61.6ns/item
 
-
-OVERALL: 53.5ns/item
+OVERALL: 54.0ns/item

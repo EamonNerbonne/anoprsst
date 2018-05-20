@@ -47,7 +47,7 @@ namespace SortAlgoBench {
             Console.WriteLine($"{typeof(T)}: {TopDownInsertionSortBatchSize}/{QuickSortNoMedianThreshold}/{MinimalParallelQuickSortBatchSize}");
         }
 
-        public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr, int TimingTrials, int IterationsPerTrial) => new SortAlgorithmBench<T, TOrder>(arr, TimingTrials, IterationsPerTrial);
+        public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr, int Iterations) => new SortAlgorithmBench<T, TOrder>(arr, Iterations);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
         public static void TopDownMergeSort(T[] array, int endIdx) {
             if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx)) {

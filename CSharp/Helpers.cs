@@ -22,7 +22,7 @@ namespace SortAlgoBench {
         public static string MSE(MeanVarianceAccumulator acc)
             => MSE(acc.Mean, StdErr(acc));
 
-        static double StdErr(MeanVarianceAccumulator acc)
+        public static double StdErr(MeanVarianceAccumulator acc)
             => acc.SampleStandardDeviation / Math.Sqrt(acc.WeightSum);
 
         public static string MSE(double mean, double stderr) {
