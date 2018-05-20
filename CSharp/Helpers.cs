@@ -22,13 +22,19 @@ namespace SortAlgoBench {
         public static string MSE(MeanVarianceAccumulator acc)
             => MSE(acc.Mean, StdErr(acc));
 
+        public static double CostScalingEstimate(double len)
+            => len * Math.Sqrt(len + 40.0) + 15.0;
+
         public static double StdErr(MeanVarianceAccumulator acc)
             => acc.SampleStandardDeviation / Math.Sqrt(acc.WeightSum);
 
         public static string MSE(double mean, double stderr) {
             var significantDigits = Math.Log10(Math.Abs(mean / stderr));
-            var digitsToShow = Math.Max(2, (int)(significantDigits + 1.9));
-            var fmtString = "g" + digitsToShow;
+            var digitsToShow = Math.Max(2, (int)(significantDigits + 2.5));
+            
+            if(Math.Pow(10,digitsToShow) <= mean && Math.Pow(10,digitsToShow+2) > mean)
+                return mean.ToString("f0")+ "~" + stderr.ToString("f0");
+            var fmtString =  "g" + digitsToShow;
             return mean.ToString(fmtString) + "~" + stderr.ToString("g2");
         }
 
@@ -40,45 +46,13 @@ namespace SortAlgoBench {
             return arr;
         }
 
-        public static (int, long, DateTime, string)[] MapToBigStruct(ulong[] data) {
-            var arr = new(int, long, DateTime, string)[data.Length];
-            for (var j = 0; j < arr.Length; j++)
-                arr[j] = ((int)(data[j] >> 48), (long)(data[j] - (data[j] >> 48 << 48)), new DateTime(2000, 1, 1) + TimeSpan.FromSeconds((int)data[j]), data[j].ToString("x"));
-            return arr;
-        }
-        public static (int, int, int)[] MapToSmallStruct(ulong[] data) {
-            var arr = new(int, int, int)[data.Length];
-            for (var j = 0; j < arr.Length; j++)
-                arr[j] = ((int)(data[j] >> 32), (int)(data[j] - (data[j] >> 32 << 32)), (int)(data[j] * 13));
-            return arr;
-        }
-
-        public static int[] MapToInt32(ulong[] data) {
-            var arr = new int[data.Length];
-            for (var j = 0; j < arr.Length; j++)
-                arr[j] = (int)(data[j] >> 32);
-            return arr;
-        }
-        public static uint[] MapToUInt32(ulong[] data) {
-            var arr = new uint[data.Length];
-            for (var j = 0; j < arr.Length; j++)
-                arr[j] = (uint)(data[j] >> 32);
-            return arr;
-        }
-
-        public static SampleClass[] MapToSampleClass(ulong[] data) {
-            var arr = new SampleClass[data.Length];
-            for (var j = 0; j < arr.Length; j++)
-                arr[j] = new SampleClass { Value = (int)(data[j] >> 32) };
-            return arr;
-        }
-
-        public static double[] MapToDouble(ulong[] data) {
-            var arr = new double[data.Length];
-            for (var j = 0; j < arr.Length; j++)
-                arr[j] = (long)data[j]/(double)(1L<<31);
-            return arr;
-        }
+        public static (int, long, DateTime, string, Guid) MapToBigStruct(ulong data) => ((int)(data >> 48), (long)(data - (data >> 48 << 48)), new DateTime(2000, 1, 1) + TimeSpan.FromSeconds((int)data), "test", default(Guid));
+        public static (int, int, int) MapToSmallStruct(ulong data) => ((int)(data >> 32), (int)(data - (data >> 32 << 32)), (int)(data * 13));
+        public static int MapToInt32(ulong data) => (int)(data >> 32);
+        public static ulong MapToUInt64(ulong data) => data;
+        public static uint MapToUInt32(ulong data) => (uint)(data >> 32);
+        public static SampleClass MapToSampleClass(ulong data) => new SampleClass { Value = (int)(data >> 32) };
+        public static double MapToDouble(ulong data) => (long)data / (double)(1L << 31);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool NeedsSort_WithBoundsCheck<T>(T[] array, int firstIdx, int endIdx) {
@@ -105,7 +79,7 @@ namespace SortAlgoBench {
             where TOrder : struct, IOrdering<T>
             => OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr);
 
-        public static void FastSort<T,TOrder>(this T[] arr, TOrder order)
+        public static void FastSort<T, TOrder>(this T[] arr, TOrder order)
             where TOrder : struct, IOrdering<T>
             => OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr);
 
