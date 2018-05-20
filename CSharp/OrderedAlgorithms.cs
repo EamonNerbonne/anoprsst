@@ -97,17 +97,17 @@ namespace SortAlgoBench {
         }
         public static void DualPivotQuickSort(T[] array) {
             if (Helpers.NeedsSort_WithBoundsCheck(array))
-                DualPivotQuickSort_Inclusive(array, 0, array.Length - 1);
+                DualPivotQuickSort_Inclusive(ref array[0], array.Length - 1);
         }
 
         public static void DualPivotQuickSort(T[] array, int endIdx) {
             if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
-                DualPivotQuickSort_Inclusive(array, 0, endIdx - 1);
+                DualPivotQuickSort_Inclusive(ref array[0], endIdx - 1);
         }
 
         public static void DualPivotQuickSort(T[] array, int firstIdx, int endIdx) {
             if (Helpers.NeedsSort_WithBoundsCheck(array, firstIdx, endIdx))
-                DualPivotQuickSort_Inclusive(array, firstIdx, endIdx - 1);
+                DualPivotQuickSort_Inclusive(ref array[firstIdx], endIdx - firstIdx - 1);
         }
 
         static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx) {
@@ -398,55 +398,67 @@ namespace SortAlgoBench {
             if (default(TOrder).LessThan(v2, v1)) (v2, v1) = (v1, v2);
         }
 
-        static void DualPivotQuickSort_Inclusive(T[] array, int firstIdx, int lastIdx) {
-            if (lastIdx - firstIdx < 400) {
-                if (lastIdx > firstIdx)
-                    QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx - firstIdx);
+        static void DualPivotQuickSort_Inclusive(ref T firstPtr, int lastOffset) {
+            if (lastOffset < 400) {
+                QuickSort_Inclusive_Small_Unsafe(ref firstPtr, lastOffset);
                 //InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
             } else {
                 // lp means left pivot, and rp means right pivot.
-                var (lowPivot, highPivot) = DualPivotPartition(array, firstIdx, lastIdx);
-                DualPivotQuickSort_Inclusive(array, firstIdx, lowPivot - 1);
-                DualPivotQuickSort_Inclusive(array, lowPivot + 1, highPivot - 1);
-                DualPivotQuickSort_Inclusive(array, highPivot + 1, lastIdx);
+                var (lowPivotO, highPivotO) = DualPivotPartition(ref firstPtr, lastOffset);
+                if (lowPivotO - 1 >= 1)
+                    DualPivotQuickSort_Inclusive(ref firstPtr, lowPivotO - 1);
+                if (highPivotO - lowPivotO - 2 >= 1)
+                    DualPivotQuickSort_Inclusive(ref Unsafe.Add(ref firstPtr, lowPivotO + 1), highPivotO - lowPivotO - 2);
+                if (lastOffset - (highPivotO + 1) >= 1)
+                    DualPivotQuickSort_Inclusive(ref Unsafe.Add(ref firstPtr, highPivotO + 1), lastOffset - (highPivotO + 1));
             }
         }
 
-        static (int lowPivot, int highPivot) DualPivotPartition(T[] arr, int firstIdx, int lastIdx) {
-            if (default(TOrder).LessThan(arr[lastIdx], arr[firstIdx]))
-                arr.Swap(firstIdx, lastIdx);
+        static (int lowPivot, int highPivot) DualPivotPartition(ref T firstPtr, int lastOffset) {
+            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
 
-            var lowPivot = firstIdx + 1;
-            var highPivot = lastIdx - 1;
-            var betweenPivots = firstIdx + 1;
-            var lowPivotValue = arr[firstIdx];
-            var highPivotValue = arr[lastIdx];
-            while (betweenPivots <= highPivot) {
-                if (default(TOrder).LessThan(arr[betweenPivots], lowPivotValue)) {
-                    arr.Swap(betweenPivots, lowPivot);
-                    lowPivot++;
-                } else if (!default(TOrder).LessThan(arr[betweenPivots], highPivotValue)) {
-                    while (default(TOrder).LessThan(highPivotValue, arr[highPivot]) && betweenPivots < highPivot)
-                        highPivot--;
-                    arr.Swap(betweenPivots, highPivot);
-                    highPivot--;
-                    if (default(TOrder).LessThan(arr[betweenPivots], lowPivotValue)) {
-                        arr.Swap(betweenPivots, lowPivot);
-                        lowPivot++;
+            if (default(TOrder).LessThan(lastPtr, firstPtr))
+                (firstPtr, lastPtr) = (lastPtr, firstPtr);
+
+            ref var lowPivot = ref Unsafe.Add(ref firstPtr, 1);
+            var lowPivotIdx = 1;
+            ref var highPivot = ref Unsafe.Subtract(ref lastPtr, 1);
+            var highPivotIdx = lastOffset - 1;
+            ref var betweenPivots = ref lowPivot;
+            var lowPivotValue = firstPtr;
+            var highPivotValue = lastPtr;
+            while (!Unsafe.IsAddressGreaterThan(ref betweenPivots, ref highPivot)) {
+                if (default(TOrder).LessThan(betweenPivots, lowPivotValue)) {
+                    (betweenPivots, lowPivot) = (lowPivot, betweenPivots);
+                    lowPivot = ref Unsafe.Add(ref lowPivot, 1);
+                    lowPivotIdx++;
+                } else if (!default(TOrder).LessThan(betweenPivots, highPivotValue)) {
+                    while (default(TOrder).LessThan(highPivotValue, highPivot) && Unsafe.IsAddressLessThan(ref betweenPivots, ref highPivot)) {
+                        highPivot = ref Unsafe.Subtract(ref highPivot, 1);
+                        highPivotIdx--;
+                    }
+                    (betweenPivots, highPivot) = (highPivot, betweenPivots);
+                    highPivot = ref Unsafe.Subtract(ref highPivot, 1);
+                    highPivotIdx--;
+
+                    if (default(TOrder).LessThan(betweenPivots, lowPivotValue)) {
+                        (betweenPivots, lowPivot) = (lowPivot, betweenPivots);
+                        lowPivot = ref Unsafe.Add(ref lowPivot, 1);
+                        lowPivotIdx++;
                     }
                 }
-
-                betweenPivots++;
+                betweenPivots = ref Unsafe.Add(ref betweenPivots, 1);
             }
-
-            lowPivot--;
-            highPivot++;
+            lowPivot = ref Unsafe.Subtract(ref lowPivot, 1);
+            lowPivotIdx--;
+            highPivot = ref Unsafe.Add(ref highPivot, 1);
+            highPivotIdx++;
 
             // bring pivots to their appropriate positions.
-            arr.Swap(firstIdx, lowPivot);
-            arr.Swap(lastIdx, highPivot);
+            (firstPtr, lowPivot) = (lowPivot, firstPtr);
+            (lastPtr, highPivot) = (highPivot, lastPtr);
 
-            return (lowPivot, highPivot);
+            return (lowPivotIdx, highPivotIdx);
         }
 
         static void BitonicSort(int logn, T[] array, int firstIdx) {

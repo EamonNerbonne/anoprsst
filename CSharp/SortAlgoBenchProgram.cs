@@ -80,7 +80,7 @@ namespace SortAlgoBench {
             Console.WriteLine($"Sorting arrays of {typeof(T).ToCSharpFriendlyTypeName()} with {meanLen:f1} elements (average over {Iterations} benchmarked arrays).");
 
             yield return BenchSort(SystemArraySort);
-            //yield return BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
+            yield return BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
