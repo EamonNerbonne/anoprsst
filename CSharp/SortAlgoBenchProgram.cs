@@ -13,7 +13,7 @@ namespace SortAlgoBench {
         public static readonly int ParallelSplitScale = Helpers.ProcScale();
 
         static void Main() {
-            const double quality = 100_000_000_000.0;
+            const double quality = 5_000_000_000_000.0;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
             var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10, 1 << 13, 1 << 16, 1 << 19, 1 << 22 }.Reverse();
             var all = targetSizes.SelectMany(targetSize => BenchSize(targetSize, quality)).ToArray();
