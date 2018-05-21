@@ -55,8 +55,6 @@ namespace SortAlgoBench {
                 
                 Console.WriteLine($"This implies a working set size of {backingArraySize*estimatedPerObjectCost/1024.0/1024.0:f1}MB, and a per-sort memory usage of on average {targetSize*estimatedPerObjectCost / (1 << 20):f1}MB upto twice that; and merge-sorts will need {targetSize*estimatedSizeInArray / (1 << 20):f1}MB scratch.");
 
-                
-
                 return new SortAlgorithmBench<T, TOrder>(mappedData, iterations).BenchVariousAlgos().ToArray();
             }
 
@@ -86,7 +84,6 @@ namespace SortAlgoBench {
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.TopDownMergeSort);
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
-            //yield return BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort2);
 
             Console.WriteLine();
         }
