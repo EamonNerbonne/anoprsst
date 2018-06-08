@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="IncrementalMeanVarianceAccumulator" Version="1.0.0" />
     <PackageReference Include="System.Memory" Version="4.5.0-rc1" />
-    <PackageReference Include="ExpressionToCodeLib" Version="2.7.0" />
+    <PackageReference Include="ExpressionToCodeLib" Version="3.0.0-alpha1" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-rc1" />
     <!--The following are workarounds for package downgrade warnings due to prerelease stuff-->
     <PackageReference Include="System.Collections" Version="4.3.0" />

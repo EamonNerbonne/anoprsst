@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using ExpressionToCodeLib;
 
 namespace SortAlgoBench {
     public interface IOrdering<in T> {
@@ -44,7 +45,7 @@ namespace SortAlgoBench {
                 QuickSortNoMedianThreshold = 16_000;
                 MinimalParallelQuickSortBatchSize = 80;
             }
-            Console.WriteLine($"{typeof(T)}: {TopDownInsertionSortBatchSize}/{QuickSortNoMedianThreshold}/{MinimalParallelQuickSortBatchSize}");
+            Console.WriteLine($"{typeof(T).ToCSharpFriendlyTypeName()}: {TopDownInsertionSortBatchSize}/{QuickSortNoMedianThreshold}/{MinimalParallelQuickSortBatchSize}");
         }
 
         public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr, int Iterations) => new SortAlgorithmBench<T, TOrder>(arr, Iterations);
