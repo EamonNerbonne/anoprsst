@@ -82,58 +82,63 @@ namespace SortAlgoBench
                 QuickSort_Inclusive_Unsafe(ref array[0], array.Length - 1);
         }
 
-        public static void ParallelQuickSort(T[] array, int endIdx)
-        {
-            if (array.Length > 1)
-                QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
-        }
-
         public static void DualPivotQuickSort(Span<T> array)
         {
             if (array.Length > 1)
                 DualPivotQuickSort_Inclusive(ref array[0], array.Length - 1);
         }
 
-        static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx)
+        public static unsafe void ParallelQuickSort(Span<T> array)
         {
-            if (lastIdx - firstIdx < MinimalParallelQuickSortBatchSize << 2) {
-                QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx - firstIdx);
+            var length = array.Length;
+            if (length < MinimalParallelQuickSortBatchSize << 2) {
+                if (length > 1)
+                    QuickSort_Inclusive_Small_Unsafe(ref array[0], array.Length - 1);
                 return;
             }
 
             var countdownEvent = new CountdownEvent(1);
-            new QuickSort_Inclusive_ParallelArgs {
-                array = array,
-                countdownEvent = countdownEvent,
-                splitAt = Math.Max(lastIdx - firstIdx >> SortAlgoBenchProgram.ParallelSplitScale, MinimalParallelQuickSortBatchSize),
-            }.Impl(firstIdx, lastIdx);
-            countdownEvent.Wait();
+            ref var byteRef = ref Unsafe.As<T, byte>(ref array.GetPinnableReference());
+            fixed (byte* ptr = &byteRef) {
+                new QuickSort_Inclusive_ParallelArgs {
+                    countdownEvent = countdownEvent,
+                    ptr = ptr,
+                    splitAt = Math.Max(length >> SortAlgoBenchProgram.ParallelSplitScale, MinimalParallelQuickSortBatchSize),
+                    lastIdx = length - 1,
+                }.Impl();
+                countdownEvent.Wait();
+            }
         }
 
-        class QuickSort_Inclusive_ParallelArgs
+        unsafe class QuickSort_Inclusive_ParallelArgs
         {
-            public T[] array;
             public CountdownEvent countdownEvent;
+            public void* ptr;
             public int splitAt;
+            public int lastIdx;
+            static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => ((QuickSort_Inclusive_ParallelArgs)o).Impl();
 
-            static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => {
-                var (parArgs, firstIdx, lastIdx) = ((QuickSort_Inclusive_ParallelArgs, int, int))o;
-                parArgs.Impl(firstIdx, lastIdx);
-            };
-
-            public void Impl(int firstIdx, int lastIdx)
+            public void Impl()
             {
-                var array = this.array;
+                ref var firstRef = ref Unsafe.AsRef<T>(ptr);
+                var lastIdx = this.lastIdx;
                 var splitAt = this.splitAt;
                 var countdownEvent = this.countdownEvent;
-                while (lastIdx - firstIdx >= splitAt) {
-                    var pivot = PartitionWithMedian_Unsafe(ref array[firstIdx], lastIdx - firstIdx) + firstIdx;
+                while (lastIdx >= splitAt) {
+                    var pivot = PartitionWithMedian_Unsafe(ref firstRef, lastIdx);
                     countdownEvent.AddCount(1);
-                    ThreadPool.UnsafeQueueUserWorkItem(QuickSort_Inclusive_Par2_callback, (this, pivot + 1, lastIdx));
+                    ThreadPool.UnsafeQueueUserWorkItem(
+                        QuickSort_Inclusive_Par2_callback,
+                        new QuickSort_Inclusive_ParallelArgs {
+                            countdownEvent = countdownEvent,
+                            ptr = Unsafe.AsPointer(ref Unsafe.Add(ref firstRef, pivot + 1)),
+                            splitAt = splitAt,
+                            lastIdx = lastIdx - (pivot + 1),
+                        });
                     lastIdx = pivot; //effectively QuickSort_Inclusive(array, firstIdx, pivot);
                 }
 
-                QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx - firstIdx);
+                QuickSort_Inclusive_Unsafe(ref firstRef, lastIdx);
                 countdownEvent.Signal();
             }
         }
