@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using ExpressionToCodeLib;
@@ -25,8 +26,8 @@ namespace SortAlgoBench
             : 64;
             /**/
         static readonly int BottomUpInsertionSortBatchSize = 24;
-        static readonly int QuickSortNoMedianThreshold = 16_384;
-        static readonly int MinimalParallelQuickSortBatchSize = 64;
+        static readonly int QuickSortNoMedianThreshold;
+        static readonly int MinimalParallelQuickSortBatchSize;
 
         static OrderedAlgorithms()
         {
@@ -34,17 +35,17 @@ namespace SortAlgoBench
                 TopDownInsertionSortBatchSize = 24;
                 BottomUpInsertionSortBatchSize = 16;
                 QuickSortNoMedianThreshold = 16_000;
-                MinimalParallelQuickSortBatchSize = 80;
+                MinimalParallelQuickSortBatchSize = 300;
             } else if (Unsafe.SizeOf<T>() <= 8) {
                 TopDownInsertionSortBatchSize = 64;
                 BottomUpInsertionSortBatchSize = 40;
                 QuickSortNoMedianThreshold = 16_000;
-                MinimalParallelQuickSortBatchSize = 80;
+                MinimalParallelQuickSortBatchSize = 500;
             } else {
                 TopDownInsertionSortBatchSize = Math.Max(8, 550 / Unsafe.SizeOf<T>());
                 BottomUpInsertionSortBatchSize = TopDownInsertionSortBatchSize * 2 / 3;
                 QuickSortNoMedianThreshold = 16_000;
-                MinimalParallelQuickSortBatchSize = 80;
+                MinimalParallelQuickSortBatchSize = 150;
             }
 
             Console.WriteLine($"{typeof(T).ToCSharpFriendlyTypeName()}: {TopDownInsertionSortBatchSize}/{QuickSortNoMedianThreshold}/{MinimalParallelQuickSortBatchSize}");
