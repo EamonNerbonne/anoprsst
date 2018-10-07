@@ -38,6 +38,7 @@ namespace SortAlgoBench {
             var data = Helpers.RandomizeUInt64(backingArraySize);
             Console.WriteLine();
 
+            // ReSharper disable once UnusedParameter.Local - for type inference
             (string method, Type type, double nsPerArrayItem, double nsStdErr)[] BencherFor<TOrder, T>(TOrder order, Func<ulong, T> map, int guesstimatedSizeInBytes)
                 where TOrder : struct, IOrdering<T> {
                 if(guesstimatedSizeInBytes * (long)backingArraySize > uint.MaxValue)
@@ -45,13 +46,13 @@ namespace SortAlgoBench {
                 var beforeMap = GC.GetTotalMemory(true);
                 var mappedData = new T[data.Length];
                 var afterArray = GC.GetTotalMemory(false);
-                for (int i = 0; i < data.Length; i++)
+                for (var i = 0; i < data.Length; i++)
                     mappedData[i] = map(data[i]);
                 var afterMap = GC.GetTotalMemory(true);
                 GC.KeepAlive(map);
-                double estimatedPerObjectCost = (afterMap - beforeMap - 24) / (double)data.Length;
-                double estimatedSizeInArray = (afterArray - beforeMap - 24) / (double)data.Length;
-                double estimatedSizeInHeap = (afterMap - afterArray) / (double)data.Length;
+                var estimatedPerObjectCost = (afterMap - beforeMap - 24) / (double)data.Length;
+                var estimatedSizeInArray = (afterArray - beforeMap - 24) / (double)data.Length;
+                var estimatedSizeInHeap = (afterMap - afterArray) / (double)data.Length;
                 Console.WriteLine($"type {typeof(T).ToCSharpFriendlyTypeName()}: total size {estimatedPerObjectCost:f1} bytes of which value {estimatedSizeInArray:f1} and heap size {estimatedSizeInHeap:f1}");
                 
                 Console.WriteLine($"This implies a working set size of {backingArraySize*estimatedPerObjectCost/1024.0/1024.0:f1}MB, and a per-sort memory usage of on average {targetSize*estimatedPerObjectCost / (1 << 20):f1}MB upto twice that; and merge-sorts will need {targetSize*estimatedSizeInArray / (1 << 20):f1}MB scratch.");
@@ -79,8 +80,8 @@ namespace SortAlgoBench {
             Console.WriteLine($"Sorting arrays of {typeof(T).ToCSharpFriendlyTypeName()} with {meanLen:f1} elements (average over {Iterations} benchmarked arrays).");
             yield return BenchSort(SystemArraySort);
             yield return BenchSort(DualPivotQuickSort);
+            yield return BenchSort(ParallelQuickSort);
             yield return BenchSort(QuickSort);
-            yield return BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
             yield return BenchSort(BottomUpMergeSort);
             yield return BenchSort(TopDownMergeSort);
             yield return BenchSort(AltTopDownMergeSort);
@@ -88,6 +89,7 @@ namespace SortAlgoBench {
             Console.WriteLine();
         }
 
+        static void ParallelQuickSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr.AsSpan(0,len)); }
         static void AltTopDownMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort(arr.AsSpan(0,len)); }
         static void TopDownMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.TopDownMergeSort(arr.AsSpan(0,len)); }
         static void DualPivotQuickSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.DualPivotQuickSort(arr.AsSpan(0,len)); }
@@ -125,7 +127,6 @@ namespace SortAlgoBench {
             var method = action.Method.Name;
             var sizes = new List<int>();
             var nsPerCost = new List<double>();
-            var random = new Random(42);
             var sw = new Stopwatch();
             var swOverhead = Stopwatch.StartNew();
             double totalActualMilliseconds = 0;
@@ -138,7 +139,9 @@ namespace SortAlgoBench {
                     checkSum = checkSum + l.GetHashCode();
                 }
 
-                if (false && len > 50) {
+#if false
+                //ensure not entirely sorted beforehand
+                if (len > 50) {
                     var sorted = true;
                     for (var j = 1; j < len; j++)
                         if (!default(TOrder).LessThan(workspace[j], workspace[j - 1]))
@@ -148,6 +151,7 @@ namespace SortAlgoBench {
                         break;
                     }
                 }
+    #endif
 
                 sw.Restart();
                 action(workspace, len);
