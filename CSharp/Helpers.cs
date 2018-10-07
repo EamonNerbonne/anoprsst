@@ -5,9 +5,6 @@ using IncrementalMeanVarianceAccumulator;
 
 namespace SortAlgoBench {
     static class Helpers {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Swap<T>(this T[] arr, int a, int b) { (arr[a], arr[b]) = (arr[b], arr[a]); }
-
         public static int ProcScale() {
             var splitIters = 4;
             var threads = Environment.ProcessorCount;
@@ -53,40 +50,6 @@ namespace SortAlgoBench {
         public static uint MapToUInt32(ulong data) => (uint)(data >> 32);
         public static SampleClass MapToSampleClass(ulong data) => new SampleClass { Value = (int)(data >> 32) };
         public static double MapToDouble(ulong data) => (long)data / (double)(1L << 31);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool NeedsSort_WithBoundsCheck<T>(T[] array, int firstIdx, int endIdx) {
-            if ((uint)firstIdx > (uint)endIdx || (uint)endIdx > (uint)array.Length) {
-                ThrowIndexOutOfRange(array, firstIdx, endIdx);
-            }
-            return endIdx - firstIdx > 1;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool NeedsSort_WithBoundsCheck<T>(T[] array, int endIdx) {
-            if ((uint)endIdx > (uint)array.Length) {
-                ThrowIndexOutOfRange(array, 0, endIdx);
-            }
-            return endIdx > 1;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool NeedsSort_WithBoundsCheck<T>(T[] array) {
-            return array.Length > 1;
-        }
-
-        public static void Sort<TOrder, T>(this TOrder order, T[] arr)
-            where TOrder : struct, IOrdering<T>
-            => OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr);
-
-        public static void FastSort<T, TOrder>(this T[] arr, TOrder order)
-            where TOrder : struct, IOrdering<T>
-            => OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr);
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ThrowIndexOutOfRange<T>(T[] array, int firstIdx, int lastIdx) {
-            throw new IndexOutOfRangeException($"Attempted to sort [{firstIdx}, {lastIdx}), which not entirely within bounds of [0, {array.Length})");
-        }
 
         public static IComparer<T> ComparerFor<T, TOrder>()
             where TOrder : IOrdering<T>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,9 +14,9 @@ namespace SortAlgoBench {
         public static readonly int ParallelSplitScale = Helpers.ProcScale();
 
         static void Main() {
-            const double quality = 100_000_000_000.0;
+            const double quality = 50_000_000_000.0;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10, 1 << 13, 1 << 16, 1 << 19/*, 1 << 22*/ }.Reverse();
+            var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10, 1 << 13, 1 << 16/*, 1 << 19/*, 1 << 22*/ }.Reverse();
             var all = targetSizes.SelectMany(targetSize => BenchSize(targetSize, quality)).ToArray();
 
             Console.WriteLine();
@@ -65,8 +66,8 @@ namespace SortAlgoBench {
                 BencherFor(default(Int32OrderingAlgorithms.Int32Order), Helpers.MapToInt32,4),
                 BencherFor(default(DoubleOrderingAlgorithms.Order), Helpers.MapToDouble,8),
                 BencherFor(default(UInt64OrderingAlgorithms.UInt64Ordering), Helpers.MapToUInt64,8),
-                //BencherFor(default(UInt32OrderingAlgorithms.UInt32Order), Helpers.MapToUInt32,4),
-                //BencherFor(default(ComparableOrderingAlgorithms<int>.ComparableOrdering), Helpers.MapToInt32,4),
+                BencherFor(default(UInt32OrderingAlgorithms.UInt32Order), Helpers.MapToUInt32,4),
+                BencherFor(default(ComparableOrderingAlgorithms<int>.ComparableOrdering), Helpers.MapToInt32,4),
             }.Where(a=>a!=null).SelectMany(r => r).ToArray();
         }
     }
@@ -76,18 +77,22 @@ namespace SortAlgoBench {
         public IEnumerable<(string method, Type type, double nsPerArrayItem, double nsStdErr)> BenchVariousAlgos() {
             var meanLen = SubArrays().Average(o => o.len);
             Console.WriteLine($"Sorting arrays of {typeof(T).ToCSharpFriendlyTypeName()} with {meanLen:f1} elements (average over {Iterations} benchmarked arrays).");
-
             yield return BenchSort(SystemArraySort);
-            //yield return BenchSort(OrderedAlgorithms<T, TOrder>.DualPivotQuickSort);
-            yield return BenchSort(OrderedAlgorithms<T, TOrder>.QuickSort);
+            yield return BenchSort(DualPivotQuickSort);
+            yield return BenchSort(QuickSort);
             yield return BenchSort(OrderedAlgorithms<T, TOrder>.ParallelQuickSort);
-            //yield return BenchSort(OrderedAlgorithms<T, TOrder>.BottomUpMergeSort);
-            yield return BenchSort(OrderedAlgorithms<T, TOrder>.TopDownMergeSort);
-            yield return BenchSort(OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort);
+            yield return BenchSort(BottomUpMergeSort);
+            yield return BenchSort(TopDownMergeSort);
+            yield return BenchSort(AltTopDownMergeSort);
 
             Console.WriteLine();
         }
 
+        static void AltTopDownMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort(arr.AsSpan(0,len)); }
+        static void TopDownMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.TopDownMergeSort(arr.AsSpan(0,len)); }
+        static void DualPivotQuickSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.DualPivotQuickSort(arr.AsSpan(0,len)); }
+        static void BottomUpMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.BottomUpMergeSort(arr.AsSpan(0,len)); }
+        static void QuickSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.QuickSort(arr.AsSpan(0,len)); }
         static void ArraySort_Primitive(T[] arr, int len) { Array.Sort(arr, 0, len); }
         static void ArraySort_OrderComparer(T[] arr, int len) { Array.Sort(arr, 0, len, Helpers.ComparerFor<T, TOrder>()); }
 

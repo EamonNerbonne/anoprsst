@@ -1,21 +1,22 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using ExpressionToCodeLib;
 
-namespace SortAlgoBench {
-    public interface IOrdering<in T> {
+namespace SortAlgoBench
+{
+    public interface IOrdering<in T>
+    {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         bool LessThan(T a, T b);
     }
 
     public abstract class OrderedAlgorithms<T, TOrder>
-        where TOrder : struct, IOrdering<T> {
+        where TOrder : struct, IOrdering<T>
+    {
         //*
         static readonly int TopDownInsertionSortBatchSize = 32;
+
         /*/
         static readonly int TopDownInsertionSortBatchSize = !typeof(T).IsValueType ? 24 
             : Unsafe.SizeOf<T>() > 32 ? 16
@@ -27,8 +28,8 @@ namespace SortAlgoBench {
         static readonly int QuickSortNoMedianThreshold = 16_384;
         static readonly int MinimalParallelQuickSortBatchSize = 64;
 
-        static OrderedAlgorithms() {
-
+        static OrderedAlgorithms()
+        {
             if (!typeof(T).IsValueType) {
                 TopDownInsertionSortBatchSize = 24;
                 BottomUpInsertionSortBatchSize = 16;
@@ -40,24 +41,28 @@ namespace SortAlgoBench {
                 QuickSortNoMedianThreshold = 16_000;
                 MinimalParallelQuickSortBatchSize = 80;
             } else {
-                TopDownInsertionSortBatchSize = Math.Max(8, 550 / (Unsafe.SizeOf<T>()));
+                TopDownInsertionSortBatchSize = Math.Max(8, 550 / Unsafe.SizeOf<T>());
                 BottomUpInsertionSortBatchSize = TopDownInsertionSortBatchSize * 2 / 3;
                 QuickSortNoMedianThreshold = 16_000;
                 MinimalParallelQuickSortBatchSize = 80;
             }
+
             Console.WriteLine($"{typeof(T).ToCSharpFriendlyTypeName()}: {TopDownInsertionSortBatchSize}/{QuickSortNoMedianThreshold}/{MinimalParallelQuickSortBatchSize}");
         }
 
-        public static SortAlgorithmBench<T, TOrder> BencherFor(T[] arr, int Iterations) => new SortAlgorithmBench<T, TOrder>(arr, Iterations);
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
-        public static void TopDownMergeSort(T[] array, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx)) {
+
+        public static void TopDownMergeSort(Span<T> array)
+        {
+            var endIdx = array.Length;
+            if (array.Length > 1) {
                 ref var firstItemsPtr = ref array[0];
                 ref var lastItemsPtr = ref Unsafe.Add(ref firstItemsPtr, endIdx - 1);
                 if (endIdx <= TopDownInsertionSortBatchSize) {
                     InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref lastItemsPtr);
                     return;
                 }
+
                 var scratch = new T[endIdx];
                 ref var firstScratchPtr = ref scratch[0];
                 ref var lastScratchPtr = ref Unsafe.Add(ref firstScratchPtr, endIdx - 1);
@@ -65,57 +70,37 @@ namespace SortAlgoBench {
             }
         }
 
-        public static void BottomUpMergeSort(T[] array, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
-                BottomUpMergeSort(array, new T[endIdx], endIdx);
+        public static void BottomUpMergeSort(Span<T> array)
+        {
+            if (array.Length > 1)
+                BottomUpMergeSort(array, new T[array.Length]);
         }
 
-        public static void QuickSort(T[] array) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array))
-                QuickSort(array, array.Length - 1);
+        public static void QuickSort(Span<T> array)
+        {
+            if (array.Length > 1)
+                QuickSort_Inclusive_Unsafe(ref array[0], array.Length - 1);
         }
 
-        public static void QuickSort(T[] array, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
-                QuickSort_Inclusive_Unsafe(ref array[0], endIdx - 1);
-        }
-        public static void QuickSort(T[] array, int firstIdx, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, firstIdx, endIdx))
-                QuickSort_Inclusive_Unsafe(ref array[firstIdx], endIdx - firstIdx - 1);
-        }
-        public static void ParallelQuickSort(T[] array) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array))
-                QuickSort_Inclusive_Parallel(array, 0, array.Length - 1);
-        }
-
-        public static void ParallelQuickSort(T[] array, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
+        public static void ParallelQuickSort(T[] array, int endIdx)
+        {
+            if (array.Length > 1)
                 QuickSort_Inclusive_Parallel(array, 0, endIdx - 1);
         }
-        public static void ParallelQuickSort(T[] array, int firstIdx, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, firstIdx, endIdx))
-                QuickSort_Inclusive_Parallel(array, firstIdx, endIdx - 1);
-        }
-        public static void DualPivotQuickSort(T[] array) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array))
+
+        public static void DualPivotQuickSort(Span<T> array)
+        {
+            if (array.Length > 1)
                 DualPivotQuickSort_Inclusive(ref array[0], array.Length - 1);
         }
 
-        public static void DualPivotQuickSort(T[] array, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, endIdx))
-                DualPivotQuickSort_Inclusive(ref array[0], endIdx - 1);
-        }
-
-        public static void DualPivotQuickSort(T[] array, int firstIdx, int endIdx) {
-            if (Helpers.NeedsSort_WithBoundsCheck(array, firstIdx, endIdx))
-                DualPivotQuickSort_Inclusive(ref array[firstIdx], endIdx - firstIdx - 1);
-        }
-
-        static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx) {
+        static void QuickSort_Inclusive_Parallel(T[] array, int firstIdx, int lastIdx)
+        {
             if (lastIdx - firstIdx < MinimalParallelQuickSortBatchSize << 2) {
                 QuickSort_Inclusive_Small_Unsafe(ref array[firstIdx], lastIdx - firstIdx);
                 return;
             }
+
             var countdownEvent = new CountdownEvent(1);
             new QuickSort_Inclusive_ParallelArgs {
                 array = array,
@@ -125,13 +110,19 @@ namespace SortAlgoBench {
             countdownEvent.Wait();
         }
 
-        class QuickSort_Inclusive_ParallelArgs {
+        class QuickSort_Inclusive_ParallelArgs
+        {
             public T[] array;
             public CountdownEvent countdownEvent;
             public int splitAt;
-            static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => { var (parArgs, firstIdx, lastIdx) = (((QuickSort_Inclusive_ParallelArgs, int, int))o); parArgs.Impl(firstIdx, lastIdx); };
 
-            public void Impl(int firstIdx, int lastIdx) {
+            static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => {
+                var (parArgs, firstIdx, lastIdx) = ((QuickSort_Inclusive_ParallelArgs, int, int))o;
+                parArgs.Impl(firstIdx, lastIdx);
+            };
+
+            public void Impl(int firstIdx, int lastIdx)
+            {
                 var array = this.array;
                 var splitAt = this.splitAt;
                 var countdownEvent = this.countdownEvent;
@@ -147,20 +138,22 @@ namespace SortAlgoBench {
             }
         }
 
-        static void QuickSort_Inclusive_Unsafe(ref T ptr, int lastOffset) {
+        static void QuickSort_Inclusive_Unsafe(ref T ptr, int lastOffset)
+        {
             while (lastOffset >= QuickSortNoMedianThreshold) {
                 var pivot = PartitionWithMedian_Unsafe(ref ptr, lastOffset);
                 QuickSort_Inclusive_Unsafe(ref Unsafe.Add(ref ptr, pivot + 1), lastOffset - (pivot + 1));
                 lastOffset = pivot; //QuickSort_Inclusive_Unsafe(ref ptr, pivot);
             }
+
             QuickSort_Inclusive_Small_Unsafe(ref ptr, lastOffset);
         }
 
-
         /// <summary>
-        /// precondition:memory in range [firstPtr, firstPtr+lastOffset] can be mutated, also implying lastOffset >= 0
+        ///     precondition:memory in range [firstPtr, firstPtr+lastOffset] can be mutated, also implying lastOffset >= 0
         /// </summary>
-        static void QuickSort_Inclusive_Small_Unsafe(ref T firstPtr, int lastOffset) {
+        static void QuickSort_Inclusive_Small_Unsafe(ref T firstPtr, int lastOffset)
+        {
             while (lastOffset >= TopDownInsertionSortBatchSize) {
                 //invariant: lastOffset >= 1
                 var pivotIdx = Partition_Unsafe(ref firstPtr, lastOffset);
@@ -168,15 +161,16 @@ namespace SortAlgoBench {
                 QuickSort_Inclusive_Small_Unsafe(ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - (pivotIdx + 1));
                 lastOffset = pivotIdx; //QuickSort(array, firstIdx, pivot);
             }
+
             InsertionSort_InPlace_Unsafe_Inclusive(ref firstPtr, ref Unsafe.Add(ref firstPtr, lastOffset));
         }
 
-
         /// <summary>
-        /// Precondition: memory in range [firstPtr, firstPtr+lastOffset] can be mutated, and lastOffset >= 1
-        /// Postcondition: returnvalue in range [0, lastOffset-1]
+        ///     Precondition: memory in range [firstPtr, firstPtr+lastOffset] can be mutated, and lastOffset >= 1
+        ///     Postcondition: returnvalue in range [0, lastOffset-1]
         /// </summary>
-        public static int Partition_Unsafe(ref T firstPtr, int lastOffset) {
+        public static int Partition_Unsafe(ref T firstPtr, int lastOffset)
+        {
             //precondition: 1 <= lastOffset
             //so midpoint != lastOffset
 #if false
@@ -192,27 +186,29 @@ namespace SortAlgoBench {
 #endif
             while (true) {
                 //on the first iteration,  the following loop bails at the lastest when it reaches the midpoint, so ref firstPtr < ref lastPtr
-                while (default(TOrder).LessThan(firstPtr, pivotValue)) {
+                while (default(TOrder).LessThan(firstPtr, pivotValue))
                     firstPtr = ref Unsafe.Add(ref firstPtr, 1);
-                }
                 //on the first iteration, the following loop either succeeds at least once (decrementing lastOffset), or it bails immediately
                 while (default(TOrder).LessThan(pivotValue, lastPtr)) {
                     lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
                     lastOffset--;
                 }
+
                 //on the first iteration, either lastOffset has been decremented, OR ref lastPtr > ref firstPtr; so if we break here, then lastOffset was decremented
                 if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr))
-                    break;// TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
+                    break; // TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
                 (firstPtr, lastPtr) = (lastPtr, firstPtr);
                 firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                 lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
                 //on the first iteration lastOffset was decremented at least once.
                 lastOffset--;
             }
+
             return lastOffset;
         }
 
-        static int PartitionWithMedian_Unsafe(ref T firstPtr, int lastOffset) {
+        static int PartitionWithMedian_Unsafe(ref T firstPtr, int lastOffset)
+        {
             var midpoint = lastOffset >> 1;
             ref var midPtr = ref Unsafe.Add(ref firstPtr, midpoint);
 
@@ -247,7 +243,7 @@ namespace SortAlgoBench {
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 3);
             firstPtr = ref Unsafe.Add(ref firstPtr, 3);
             lastOffset = lastOffset - 3;
-#else 
+#else
             SortThreeIndexes(
                 ref Unsafe.Add(ref firstPtr, 1),
                 ref firstPtr,
@@ -272,25 +268,27 @@ namespace SortAlgoBench {
             lastOffset = lastOffset - 1;
 #endif
             while (true) {
-                while (default(TOrder).LessThan(firstPtr, pivotValue)) {
+                while (default(TOrder).LessThan(firstPtr, pivotValue))
                     firstPtr = ref Unsafe.Add(ref firstPtr, 1);
-                }
                 while (default(TOrder).LessThan(pivotValue, lastPtr)) {
                     lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
                     lastOffset--;
                 }
+
                 if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr))
-                    break;// TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
+                    break; // TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
                 lastOffset--;
                 (firstPtr, lastPtr) = (lastPtr, firstPtr);
                 firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                 lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
             }
+
             return lastOffset;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void MedianOf5(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4) {
+        static void MedianOf5(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4)
+        {
             if (default(TOrder).LessThan(v4, v0)) (v4, v0) = (v0, v4);
             if (default(TOrder).LessThan(v3, v1)) (v3, v1) = (v1, v3);
             if (default(TOrder).LessThan(v2, v0)) (v2, v0) = (v0, v2);
@@ -302,9 +300,9 @@ namespace SortAlgoBench {
             //if (default(TOrder).LessThan(v4, v3)) (v4, v3) = (v3, v4);
         }
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void MedianOf7(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6) {
+        static void MedianOf7(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6)
+        {
             if (default(TOrder).LessThan(v4, v0)) (v4, v0) = (v0, v4);
             if (default(TOrder).LessThan(v5, v1)) (v5, v1) = (v1, v5);
             if (default(TOrder).LessThan(v6, v2)) (v6, v2) = (v2, v6);
@@ -322,7 +320,8 @@ namespace SortAlgoBench {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void Sort11Indexes(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6, ref T v7, ref T v8, ref T v9, ref T v10) {
+        static void Sort11Indexes(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6, ref T v7, ref T v8, ref T v9, ref T v10)
+        {
             if (default(TOrder).LessThan(v1, v0)) (v1, v0) = (v0, v1);
             if (default(TOrder).LessThan(v3, v2)) (v3, v2) = (v2, v3);
             if (default(TOrder).LessThan(v5, v4)) (v5, v4) = (v4, v5);
@@ -361,7 +360,8 @@ namespace SortAlgoBench {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void MedianOf11(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6, ref T v7, ref T v8, ref T v9, ref T v10) {
+        static void MedianOf11(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6, ref T v7, ref T v8, ref T v9, ref T v10)
+        {
             if (default(TOrder).LessThan(v1, v0)) (v1, v0) = (v0, v1);
             if (default(TOrder).LessThan(v3, v2)) (v3, v2) = (v2, v3);
             if (default(TOrder).LessThan(v5, v4)) (v5, v4) = (v4, v5);
@@ -393,13 +393,15 @@ namespace SortAlgoBench {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void SortThreeIndexes(ref T v0, ref T v1, ref T v2) {
+        static void SortThreeIndexes(ref T v0, ref T v1, ref T v2)
+        {
             if (default(TOrder).LessThan(v2, v0)) (v2, v0) = (v0, v2);
             if (default(TOrder).LessThan(v1, v0)) (v1, v0) = (v0, v1);
             if (default(TOrder).LessThan(v2, v1)) (v2, v1) = (v1, v2);
         }
 
-        static void DualPivotQuickSort_Inclusive(ref T firstPtr, int lastOffset) {
+        static void DualPivotQuickSort_Inclusive(ref T firstPtr, int lastOffset)
+        {
             if (lastOffset < 400) {
                 QuickSort_Inclusive_Small_Unsafe(ref firstPtr, lastOffset);
                 //InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
@@ -415,7 +417,8 @@ namespace SortAlgoBench {
             }
         }
 
-        static (int lowPivot, int highPivot) DualPivotPartition(ref T firstPtr, int lastOffset) {
+        static (int lowPivot, int highPivot) DualPivotPartition(ref T firstPtr, int lastOffset)
+        {
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
 
             if (default(TOrder).LessThan(lastPtr, firstPtr))
@@ -438,6 +441,7 @@ namespace SortAlgoBench {
                         highPivot = ref Unsafe.Subtract(ref highPivot, 1);
                         highPivotIdx--;
                     }
+
                     (betweenPivots, highPivot) = (highPivot, betweenPivots);
                     highPivot = ref Unsafe.Subtract(ref highPivot, 1);
                     highPivotIdx--;
@@ -448,8 +452,10 @@ namespace SortAlgoBench {
                         lowPivotIdx++;
                     }
                 }
+
                 betweenPivots = ref Unsafe.Add(ref betweenPivots, 1);
             }
+
             lowPivot = ref Unsafe.Subtract(ref lowPivot, 1);
             lowPivotIdx--;
             highPivot = ref Unsafe.Add(ref highPivot, 1);
@@ -462,61 +468,66 @@ namespace SortAlgoBench {
             return (lowPivotIdx, highPivotIdx);
         }
 
-        static void BitonicSort(int logn, T[] array, int firstIdx) {
+        static void BitonicSort(int logn, T[] array, int firstIdx)
+        {
             var endIdx = firstIdx + (1 << logn);
             var mask = (1 << logn) - 1;
 
             for (var i = 0; i < logn; i++)
-                for (var j = 0; j <= i; j++) {
-                    var bitMask = 1 << (i - j);
+            for (var j = 0; j <= i; j++) {
+                var bitMask = 1 << (i - j);
 
-                    for (var idx = firstIdx; idx < endIdx; idx++) {
-                        var up = (((idx & mask) >> i) & 2) == 0;
+                for (var idx = firstIdx; idx < endIdx; idx++) {
+                    var up = (((idx & mask) >> i) & 2) == 0;
 
-                        if ((idx & bitMask) == 0 && default(TOrder).LessThan(array[idx | bitMask], array[idx]) == up) {
-                            var t = array[idx];
-                            array[idx] = array[idx | bitMask];
-                            array[idx | bitMask] = t;
-                        }
+                    if ((idx & bitMask) == 0 && default(TOrder).LessThan(array[idx | bitMask], array[idx]) == up) {
+                        var t = array[idx];
+                        array[idx] = array[idx | bitMask];
+                        array[idx | bitMask] = t;
                     }
                 }
+            }
         }
 
-        static void InsertionSort_InPlace_Unsafe_Inclusive(ref T firstPtr, ref T lastPtr) {
+        static void InsertionSort_InPlace_Unsafe_Inclusive(ref T firstPtr, ref T lastPtr)
+        {
             if (Unsafe.AreSame(ref firstPtr, ref lastPtr))
                 return;
             ref var writePtr = ref firstPtr;
             ref var readPtr = ref Unsafe.Add(ref firstPtr, 1);
-            while (true) {//readIdx < idxEnd
+            while (true) { //readIdx < idxEnd
                 var readValue = readPtr;
                 if (default(TOrder).LessThan(readValue, writePtr)) {
                     while (true) {
                         //default(TOrder).LessThan(readValue, writePtr) holds
                         Unsafe.Add(ref writePtr, 1) = writePtr;
-                        if (Unsafe.AreSame(ref writePtr, ref firstPtr)) {
+                        if (Unsafe.AreSame(ref writePtr, ref firstPtr))
                             break;
-                        }
                         writePtr = ref Unsafe.Subtract(ref writePtr, 1);
                         if (!default(TOrder).LessThan(readValue, writePtr)) {
                             writePtr = ref Unsafe.Add(ref writePtr, 1);
                             break;
                         }
+
                         //default(TOrder).LessThan(readValue, writePtr) holds
                     }
+
                     writePtr = readValue;
                 }
-                if (Unsafe.AreSame(ref readPtr, ref lastPtr)) {
+
+                if (Unsafe.AreSame(ref readPtr, ref lastPtr))
                     break;
-                }
                 writePtr = ref readPtr;
                 readPtr = ref Unsafe.Add(ref readPtr, 1);
             }
         }
 
-        public static void AltTopDownMergeSort(T[] items, int n) {
-            if (!Helpers.NeedsSort_WithBoundsCheck(items, n))
+        public static void AltTopDownMergeSort(Span<T> items)
+        {
+            if (!(items.Length > 1))
                 return;
 
+            var n = items.Length;
             if (n < TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref items[0], ref items[n - 1]);
                 return;
@@ -550,7 +561,8 @@ namespace SortAlgoBench {
 #endif
         }
 
-        static void AltTopDownSplitMerge_Unsafe(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length, int mergeCount) {
+        static void AltTopDownSplitMerge_Unsafe(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length, int mergeCount)
+        {
             var firstHalfLength = length >> 1;
             var secondHalfLength = length - firstHalfLength;
             ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
@@ -560,19 +572,38 @@ namespace SortAlgoBench {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1));
             } else {
                 AltTopDownSplitMerge_Unsafe(ref middleScratchPtr, ref lastScratchPtr, ref middleItemsPtr, ref lastItemsPtr, secondHalfLength, mergeCount - 1);
-                AltTopDownSplitMerge_Unsafe(ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), firstHalfLength, mergeCount - 1);
+                AltTopDownSplitMerge_Unsafe(
+                    ref firstScratchPtr,
+                    ref Unsafe.Subtract(ref middleScratchPtr, 1),
+                    ref firstItemsPtr,
+                    ref Unsafe.Subtract(ref middleItemsPtr, 1),
+                    firstHalfLength,
+                    mergeCount - 1);
             }
+
             Merge_Unsafe(ref firstScratchPtr, ref middleScratchPtr, ref lastScratchPtr, ref firstItemsPtr);
         }
 
-        static void TopDownSplitMerge_toItems(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length) {
+        static void TopDownSplitMerge_toItems(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length)
+        {
             var firstHalfLength = length >> 1;
-            TopDownSplitMerge_toScratch(ref Unsafe.Add(ref firstItemsPtr, firstHalfLength), ref lastItemsPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength), ref lastScratchPtr, length - firstHalfLength);
-            TopDownSplitMerge_toScratch(ref firstItemsPtr, ref Unsafe.Add(ref firstItemsPtr, firstHalfLength - 1), ref firstScratchPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength - 1), firstHalfLength);
+            TopDownSplitMerge_toScratch(
+                ref Unsafe.Add(ref firstItemsPtr, firstHalfLength),
+                ref lastItemsPtr,
+                ref Unsafe.Add(ref firstScratchPtr, firstHalfLength),
+                ref lastScratchPtr,
+                length - firstHalfLength);
+            TopDownSplitMerge_toScratch(
+                ref firstItemsPtr,
+                ref Unsafe.Add(ref firstItemsPtr, firstHalfLength - 1),
+                ref firstScratchPtr,
+                ref Unsafe.Add(ref firstScratchPtr, firstHalfLength - 1),
+                firstHalfLength);
             Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength), ref lastScratchPtr, ref firstItemsPtr);
         }
 
-        static void TopDownSplitMerge_toScratch(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length) {
+        static void TopDownSplitMerge_toScratch(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length)
+        {
             if (length <= TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref lastItemsPtr);
                 CopyInclusiveRefRange_Unsafe(ref firstItemsPtr, ref lastItemsPtr, ref firstScratchPtr);
@@ -589,26 +620,27 @@ namespace SortAlgoBench {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref middleItemsPtr, ref lastItemsPtr);
             } else {
                 TopDownSplitMerge_toItems(ref middleItemsPtr, ref lastItemsPtr, ref middleScratchPtr, ref lastScratchPtr, secondHalfLength);
-                TopDownSplitMerge_toItems(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ref firstScratchPtr, ref Unsafe.Subtract(ref middleScratchPtr, 1), firstHalfLength);
+                TopDownSplitMerge_toItems(
+                    ref firstItemsPtr,
+                    ref Unsafe.Subtract(ref middleItemsPtr, 1),
+                    ref firstScratchPtr,
+                    ref Unsafe.Subtract(ref middleScratchPtr, 1),
+                    firstHalfLength);
             }
 
             Merge_Unsafe(ref firstItemsPtr, ref middleItemsPtr, ref lastItemsPtr, ref firstScratchPtr);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void Merge(T[] source, int firstIdx, int middleIdx, int endIdx, T[] target) {
-            Merge_Unsafe(ref source[firstIdx], ref source[middleIdx], ref source[endIdx - 1], ref target[firstIdx]);
-        }
-
-        static void Merge_Unsafe(ref T readPtrA, ref T readPtrB, ref T lastPtrB, ref T writePtr) {
+        static void Merge_Unsafe(ref T readPtrA, ref T readPtrB, ref T lastPtrB, ref T writePtr)
+        {
             ref var lastPtrA = ref Unsafe.Subtract(ref readPtrB, 1);
-            while (true) {
+            while (true)
                 if (!default(TOrder).LessThan(readPtrB, readPtrA)) {
                     writePtr = readPtrA;
                     writePtr = ref Unsafe.Add(ref writePtr, 1);
-                    if (Unsafe.IsAddressLessThan(ref readPtrA, ref lastPtrA)) {
+                    if (Unsafe.IsAddressLessThan(ref readPtrA, ref lastPtrA))
                         readPtrA = ref Unsafe.Add(ref readPtrA, 1);
-                    } else {
+                    else
                         while (true) {
                             writePtr = readPtrB;
                             if (!Unsafe.AreSame(ref readPtrB, ref lastPtrB)) {
@@ -616,15 +648,15 @@ namespace SortAlgoBench {
                                 writePtr = ref Unsafe.Add(ref writePtr, 1);
                                 continue;
                             }
+
                             return;
                         }
-                    }
                 } else {
                     writePtr = readPtrB;
                     writePtr = ref Unsafe.Add(ref writePtr, 1);
-                    if (Unsafe.IsAddressLessThan(ref readPtrB, ref lastPtrB)) {
+                    if (Unsafe.IsAddressLessThan(ref readPtrB, ref lastPtrB))
                         readPtrB = ref Unsafe.Add(ref readPtrB, 1);
-                    } else {
+                    else
                         while (true) {
                             writePtr = readPtrA;
                             if (!Unsafe.AreSame(ref readPtrA, ref lastPtrA)) {
@@ -632,23 +664,24 @@ namespace SortAlgoBench {
                                 readPtrA = ref Unsafe.Add(ref readPtrA, 1);
                                 continue;
                             }
+
                             return;
                         }
-                    }
                 }
-            }
         }
 
-        static void BottomUpMergeSort(T[] targetArr, T[] scratchArr, int n) {
+        static void BottomUpMergeSort(Span<T> targetArr, Span<T> scratchArr)
+        {
+            var n = targetArr.Length;
             ref var targetPtr = ref targetArr[0];
             ref var scratchPtr = ref scratchArr[0];
 
             var mergeCount = 0;
-            int defaultBatchSize = TopDownInsertionSortBatchSize & ~1;
+            var defaultBatchSize = TopDownInsertionSortBatchSize & ~1;
             for (var s = defaultBatchSize; s < n; s <<= 1)
                 mergeCount++;
 
-            var width = (mergeCount & 1) == 0 ? defaultBatchSize : (defaultBatchSize >> 1);
+            var width = (mergeCount & 1) == 0 ? defaultBatchSize : defaultBatchSize >> 1;
             var batchesSortedUpto = 0;
 
             while (true)
@@ -666,14 +699,22 @@ namespace SortAlgoBench {
                 var middleIdx = width;
                 var endIdx = width = width << 1;
                 while (endIdx <= n) {
-                    Merge_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, middleIdx), ref Unsafe.Add(ref targetPtr, endIdx - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
+                    Merge_Unsafe(
+                        ref Unsafe.Add(ref targetPtr, firstIdx),
+                        ref Unsafe.Add(ref targetPtr, middleIdx),
+                        ref Unsafe.Add(ref targetPtr, endIdx - 1),
+                        ref Unsafe.Add(ref scratchPtr, firstIdx));
                     firstIdx += width;
                     middleIdx += width;
                     endIdx += width;
                 }
 
                 if (middleIdx < n)
-                    Merge_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, middleIdx), ref Unsafe.Add(ref targetPtr, n - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
+                    Merge_Unsafe(
+                        ref Unsafe.Add(ref targetPtr, firstIdx),
+                        ref Unsafe.Add(ref targetPtr, middleIdx),
+                        ref Unsafe.Add(ref targetPtr, n - 1),
+                        ref Unsafe.Add(ref scratchPtr, firstIdx));
                 else if (firstIdx < n)
                     CopyInclusiveRefRange_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, n - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
                 ref var tmp = ref scratchPtr;
@@ -682,12 +723,12 @@ namespace SortAlgoBench {
             }
         }
 
-        static void CopyInclusiveRefRange_Unsafe(ref T readPtr, ref T readUntil, ref T writePtr) {
+        static void CopyInclusiveRefRange_Unsafe(ref T readPtr, ref T readUntil, ref T writePtr)
+        {
             while (true) {
                 writePtr = readPtr;
-                if (Unsafe.AreSame(ref readPtr, ref readUntil)) {
+                if (Unsafe.AreSame(ref readPtr, ref readUntil))
                     break;
-                }
                 readPtr = ref Unsafe.Add(ref readPtr, 1);
                 writePtr = ref Unsafe.Add(ref writePtr, 1);
             }
