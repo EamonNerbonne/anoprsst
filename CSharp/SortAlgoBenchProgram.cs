@@ -31,8 +31,8 @@ namespace SortAlgoBench {
             Console.WriteLine($"OVERALL: {all.Average(o => o.nsPerArrayItem):f1}ns/item");
         }
 
-        private static (string method, Type type, double nsPerArrayItem, double nsStdErr)[] BenchSize(int targetSize, double quality) {
-            var backingArraySize = checked(targetSize << 4);
+        static (string method, Type type, double nsPerArrayItem, double nsStdErr)[] BenchSize(int targetSize, double quality) {
+            var backingArraySize = checked(targetSize *16);
             var iterations = (int)(6.5 + Math.Pow(quality / Helpers.CostScalingEstimate(targetSize), 0.7));
 
             var data = Helpers.RandomizeUInt64(backingArraySize);
