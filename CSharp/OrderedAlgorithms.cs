@@ -63,17 +63,24 @@ namespace SortAlgoBench
                     return;
                 }
 
-                var scratch = new T[endIdx];
+                var scratch = memPool.Rent(endIdx);
                 ref var firstScratchPtr = ref scratch[0];
                 ref var lastScratchPtr = ref Unsafe.Add(ref firstScratchPtr, endIdx - 1);
                 TopDownSplitMerge_toItems(ref firstItemsPtr, ref lastItemsPtr, ref firstScratchPtr, ref lastScratchPtr, endIdx);
+                Array.Clear(scratch, 0, endIdx);
+                memPool.Return(scratch);
             }
         }
 
         public static void BottomUpMergeSort(Span<T> array)
         {
-            if (array.Length > 1)
+            if (array.Length > 1) {
+                var scratch = memPool.Rent(array.Length);
+
                 BottomUpMergeSort(array, new T[array.Length]);
+                Array.Clear(scratch, 0, array.Length);
+                memPool.Return(scratch);
+            }
         }
 
         public static void QuickSort(Span<T> array)
@@ -527,6 +534,8 @@ namespace SortAlgoBench
             }
         }
 
+        static readonly ArrayPool<T> memPool = ArrayPool<T>.Shared;
+
         public static void AltTopDownMergeSort(Span<T> items)
         {
             if (!(items.Length > 1))
@@ -543,11 +552,12 @@ namespace SortAlgoBench
                 mergeCount += 2;
 
             ref var itemsPtr = ref items[0];
-            var scratch = new T[n];
+            var scratch = memPool.Rent(n);
             ref var scratchPtr = ref scratch[0];
 
             AltTopDownSplitMerge_Unsafe(ref itemsPtr, ref Unsafe.Add(ref itemsPtr, n - 1), ref scratchPtr, ref Unsafe.Add(ref scratchPtr, n - 1), n, mergeCount);
-
+            Array.Clear(scratch, 0, n);
+            memPool.Return(scratch);
 #else
             var mergeCount = 1;
             for (var s = (uint)TopDownInsertionSortBatchSize << 1; s < (uint)n; s <<= 1)
