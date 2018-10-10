@@ -301,7 +301,13 @@ namespace SortAlgoBench
             if (default(TOrder).LessThan(v3, v2)) (v3, v2) = (v2, v3);
             if (default(TOrder).LessThan(v4, v1)) (v4, v1) = (v1, v4);
             if (default(TOrder).LessThan(v2, v1)) (v2, v1) = (v1, v2);
-            //if (default(TOrder).LessThan(v4, v3)) (v4, v3) = (v3, v4);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void SortOf5(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4)
+        {
+            MedianOf5(ref v0, ref v1, ref v2, ref v3, ref v4);
+            if (default(TOrder).LessThan(v4, v3)) (v4, v3) = (v3, v4);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
