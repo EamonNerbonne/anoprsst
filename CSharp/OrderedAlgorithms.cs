@@ -15,17 +15,8 @@ namespace SortAlgoBench
     public abstract class OrderedAlgorithms<T, TOrder>
         where TOrder : struct, IOrdering<T>
     {
-        //*
-        static readonly int TopDownInsertionSortBatchSize = 32;
-
-        /*/
-        static readonly int TopDownInsertionSortBatchSize = !typeof(T).IsValueType ? 24 
-            : Unsafe.SizeOf<T>() > 32 ? 16
-            : Unsafe.SizeOf<T>() > 8 ? 32
-            : Unsafe.SizeOf<T>() > 4 ? 44
-            : 64;
-            /**/
-        static readonly int BottomUpInsertionSortBatchSize = 24;
+        static readonly int TopDownInsertionSortBatchSize;
+        static readonly int BottomUpInsertionSortBatchSize;
         static readonly int QuickSortNoMedianThreshold;
         static readonly int MinimalParallelQuickSortBatchSize;
 
