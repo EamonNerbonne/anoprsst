@@ -690,7 +690,7 @@ namespace SortAlgoBench
             ref var scratchPtr = ref scratchArr[0];
 
             var mergeCount = 0;
-            var defaultBatchSize = TopDownInsertionSortBatchSize & ~1;
+            var defaultBatchSize = BottomUpInsertionSortBatchSize & ~1;
             for (var s = defaultBatchSize; s < n; s <<= 1)
                 mergeCount++;
 
