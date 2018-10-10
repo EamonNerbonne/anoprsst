@@ -177,7 +177,7 @@ namespace SortAlgoBench
         {
             //precondition: 1 <= lastOffset
             //so midpoint != lastOffset
-#if false
+#if true
             ref var midPtr = ref Unsafe.Add(ref firstPtr, lastOffset >> 1);
             SortThreeIndexes(ref firstPtr, ref midPtr, ref Unsafe.Add(ref firstPtr, lastOffset));
             var pivotValue = midPtr;
@@ -310,6 +310,7 @@ namespace SortAlgoBench
             if (default(TOrder).LessThan(v4, v3)) (v4, v3) = (v3, v4);
         }
 
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void MedianOf7(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6)
         {
@@ -430,10 +431,20 @@ namespace SortAlgoBench
         static (int lowPivot, int highPivot) DualPivotPartition(ref T firstPtr, int lastOffset)
         {
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+            //*
+            var midpoint = lastOffset >> 1;
+            var quarter = lastOffset >> 2;
 
+            SortOf5(
+                ref Unsafe.Add(ref firstPtr, quarter),
+                ref firstPtr,
+                ref Unsafe.Add(ref firstPtr, midpoint),
+                ref lastPtr,
+                ref Unsafe.Subtract(ref lastPtr, quarter));
+            /*/
             if (default(TOrder).LessThan(lastPtr, firstPtr))
                 (firstPtr, lastPtr) = (lastPtr, firstPtr);
-
+            /**/
             ref var lowPivot = ref Unsafe.Add(ref firstPtr, 1);
             var lowPivotIdx = 1;
             ref var highPivot = ref Unsafe.Subtract(ref lastPtr, 1);
