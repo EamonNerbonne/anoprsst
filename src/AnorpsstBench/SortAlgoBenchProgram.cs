@@ -62,8 +62,9 @@ namespace AnorpsstBench
                 var estimatedSizeInHeap = (afterMap - afterArray) / (double)data.Length;
                 Console.WriteLine(
                     $"type {typeof(T).ToCSharpFriendlyTypeName()}: total size {estimatedPerObjectCost:f1} bytes of which value {estimatedSizeInArray:f1} and heap size {estimatedSizeInHeap:f1}");
+                var algorithmThesholds = AlgorithmChoiceThresholds<T>.Defaults;
                 Console.WriteLine(
-                    $"{typeof(T).ToCSharpFriendlyTypeName()}: {OrderedAlgorithms<T, TOrder>.TopDownInsertionSortBatchSize}/{OrderedAlgorithms<T, TOrder>.QuickSortFastMedianThreshold}/{OrderedAlgorithms<T, TOrder>.MinimalParallelQuickSortBatchSize}");
+                    $"{typeof(T).ToCSharpFriendlyTypeName()}: {algorithmThesholds.TopDownInsertionSortBatchSize}/{algorithmThesholds.QuickSortFastMedianThreshold}/{algorithmThesholds.MinimalParallelQuickSortBatchSize}");
 
                 Console.WriteLine(
                     $"This implies a working set size of {backingArraySize * estimatedPerObjectCost / 1024.0 / 1024.0:f1}MB, and a per-sort memory usage of on average {targetSize * estimatedPerObjectCost / (1 << 20):f1}MB upto twice that; and merge-sorts will need {targetSize * estimatedSizeInArray / (1 << 20):f1}MB scratch.");

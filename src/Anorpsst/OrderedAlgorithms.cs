@@ -14,31 +14,7 @@ namespace Anoprsst
     public abstract class OrderedAlgorithms<T, TOrder>
         where TOrder : struct, IOrdering<T>
     {
-        public static readonly int TopDownInsertionSortBatchSize;
-        public static readonly int BottomUpInsertionSortBatchSize;
-        public static readonly int QuickSortFastMedianThreshold;
-        public static readonly int MinimalParallelQuickSortBatchSize;
-
-        static OrderedAlgorithms()
-        {
-            if (!typeof(T).IsValueType) {
-                TopDownInsertionSortBatchSize = 24;
-                BottomUpInsertionSortBatchSize = 16;
-                QuickSortFastMedianThreshold = 10_000;
-                MinimalParallelQuickSortBatchSize = 1500;
-            } else if (Unsafe.SizeOf<T>() <= 8) {
-                TopDownInsertionSortBatchSize = 64;
-                BottomUpInsertionSortBatchSize = 40;
-                QuickSortFastMedianThreshold = 13_000;
-                MinimalParallelQuickSortBatchSize = 1100;
-            } else {
-                TopDownInsertionSortBatchSize = Math.Max(8, 550 / Unsafe.SizeOf<T>());
-                BottomUpInsertionSortBatchSize = TopDownInsertionSortBatchSize * 2 / 3;
-                QuickSortFastMedianThreshold = 16_000;
-                MinimalParallelQuickSortBatchSize = 1000;
-            }
-        }
-
+        static readonly AlgorithmChoiceThresholds<T> Thresholds = AlgorithmChoiceThresholds<T>.Defaults;
         protected OrderedAlgorithms()
             => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
 
@@ -48,7 +24,7 @@ namespace Anoprsst
             if (array.Length > 1) {
                 ref var firstItemsPtr = ref array[0];
                 ref var lastItemsPtr = ref Unsafe.Add(ref firstItemsPtr, endIdx - 1);
-                if (endIdx <= TopDownInsertionSortBatchSize) {
+                if (endIdx <= Thresholds.TopDownInsertionSortBatchSize) {
                     InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref lastItemsPtr, ordering);
                     return;
                 }
@@ -90,10 +66,11 @@ namespace Anoprsst
         public static unsafe void ParallelQuickSort(Span<T> array, TOrder ordering)
         {
             var length = array.Length;
-            if (length < MinimalParallelQuickSortBatchSize << 1) {
+            if (length < Thresholds.MinimalParallelQuickSortBatchSize << 1) {
                 if (length > 1) {
                     QuickSort_Inclusive_Small_Unsafe(ref array[0], array.Length - 1, ordering);
                 }
+
                 return;
             }
 
@@ -103,7 +80,7 @@ namespace Anoprsst
                 new QuickSort_Inclusive_ParallelArgs {
                     CountdownEvent = countdownEvent,
                     Ptr = ptr,
-                    SplitAt = Math.Max(length >> ParallelismConstants.ParallelSplitScale, MinimalParallelQuickSortBatchSize),
+                    SplitAt = Math.Max(length >> ParallelismConstants.ParallelSplitScale, Thresholds.MinimalParallelQuickSortBatchSize),
                     LastIdx = length - 1,
                     Ordering = ordering,
                 }.Impl();
@@ -148,7 +125,7 @@ namespace Anoprsst
 
         static void QuickSort_Inclusive_Unsafe(ref T ptr, int lastOffset, TOrder ordering)
         {
-            while (lastOffset >= QuickSortFastMedianThreshold) {
+            while (lastOffset >= Thresholds.QuickSortFastMedianThreshold) {
                 var pivot = PartitionWithMedian_Unsafe(ref ptr, lastOffset, ordering);
                 QuickSort_Inclusive_Unsafe(ref Unsafe.Add(ref ptr, pivot + 1), lastOffset - (pivot + 1), ordering);
                 lastOffset = pivot; //QuickSort_Inclusive_Unsafe(ref ptr, pivot);
@@ -162,7 +139,7 @@ namespace Anoprsst
         /// </summary>
         static void QuickSort_Inclusive_Small_Unsafe(ref T firstPtr, int lastOffset, TOrder ordering)
         {
-            while (lastOffset >= TopDownInsertionSortBatchSize) {
+            while (lastOffset >= Thresholds.TopDownInsertionSortBatchSize) {
                 //invariant: lastOffset >= 1
                 var pivotIdx = Partition_Unsafe(ref firstPtr, lastOffset, ordering);
                 //invariant: pivotIdx in [0, lastOffset-1]
@@ -197,6 +174,7 @@ namespace Anoprsst
                 while (ordering.LessThan(firstPtr, pivotValue)) {
                     firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                 }
+
                 //on the first iteration, the following loop either succeeds at least once (decrementing lastOffset), or it bails immediately
                 while (ordering.LessThan(pivotValue, lastPtr)) {
                     lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
@@ -207,6 +185,7 @@ namespace Anoprsst
                 if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr)) {
                     break; // TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
                 }
+
                 (firstPtr, lastPtr) = (lastPtr, firstPtr);
                 firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                 lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
@@ -277,6 +256,7 @@ namespace Anoprsst
                 while (ordering.LessThan(firstPtr, pivotValue)) {
                     firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                 }
+
                 while (ordering.LessThan(pivotValue, lastPtr)) {
                     lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
                     lastOffset--;
@@ -285,6 +265,7 @@ namespace Anoprsst
                 if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr)) {
                     break; // TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
                 }
+
                 lastOffset--;
                 (firstPtr, lastPtr) = (lastPtr, firstPtr);
                 firstPtr = ref Unsafe.Add(ref firstPtr, 1);
@@ -300,24 +281,31 @@ namespace Anoprsst
             if (ordering.LessThan(v4, v0)) {
                 (v4, v0) = (v0, v4);
             }
+
             if (ordering.LessThan(v3, v1)) {
                 (v3, v1) = (v1, v3);
             }
+
             if (ordering.LessThan(v2, v0)) {
                 (v2, v0) = (v0, v2);
             }
+
             if (ordering.LessThan(v4, v2)) {
                 (v4, v2) = (v2, v4);
             }
+
             if (ordering.LessThan(v1, v0)) {
                 (v1, v0) = (v0, v1);
             }
+
             if (ordering.LessThan(v3, v2)) {
                 (v3, v2) = (v2, v3);
             }
+
             if (ordering.LessThan(v4, v1)) {
                 (v4, v1) = (v1, v4);
             }
+
             if (ordering.LessThan(v2, v1)) {
                 (v2, v1) = (v1, v2);
             }
@@ -338,42 +326,55 @@ namespace Anoprsst
             if (ordering.LessThan(v4, v0)) {
                 (v4, v0) = (v0, v4);
             }
+
             if (ordering.LessThan(v5, v1)) {
                 (v5, v1) = (v1, v5);
             }
+
             if (ordering.LessThan(v6, v2)) {
                 (v6, v2) = (v2, v6);
             }
+
             if (ordering.LessThan(v2, v0)) {
                 (v2, v0) = (v0, v2);
             }
+
             if (ordering.LessThan(v3, v1)) {
                 (v3, v1) = (v1, v3);
             }
+
             if (ordering.LessThan(v6, v4)) {
                 (v6, v4) = (v4, v6);
             }
+
             if (ordering.LessThan(v4, v2)) {
                 (v4, v2) = (v2, v4);
             }
+
             if (ordering.LessThan(v5, v3)) {
                 (v5, v3) = (v3, v5);
             }
+
             if (ordering.LessThan(v1, v0)) {
                 (v1, v0) = (v0, v1);
             }
+
             if (ordering.LessThan(v3, v2)) {
                 (v3, v2) = (v2, v3);
             }
+
             if (ordering.LessThan(v5, v4)) {
                 (v5, v4) = (v4, v5);
             }
+
             if (ordering.LessThan(v4, v1)) {
                 (v4, v1) = (v1, v4);
             }
+
             if (ordering.LessThan(v6, v3)) {
                 (v6, v3) = (v3, v6);
             }
+
             if (ordering.LessThan(v4, v3)) {
                 (v4, v3) = (v3, v4);
             }
@@ -386,105 +387,139 @@ namespace Anoprsst
             if (ordering.LessThan(v1, v0)) {
                 (v1, v0) = (v0, v1);
             }
+
             if (ordering.LessThan(v3, v2)) {
                 (v3, v2) = (v2, v3);
             }
+
             if (ordering.LessThan(v5, v4)) {
                 (v5, v4) = (v4, v5);
             }
+
             if (ordering.LessThan(v7, v6)) {
                 (v7, v6) = (v6, v7);
             }
+
             if (ordering.LessThan(v9, v8)) {
                 (v9, v8) = (v8, v9);
             }
+
             if (ordering.LessThan(v3, v1)) {
                 (v3, v1) = (v1, v3);
             }
+
             if (ordering.LessThan(v7, v5)) {
                 (v7, v5) = (v5, v7);
             }
+
             if (ordering.LessThan(v2, v0)) {
                 (v2, v0) = (v0, v2);
             }
+
             if (ordering.LessThan(v6, v4)) {
                 (v6, v4) = (v4, v6);
             }
+
             if (ordering.LessThan(v10, v8)) {
                 (v10, v8) = (v8, v10);
             }
+
             if (ordering.LessThan(v2, v1)) {
                 (v2, v1) = (v1, v2);
             }
+
             if (ordering.LessThan(v6, v5)) {
                 (v6, v5) = (v5, v6);
             }
+
             if (ordering.LessThan(v10, v9)) {
                 (v10, v9) = (v9, v10);
             }
+
             if (ordering.LessThan(v4, v0)) {
                 (v4, v0) = (v0, v4);
             }
+
             if (ordering.LessThan(v7, v3)) {
                 (v7, v3) = (v3, v7);
             }
+
             if (ordering.LessThan(v5, v1)) {
                 (v5, v1) = (v1, v5);
             }
+
             if (ordering.LessThan(v10, v6)) {
                 (v10, v6) = (v6, v10);
             }
+
             if (ordering.LessThan(v8, v4)) {
                 (v8, v4) = (v4, v8);
             }
+
             if (ordering.LessThan(v9, v5)) {
                 (v9, v5) = (v5, v9);
             }
+
             if (ordering.LessThan(v6, v2)) {
                 (v6, v2) = (v2, v6);
             }
+
             if (ordering.LessThan(v4, v0)) {
                 (v4, v0) = (v0, v4);
             }
+
             if (ordering.LessThan(v8, v3)) {
                 (v8, v3) = (v3, v8);
             }
+
             if (ordering.LessThan(v5, v1)) {
                 (v5, v1) = (v1, v5);
             }
+
             if (ordering.LessThan(v10, v6)) {
                 (v10, v6) = (v6, v10);
             }
+
             if (ordering.LessThan(v3, v2)) {
                 (v3, v2) = (v2, v3);
             }
+
             if (ordering.LessThan(v9, v8)) {
                 (v9, v8) = (v8, v9);
             }
+
             if (ordering.LessThan(v4, v1)) {
                 (v4, v1) = (v1, v4);
             }
+
             if (ordering.LessThan(v10, v7)) {
                 (v10, v7) = (v7, v10);
             }
+
             if (ordering.LessThan(v5, v3)) {
                 (v5, v3) = (v3, v5);
             }
+
             if (ordering.LessThan(v8, v6)) {
                 (v8, v6) = (v6, v8);
             }
+
             if (ordering.LessThan(v4, v2)) {
                 (v4, v2) = (v2, v4);
             }
+
             if (ordering.LessThan(v9, v7)) {
                 (v9, v7) = (v7, v9);
             }
+
             if (ordering.LessThan(v6, v5)) {
                 (v6, v5) = (v5, v6);
             }
+
             if (ordering.LessThan(v4, v3)) {
                 (v4, v3) = (v3, v4);
             }
+
             if (ordering.LessThan(v8, v7)) {
                 (v8, v7) = (v7, v8);
             }
@@ -497,84 +532,111 @@ namespace Anoprsst
             if (ordering.LessThan(v1, v0)) {
                 (v1, v0) = (v0, v1);
             }
+
             if (ordering.LessThan(v3, v2)) {
                 (v3, v2) = (v2, v3);
             }
+
             if (ordering.LessThan(v5, v4)) {
                 (v5, v4) = (v4, v5);
             }
+
             if (ordering.LessThan(v7, v6)) {
                 (v7, v6) = (v6, v7);
             }
+
             if (ordering.LessThan(v9, v8)) {
                 (v9, v8) = (v8, v9);
             }
+
             if (ordering.LessThan(v3, v1)) {
                 (v3, v1) = (v1, v3);
             }
+
             if (ordering.LessThan(v7, v5)) {
                 (v7, v5) = (v5, v7);
             }
+
             if (ordering.LessThan(v2, v0)) {
                 (v2, v0) = (v0, v2);
             }
+
             if (ordering.LessThan(v6, v4)) {
                 (v6, v4) = (v4, v6);
             }
+
             if (ordering.LessThan(v10, v8)) {
                 (v10, v8) = (v8, v10);
             }
+
             if (ordering.LessThan(v2, v1)) {
                 (v2, v1) = (v1, v2);
             }
+
             if (ordering.LessThan(v6, v5)) {
                 (v6, v5) = (v5, v6);
             }
+
             if (ordering.LessThan(v10, v9)) {
                 (v10, v9) = (v9, v10);
             }
+
             if (ordering.LessThan(v4, v0)) {
                 (v4, v0) = (v0, v4);
             }
+
             if (ordering.LessThan(v7, v3)) {
                 (v7, v3) = (v3, v7);
             }
+
             if (ordering.LessThan(v5, v1)) {
                 (v5, v1) = (v1, v5);
             }
+
             if (ordering.LessThan(v10, v6)) {
                 (v10, v6) = (v6, v10);
             }
+
             if (ordering.LessThan(v8, v4)) {
                 (v8, v4) = (v4, v8);
             }
+
             if (ordering.LessThan(v9, v5)) {
                 (v9, v5) = (v5, v9);
             }
+
             if (ordering.LessThan(v6, v2)) {
                 (v6, v2) = (v2, v6);
             }
+
             if (ordering.LessThan(v8, v3)) {
                 (v8, v3) = (v3, v8);
             }
+
             if (ordering.LessThan(v5, v1)) {
                 (v5, v1) = (v1, v5);
             }
+
             if (ordering.LessThan(v10, v6)) {
                 (v10, v6) = (v6, v10);
             }
+
             if (ordering.LessThan(v3, v2)) {
                 (v3, v2) = (v2, v3);
             }
+
             if (ordering.LessThan(v9, v8)) {
                 (v9, v8) = (v8, v9);
             }
+
             if (ordering.LessThan(v5, v3)) {
                 (v5, v3) = (v3, v5);
             }
+
             if (ordering.LessThan(v8, v6)) {
                 (v8, v6) = (v6, v8);
             }
+
             if (ordering.LessThan(v6, v5)) {
                 (v6, v5) = (v5, v6);
             }
@@ -586,9 +648,11 @@ namespace Anoprsst
             if (ordering.LessThan(v2, v0)) {
                 (v2, v0) = (v0, v2);
             }
+
             if (ordering.LessThan(v1, v0)) {
                 (v1, v0) = (v0, v1);
             }
+
             if (ordering.LessThan(v2, v1)) {
                 (v2, v1) = (v1, v2);
             }
@@ -605,9 +669,11 @@ namespace Anoprsst
                 if (lowPivotO - 1 >= 1) {
                     DualPivotQuickSort_Inclusive(ref firstPtr, lowPivotO - 1, ordering);
                 }
+
                 if (highPivotO - lowPivotO - 2 >= 1) {
                     DualPivotQuickSort_Inclusive(ref Unsafe.Add(ref firstPtr, lowPivotO + 1), highPivotO - lowPivotO - 2, ordering);
                 }
+
                 if (lastOffset - (highPivotO + 1) >= 1) {
                     DualPivotQuickSort_Inclusive(ref Unsafe.Add(ref firstPtr, highPivotO + 1), lastOffset - (highPivotO + 1), ordering);
                 }
@@ -703,6 +769,7 @@ namespace Anoprsst
             if (Unsafe.AreSame(ref firstPtr, ref lastPtr)) {
                 return;
             }
+
             ref var writePtr = ref firstPtr;
             ref var readPtr = ref Unsafe.Add(ref firstPtr, 1);
             while (true) { //readIdx < idxEnd
@@ -714,6 +781,7 @@ namespace Anoprsst
                         if (Unsafe.AreSame(ref writePtr, ref firstPtr)) {
                             break;
                         }
+
                         writePtr = ref Unsafe.Subtract(ref writePtr, 1);
                         if (!ordering.LessThan(readValue, writePtr)) {
                             writePtr = ref Unsafe.Add(ref writePtr, 1);
@@ -729,6 +797,7 @@ namespace Anoprsst
                 if (Unsafe.AreSame(ref readPtr, ref lastPtr)) {
                     break;
                 }
+
                 writePtr = ref readPtr;
                 readPtr = ref Unsafe.Add(ref readPtr, 1);
             }
@@ -743,13 +812,13 @@ namespace Anoprsst
             }
 
             var n = items.Length;
-            if (n < TopDownInsertionSortBatchSize) {
+            if (n < Thresholds.TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref items[0], ref items[n - 1], ordering);
                 return;
             }
 #if true
             var mergeCount = 2;
-            for (var s = (uint)TopDownInsertionSortBatchSize << 2; s < (uint)n; s <<= 2) {
+            for (var s = (uint)Thresholds.TopDownInsertionSortBatchSize << 2; s < (uint)n; s <<= 2) {
                 mergeCount += 2;
             }
 
@@ -831,7 +900,7 @@ namespace Anoprsst
 
         static void TopDownSplitMerge_toScratch(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length, TOrder ordering)
         {
-            if (length <= TopDownInsertionSortBatchSize) {
+            if (length <= Thresholds.TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref lastItemsPtr, ordering);
                 CopyInclusiveRefRange_Unsafe(ref firstItemsPtr, ref lastItemsPtr, out firstScratchPtr);
                 return;
@@ -842,7 +911,7 @@ namespace Anoprsst
             ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
             ref var middleScratchPtr = ref Unsafe.Add(ref firstScratchPtr, firstHalfLength);
 
-            if (firstHalfLength < TopDownInsertionSortBatchSize) {
+            if (firstHalfLength < Thresholds.TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1), ordering);
                 InsertionSort_InPlace_Unsafe_Inclusive(ref middleItemsPtr, ref lastItemsPtr, ordering);
             } else {
@@ -908,7 +977,7 @@ namespace Anoprsst
             ref var scratchPtr = ref scratchArr[0];
 
             var mergeCount = 0;
-            var defaultBatchSize = BottomUpInsertionSortBatchSize & ~1;
+            var defaultBatchSize = Thresholds.BottomUpInsertionSortBatchSize & ~1;
             for (var s = defaultBatchSize; s < n; s <<= 1) {
                 mergeCount++;
             }
@@ -927,6 +996,7 @@ namespace Anoprsst
                     if (batchesSortedUpto < n - 1) {
                         InsertionSort_InPlace_Unsafe_Inclusive(ref Unsafe.Add(ref targetPtr, batchesSortedUpto), ref Unsafe.Add(ref targetPtr, n - 1), ordering);
                     }
+
                     break;
                 }
             }
@@ -957,6 +1027,7 @@ namespace Anoprsst
                 } else if (firstIdx < n) {
                     CopyInclusiveRefRange_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, n - 1), out Unsafe.Add(ref scratchPtr, firstIdx));
                 }
+
                 ref var tmp = ref scratchPtr;
                 scratchPtr = ref targetPtr;
                 targetPtr = ref tmp;
@@ -970,6 +1041,7 @@ namespace Anoprsst
                 if (Unsafe.AreSame(ref readPtr, ref readUntil)) {
                     break;
                 }
+
                 readPtr = ref Unsafe.Add(ref readPtr, 1);
                 writePtr = ref Unsafe.Add(ref writePtr, 1);
             }
