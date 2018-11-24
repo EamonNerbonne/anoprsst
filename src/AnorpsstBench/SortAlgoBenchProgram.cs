@@ -98,12 +98,12 @@ namespace AnorpsstBench
             Console.WriteLine();
         }
 
-        static void ParallelQuickSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr.AsSpan(0, len)); }
-        static void AltTopDownMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort(arr.AsSpan(0, len)); }
-        static void TopDownMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.TopDownMergeSort(arr.AsSpan(0, len)); }
-        static void DualPivotQuickSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.DualPivotQuickSort(arr.AsSpan(0, len)); }
-        static void BottomUpMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.BottomUpMergeSort(arr.AsSpan(0, len)); }
-        static void QuickSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.QuickSort(arr.AsSpan(0, len)); }
+        static void ParallelQuickSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.ParallelQuickSort(arr.AsSpan(0, len), default); }
+        static void AltTopDownMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort(arr.AsSpan(0, len), default); }
+        static void TopDownMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.TopDownMergeSort(arr.AsSpan(0, len), default); }
+        static void DualPivotQuickSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.DualPivotQuickSort(arr.AsSpan(0, len), default); }
+        static void BottomUpMergeSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.BottomUpMergeSort(arr.AsSpan(0, len), default); }
+        static void QuickSort(T[] arr, int len) { OrderedAlgorithms<T, TOrder>.QuickSort(arr.AsSpan(0, len), default); }
         static void ArraySort_Primitive(T[] arr, int len) { Array.Sort(arr, 0, len); }
         static void ArraySort_OrderComparer(T[] arr, int len) { Array.Sort(arr, 0, len, Helpers.ComparerFor<T, TOrder>()); }
         static readonly Action<T[], int> SystemArraySort = typeof(T).IsPrimitive ? (Action<T[], int>)ArraySort_Primitive : ArraySort_OrderComparer;
