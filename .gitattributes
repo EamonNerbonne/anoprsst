@@ -1,0 +1,2 @@
+# disable the text file mangling feature built into git.
+* -text
