@@ -1,13 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <OutputType>Library</OutputType>
+  <PropertyGroup Label="Configuration">
+    <Version>0.1.0</Version>
+    <Authors>Eamon Nerbonne</Authors>
+    <Owners>Eamon Nerbonne</Owners>
+    <Title>Anorpsst</Title>
+    <Description>Sorts Span&lt;T&gt; (and arrays) more quickly than System.Array.Sort</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Initial nuget version</PackageReleaseNotes>
+    <PackageTags>Span QuickSort MergeSort InsertionSort</PackageTags>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/EamonNerbonne/anorpsst</PackageProjectUrl>
     <TargetFrameworks>netcoreapp2.1;net471</TargetFrameworks>
+    <RepositoryUrl>https://github.com/EamonNerbonne/anorpsst</RepositoryUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>false<!--not yet, anyhow--></GenerateDocumentationFile>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
     <LangVersion>7.3</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TieredCompilation>true</TieredCompilation>
-    <ApplicationIcon />
-    <StartupObject />
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
