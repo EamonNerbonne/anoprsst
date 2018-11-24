@@ -599,7 +599,7 @@ namespace Anoprsst
                     mergeCount - 1);
             }
 
-            Merge_Unsafe(ref firstScratchPtr, ref middleScratchPtr, ref lastScratchPtr, ref firstItemsPtr);
+            Merge_Unsafe(ref firstScratchPtr, ref middleScratchPtr, ref lastScratchPtr, out firstItemsPtr);
         }
 
         static void TopDownSplitMerge_toItems(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length)
@@ -617,14 +617,14 @@ namespace Anoprsst
                 ref firstScratchPtr,
                 ref Unsafe.Add(ref firstScratchPtr, firstHalfLength - 1),
                 firstHalfLength);
-            Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength), ref lastScratchPtr, ref firstItemsPtr);
+            Merge_Unsafe(ref firstScratchPtr, ref Unsafe.Add(ref firstScratchPtr, firstHalfLength), ref lastScratchPtr, out firstItemsPtr);
         }
 
         static void TopDownSplitMerge_toScratch(ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length)
         {
             if (length <= TopDownInsertionSortBatchSize) {
                 InsertionSort_InPlace_Unsafe_Inclusive(ref firstItemsPtr, ref lastItemsPtr);
-                CopyInclusiveRefRange_Unsafe(ref firstItemsPtr, ref lastItemsPtr, ref firstScratchPtr);
+                CopyInclusiveRefRange_Unsafe(ref firstItemsPtr, ref lastItemsPtr, out firstScratchPtr);
                 return;
             }
 
@@ -646,10 +646,10 @@ namespace Anoprsst
                     firstHalfLength);
             }
 
-            Merge_Unsafe(ref firstItemsPtr, ref middleItemsPtr, ref lastItemsPtr, ref firstScratchPtr);
+            Merge_Unsafe(ref firstItemsPtr, ref middleItemsPtr, ref lastItemsPtr, out firstScratchPtr);
         }
 
-        static void Merge_Unsafe(ref T readPtrA, ref T readPtrB, ref T lastPtrB, ref T writePtr)
+        static void Merge_Unsafe(ref T readPtrA, ref T readPtrB, ref T lastPtrB, out T writePtr)
         {
             ref var lastPtrA = ref Unsafe.Subtract(ref readPtrB, 1);
             while (true)
@@ -721,7 +721,7 @@ namespace Anoprsst
                         ref Unsafe.Add(ref targetPtr, firstIdx),
                         ref Unsafe.Add(ref targetPtr, middleIdx),
                         ref Unsafe.Add(ref targetPtr, endIdx - 1),
-                        ref Unsafe.Add(ref scratchPtr, firstIdx));
+                        out Unsafe.Add(ref scratchPtr, firstIdx));
                     firstIdx += width;
                     middleIdx += width;
                     endIdx += width;
@@ -732,16 +732,16 @@ namespace Anoprsst
                         ref Unsafe.Add(ref targetPtr, firstIdx),
                         ref Unsafe.Add(ref targetPtr, middleIdx),
                         ref Unsafe.Add(ref targetPtr, n - 1),
-                        ref Unsafe.Add(ref scratchPtr, firstIdx));
+                        out Unsafe.Add(ref scratchPtr, firstIdx));
                 else if (firstIdx < n)
-                    CopyInclusiveRefRange_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, n - 1), ref Unsafe.Add(ref scratchPtr, firstIdx));
+                    CopyInclusiveRefRange_Unsafe(ref Unsafe.Add(ref targetPtr, firstIdx), ref Unsafe.Add(ref targetPtr, n - 1), out Unsafe.Add(ref scratchPtr, firstIdx));
                 ref var tmp = ref scratchPtr;
                 scratchPtr = ref targetPtr;
                 targetPtr = ref tmp;
             }
         }
 
-        static void CopyInclusiveRefRange_Unsafe(ref T readPtr, ref T readUntil, ref T writePtr)
+        static void CopyInclusiveRefRange_Unsafe(ref T readPtr, ref T readUntil, out T writePtr)
         {
             while (true) {
                 writePtr = readPtr;
