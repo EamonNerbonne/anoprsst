@@ -14,10 +14,10 @@ namespace Anoprsst
     public abstract class OrderedAlgorithms<T, TOrder>
         where TOrder : struct, IOrdering<T>
     {
-        static readonly int TopDownInsertionSortBatchSize;
-        static readonly int BottomUpInsertionSortBatchSize;
-        static readonly int QuickSortFastMedianThreshold;
-        static readonly int MinimalParallelQuickSortBatchSize;
+        public static readonly int TopDownInsertionSortBatchSize;
+        public static readonly int BottomUpInsertionSortBatchSize;
+        public static readonly int QuickSortFastMedianThreshold;
+        public static readonly int MinimalParallelQuickSortBatchSize;
 
         static OrderedAlgorithms()
         {
@@ -37,8 +37,6 @@ namespace Anoprsst
                 QuickSortFastMedianThreshold = 16_000;
                 MinimalParallelQuickSortBatchSize = 1000;
             }
-
-            Console.WriteLine($"{typeof(T).ToCSharpFriendlyTypeName()}: {TopDownInsertionSortBatchSize}/{QuickSortFastMedianThreshold}/{MinimalParallelQuickSortBatchSize}");
         }
 
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");

@@ -1,10 +1,10 @@
 ﻿using System;
+using ExpressionToCodeLib;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Anoprsst;
-using ExpressionToCodeLib;
 using IncrementalMeanVarianceAccumulator;
 
 // ReSharper disable UnusedMember.Global
@@ -58,6 +58,8 @@ namespace AnorpsstBench
                 var estimatedSizeInHeap = (afterMap - afterArray) / (double)data.Length;
                 Console.WriteLine(
                     $"type {typeof(T).ToCSharpFriendlyTypeName()}: total size {estimatedPerObjectCost:f1} bytes of which value {estimatedSizeInArray:f1} and heap size {estimatedSizeInHeap:f1}");
+                Console.WriteLine(
+                    $"{typeof(T).ToCSharpFriendlyTypeName()}: {OrderedAlgorithms<T, TOrder>.TopDownInsertionSortBatchSize}/{OrderedAlgorithms<T, TOrder>.QuickSortFastMedianThreshold}/{OrderedAlgorithms<T, TOrder>.MinimalParallelQuickSortBatchSize}");
 
                 Console.WriteLine(
                     $"This implies a working set size of {backingArraySize * estimatedPerObjectCost / 1024.0 / 1024.0:f1}MB, and a per-sort memory usage of on average {targetSize * estimatedPerObjectCost / (1 << 20):f1}MB upto twice that; and merge-sorts will need {targetSize * estimatedSizeInArray / (1 << 20):f1}MB scratch.");
