@@ -4,20 +4,7 @@ using System.Runtime.CompilerServices;
 using IncrementalMeanVarianceAccumulator;
 
 namespace SortAlgoBench {
-    static class Helpers {
-        static int ProcScale() {
-            var splitIters = 3;
-            var threads = Environment.ProcessorCount;
-            while (threads > 0) {
-                threads = threads >> 1;
-                splitIters++;
-            }
-
-            return splitIters;
-        }
-
-        public static readonly int ParallelSplitScale = Helpers.ProcScale();
-
+    public static class Helpers {
         public static string MSE(MeanVarianceAccumulator acc)
             => MSE(acc.Mean, StdErr(acc));
 
@@ -62,8 +49,8 @@ namespace SortAlgoBench {
             public static IComparer<T> Instance = new OrderComparer<T, TOrder>();
             public int Compare(T x, T y)
                 => default(TOrder).LessThan(x, y) ? -1
-                : default(TOrder).LessThan(y, x) ? 1
-                : 0;
+                    : default(TOrder).LessThan(y, x) ? 1
+                    : 0;
         }
     }
 }

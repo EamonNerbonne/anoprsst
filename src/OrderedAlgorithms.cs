@@ -102,7 +102,7 @@ namespace SortAlgoBench
                 new QuickSort_Inclusive_ParallelArgs {
                     countdownEvent = countdownEvent,
                     ptr = ptr,
-                    splitAt = Math.Max(length >> Helpers.ParallelSplitScale, MinimalParallelQuickSortBatchSize),
+                    splitAt = Math.Max(length >> ParallelismConstants.ParallelSplitScale, MinimalParallelQuickSortBatchSize),
                     lastIdx = length - 1,
                 }.Impl();
                 countdownEvent.Wait();
@@ -214,9 +214,9 @@ namespace SortAlgoBench
         static int PartitionWithMedian_Unsafe(ref T firstPtr, int lastOffset)
         {
 #if false
-            //InsertionSort_InPlace_Unsafe_Inclusive(ref Unsafe.Add(ref firstPtr, midpoint-3),ref Unsafe.Add(ref firstPtr, midpoint+3));
-            //var pivotValue = midPtr;
-            //ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+//InsertionSort_InPlace_Unsafe_Inclusive(ref Unsafe.Add(ref firstPtr, midpoint-3),ref Unsafe.Add(ref firstPtr, midpoint+3));
+//var pivotValue = midPtr;
+//ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
             MedianOf5(
                 ref firstPtr,
                 ref Unsafe.Add(ref firstPtr, 1),
@@ -304,7 +304,6 @@ namespace SortAlgoBench
             MedianOf5(ref v0, ref v1, ref v2, ref v3, ref v4);
             if (default(TOrder).LessThan(v4, v3)) (v4, v3) = (v3, v4);
         }
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void MedianOf7(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6)

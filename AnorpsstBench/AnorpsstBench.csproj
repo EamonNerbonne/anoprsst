@@ -4,7 +4,6 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp2.1;net471</TargetFrameworks>
     <LangVersion>7.3</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
 
@@ -21,5 +20,10 @@
     <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
     <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Anoprsst.csproj" />
+  </ItemGroup>
+
 
 </Project>
