@@ -193,7 +193,7 @@ namespace AnorpsstBench
             var medianNsPerItem = (nsPerCost[nsPerCost.Count >> 1] + nsPerCost[nsPerCost.Count + 1 >> 1]) / 2.0 * rescaleFromNsPerCostToNsPerItem;
             Console.WriteLine(
                 $"{method.PadLeft(23)}: mean {Helpers.MSE(nsPerItem, nsStdErr).PadRight(11)} ns/item; median {medianNsPerItem:f1}; overhead: {100 * (1 - totalActualMilliseconds / swOverhead.Elapsed.TotalMilliseconds):f1}%");
-            return (action.Method.Name.StartsWith("ArraySort_") ? "ArraySort" : method, typeof(T), nsPerItem, nsStdErr);
+            return (action.Method.Name.StartsWith("ArraySort_", StringComparison.Ordinal) ? "ArraySort" : method, typeof(T), nsPerItem, nsStdErr);
         }
     }
 

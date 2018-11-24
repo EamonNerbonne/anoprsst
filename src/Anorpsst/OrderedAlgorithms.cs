@@ -107,7 +107,7 @@ namespace Anoprsst
             }
         }
 
-        unsafe class QuickSort_Inclusive_ParallelArgs
+        sealed unsafe class QuickSort_Inclusive_ParallelArgs
         {
             public CountdownEvent CountdownEvent;
             public void* Ptr;
@@ -495,10 +495,10 @@ namespace Anoprsst
 
             for (var i = 0; i < logn; i++)
             for (var j = 0; j <= i; j++) {
-                var bitMask = 1 << (i - j);
+                var bitMask = 1 << i - j;
 
                 for (var idx = firstIdx; idx < endIdx; idx++) {
-                    var up = (((idx & mask) >> i) & 2) == 0;
+                    var up = ((idx & mask) >> i & 2) == 0;
 
                     if ((idx & bitMask) == 0 && ordering.LessThan(array[idx | bitMask], array[idx]) == up) {
                         var t = array[idx];

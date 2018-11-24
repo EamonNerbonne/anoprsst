@@ -17,7 +17,7 @@ namespace AnorpsstBench {
         public static string MSE(double mean, double stderr) {
             var significantDigits = Math.Log10(Math.Abs(mean / stderr));
             var digitsToShow = Math.Max(2, (int)(significantDigits + 2.5));
-            
+
             if(Math.Pow(10,digitsToShow) <= mean && Math.Pow(10,digitsToShow+2) > mean)
                 return mean.ToString("f0")+ "~" + stderr.ToString("f0");
             var fmtString =  "g" + digitsToShow;
@@ -28,7 +28,7 @@ namespace AnorpsstBench {
             var arr = new ulong[size];
             var r = new Random(37);
             for (var j = 0; j < arr.Length; j++)
-                arr[j] = (((ulong)(uint)r.Next() << 32) + (uint)r.Next());
+                arr[j] = ((ulong)(uint)r.Next() << 32) + (uint)r.Next();
             return arr;
         }
 
@@ -43,10 +43,10 @@ namespace AnorpsstBench {
         public static IComparer<T> ComparerFor<T, TOrder>()
             where TOrder : IOrdering<T> => OrderComparer<T, TOrder>.Instance;
 
-        class OrderComparer<T, TOrder> : IComparer<T>
+        sealed class OrderComparer<T, TOrder> : IComparer<T>
             where TOrder : IOrdering<T>
         {
-            public static IComparer<T> Instance = new OrderComparer<T, TOrder>();
+            public static readonly IComparer<T> Instance = new OrderComparer<T, TOrder>();
             public int Compare(T x, T y)
                 => default(TOrder).LessThan(x, y) ? -1
                     : default(TOrder).LessThan(y, x) ? 1
