@@ -5,8 +5,8 @@ using IncrementalMeanVarianceAccumulator;
 
 namespace SortAlgoBench {
     static class Helpers {
-        public static int ProcScale() {
-            var splitIters = 4;
+        static int ProcScale() {
+            var splitIters = 3;
             var threads = Environment.ProcessorCount;
             while (threads > 0) {
                 threads = threads >> 1;
@@ -15,6 +15,8 @@ namespace SortAlgoBench {
 
             return splitIters;
         }
+
+        public static readonly int ParallelSplitScale = Helpers.ProcScale();
 
         public static string MSE(MeanVarianceAccumulator acc)
             => MSE(acc.Mean, StdErr(acc));

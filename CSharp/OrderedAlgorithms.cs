@@ -17,7 +17,7 @@ namespace SortAlgoBench
     {
         static readonly int TopDownInsertionSortBatchSize;
         static readonly int BottomUpInsertionSortBatchSize;
-        static readonly int QuickSortNoMedianThreshold;
+        static readonly int QuickSortFastMedianThreshold;
         static readonly int MinimalParallelQuickSortBatchSize;
 
         static OrderedAlgorithms()
@@ -25,21 +25,21 @@ namespace SortAlgoBench
             if (!typeof(T).IsValueType) {
                 TopDownInsertionSortBatchSize = 24;
                 BottomUpInsertionSortBatchSize = 16;
-                QuickSortNoMedianThreshold = 16_000;
-                MinimalParallelQuickSortBatchSize = 300;
+                QuickSortFastMedianThreshold = 10_000;
+                MinimalParallelQuickSortBatchSize = 1500;
             } else if (Unsafe.SizeOf<T>() <= 8) {
                 TopDownInsertionSortBatchSize = 64;
                 BottomUpInsertionSortBatchSize = 40;
-                QuickSortNoMedianThreshold = 16_000;
-                MinimalParallelQuickSortBatchSize = 500;
+                QuickSortFastMedianThreshold = 13_000;
+                MinimalParallelQuickSortBatchSize = 1100;
             } else {
                 TopDownInsertionSortBatchSize = Math.Max(8, 550 / Unsafe.SizeOf<T>());
                 BottomUpInsertionSortBatchSize = TopDownInsertionSortBatchSize * 2 / 3;
-                QuickSortNoMedianThreshold = 16_000;
-                MinimalParallelQuickSortBatchSize = 150;
+                QuickSortFastMedianThreshold = 16_000;
+                MinimalParallelQuickSortBatchSize = 1000;
             }
 
-            Console.WriteLine($"{typeof(T).ToCSharpFriendlyTypeName()}: {TopDownInsertionSortBatchSize}/{QuickSortNoMedianThreshold}/{MinimalParallelQuickSortBatchSize}");
+            Console.WriteLine($"{typeof(T).ToCSharpFriendlyTypeName()}: {TopDownInsertionSortBatchSize}/{QuickSortFastMedianThreshold}/{MinimalParallelQuickSortBatchSize}");
         }
 
         protected OrderedAlgorithms() => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
@@ -90,7 +90,7 @@ namespace SortAlgoBench
         public static unsafe void ParallelQuickSort(Span<T> array)
         {
             var length = array.Length;
-            if (length < MinimalParallelQuickSortBatchSize << 2) {
+            if (length < MinimalParallelQuickSortBatchSize << 1) {
                 if (length > 1)
                     QuickSort_Inclusive_Small_Unsafe(ref array[0], array.Length - 1);
                 return;
@@ -102,7 +102,7 @@ namespace SortAlgoBench
                 new QuickSort_Inclusive_ParallelArgs {
                     countdownEvent = countdownEvent,
                     ptr = ptr,
-                    splitAt = Math.Max(length >> SortAlgoBenchProgram.ParallelSplitScale, MinimalParallelQuickSortBatchSize),
+                    splitAt = Math.Max(length >> Helpers.ParallelSplitScale, MinimalParallelQuickSortBatchSize),
                     lastIdx = length - 1,
                 }.Impl();
                 countdownEvent.Wait();
@@ -124,8 +124,8 @@ namespace SortAlgoBench
                 var splitAt = this.splitAt;
                 var countdownEvent = this.countdownEvent;
                 while (lastIdx >= splitAt) {
-                    var pivot = PartitionWithMedian_Unsafe(ref firstRef, lastIdx);
                     countdownEvent.AddCount(1);
+                    var pivot = PartitionWithMedian_Unsafe(ref firstRef, lastIdx);
                     ThreadPool.UnsafeQueueUserWorkItem(
                         QuickSort_Inclusive_Par2_callback,
                         new QuickSort_Inclusive_ParallelArgs {
@@ -144,7 +144,7 @@ namespace SortAlgoBench
 
         static void QuickSort_Inclusive_Unsafe(ref T ptr, int lastOffset)
         {
-            while (lastOffset >= QuickSortNoMedianThreshold) {
+            while (lastOffset >= QuickSortFastMedianThreshold) {
                 var pivot = PartitionWithMedian_Unsafe(ref ptr, lastOffset);
                 QuickSort_Inclusive_Unsafe(ref Unsafe.Add(ref ptr, pivot + 1), lastOffset - (pivot + 1));
                 lastOffset = pivot; //QuickSort_Inclusive_Unsafe(ref ptr, pivot);
@@ -213,64 +213,59 @@ namespace SortAlgoBench
 
         static int PartitionWithMedian_Unsafe(ref T firstPtr, int lastOffset)
         {
-            var midpoint = lastOffset >> 1;
-            ref var midPtr = ref Unsafe.Add(ref firstPtr, midpoint);
-
-#if true
+#if false
             //InsertionSort_InPlace_Unsafe_Inclusive(ref Unsafe.Add(ref firstPtr, midpoint-3),ref Unsafe.Add(ref firstPtr, midpoint+3));
             //var pivotValue = midPtr;
             //ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
             MedianOf5(
                 ref firstPtr,
                 ref Unsafe.Add(ref firstPtr, 1),
-                ref midPtr,
+                ref Unsafe.Add(ref firstPtr, lastOffset >> 1),
                 ref Unsafe.Add(ref firstPtr, lastOffset - 1),
                 ref Unsafe.Add(ref firstPtr, lastOffset));
 
-            var pivotValue = midPtr;
-
-            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 2);
-            firstPtr = ref Unsafe.Add(ref firstPtr, 2);
+            var pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
             lastOffset = lastOffset - 2;
+            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+            firstPtr = ref Unsafe.Add(ref firstPtr, 2);
 #elif true
             MedianOf7(
                 ref firstPtr,
                 ref Unsafe.Add(ref firstPtr, 1),
                 ref Unsafe.Add(ref firstPtr, 2),
-                ref midPtr,
+                ref Unsafe.Add(ref firstPtr, lastOffset >> 1),
                 ref Unsafe.Add(ref firstPtr, lastOffset - 2),
                 ref Unsafe.Add(ref firstPtr, lastOffset - 1),
                 ref Unsafe.Add(ref firstPtr, lastOffset));
 
-            var pivotValue = midPtr;
-
-            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 3);
-            firstPtr = ref Unsafe.Add(ref firstPtr, 3);
+            var pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
             lastOffset = lastOffset - 3;
+            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+            firstPtr = ref Unsafe.Add(ref firstPtr, 3);
 #else
             SortThreeIndexes(
                 ref Unsafe.Add(ref firstPtr, 1),
                 ref firstPtr,
                 ref Unsafe.Add(ref firstPtr, 2));
             SortThreeIndexes(
-                ref Unsafe.Add(ref midPtr, -1),
-                ref midPtr,
-                ref Unsafe.Add(ref firstPtr, 1));
+                ref Unsafe.Add(ref firstPtr, (lastOffset >> 1)-1),
+                ref Unsafe.Add(ref firstPtr, lastOffset >> 1),
+                ref Unsafe.Add(ref firstPtr, (lastOffset >> 1)+1));
             SortThreeIndexes(
                 ref Unsafe.Add(ref firstPtr, lastOffset - 2),
                 ref Unsafe.Add(ref firstPtr, lastOffset),
                 ref Unsafe.Add(ref firstPtr, lastOffset - 1));
-
             SortThreeIndexes(
                 ref firstPtr,
-                ref midPtr,
+                ref Unsafe.Add(ref firstPtr, lastOffset >> 1),
                 ref Unsafe.Add(ref firstPtr, lastOffset));
-            var pivotValue = midPtr;
 
-            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset - 1);
-            firstPtr = ref Unsafe.Add(ref firstPtr, 1);
+            var pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
             lastOffset = lastOffset - 1;
+            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+            firstPtr = ref Unsafe.Add(ref firstPtr, 1);
 #endif
+
             while (true) {
                 while (default(TOrder).LessThan(firstPtr, pivotValue))
                     firstPtr = ref Unsafe.Add(ref firstPtr, 1);

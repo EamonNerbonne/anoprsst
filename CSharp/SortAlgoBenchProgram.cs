@@ -12,8 +12,6 @@ namespace SortAlgoBench
 {
     static class SortAlgoBenchProgram
     {
-        public static readonly int ParallelSplitScale = Helpers.ProcScale();
-
         static void Main()
         {
             const double quality = 200_000_000_000.0;
