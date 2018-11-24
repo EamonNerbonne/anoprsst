@@ -87,13 +87,13 @@ namespace AnorpsstBench
         {
             var meanLen = SubArrays().Average(o => o.len);
             Console.WriteLine($"Sorting arrays of {typeof(T).ToCSharpFriendlyTypeName()} with {meanLen:f1} elements (average over {Iterations} benchmarked arrays).");
-            //yield return BenchSort(SystemArraySort);
-            //yield return BenchSort(DualPivotQuickSort);
+            yield return BenchSort(SystemArraySort);
+            yield return BenchSort(DualPivotQuickSort);
             yield return BenchSort(ParallelQuickSort);
             yield return BenchSort(QuickSort);
-            //yield return BenchSort(BottomUpMergeSort);
-            //yield return BenchSort(TopDownMergeSort);
-            //yield return BenchSort(AltTopDownMergeSort);
+            yield return BenchSort(BottomUpMergeSort);
+            yield return BenchSort(TopDownMergeSort);
+            yield return BenchSort(AltTopDownMergeSort);
 
             Console.WriteLine();
         }
