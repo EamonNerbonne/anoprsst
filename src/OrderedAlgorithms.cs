@@ -2,9 +2,8 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using ExpressionToCodeLib;
 
-namespace SortAlgoBench
+namespace Anoprsst
 {
     public interface IOrdering<in T>
     {

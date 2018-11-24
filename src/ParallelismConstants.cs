@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SortAlgoBench
+namespace Anoprsst
 {
     public static class ParallelismConstants
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using Anoprsst;
 using IncrementalMeanVarianceAccumulator;
 
-namespace SortAlgoBench {
+namespace AnorpsstBench {
     public static class Helpers {
         public static string MSE(MeanVarianceAccumulator acc)
             => MSE(acc.Mean, StdErr(acc));
