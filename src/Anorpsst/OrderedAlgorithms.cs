@@ -322,6 +322,7 @@ namespace Anoprsst
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        // ReSharper disable once UnusedMember.Local
         static void Sort11Indexes(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6, ref T v7, ref T v8, ref T v9, ref T v10)
         {
             if (default(TOrder).LessThan(v1, v0)) (v1, v0) = (v0, v1);
@@ -362,6 +363,7 @@ namespace Anoprsst
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        // ReSharper disable once UnusedMember.Local
         static void MedianOf11(ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6, ref T v7, ref T v8, ref T v9, ref T v10)
         {
             if (default(TOrder).LessThan(v1, v0)) (v1, v0) = (v0, v1);
@@ -480,6 +482,7 @@ namespace Anoprsst
             return (lowPivotIdx, highPivotIdx);
         }
 
+        // ReSharper disable once UnusedMember.Local
         static void BitonicSort(int logn, T[] array, int firstIdx)
         {
             var endIdx = firstIdx + (1 << logn);
