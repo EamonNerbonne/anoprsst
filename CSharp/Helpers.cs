@@ -52,11 +52,11 @@ namespace SortAlgoBench {
         public static double MapToDouble(ulong data) => (long)data / (double)(1L << 31);
 
         public static IComparer<T> ComparerFor<T, TOrder>()
-            where TOrder : IOrdering<T>
-            => OrderComparer<T, TOrder>.Instance;
+            where TOrder : IOrdering<T> => OrderComparer<T, TOrder>.Instance;
 
         class OrderComparer<T, TOrder> : IComparer<T>
-            where TOrder : IOrdering<T> {
+            where TOrder : IOrdering<T>
+        {
             public static IComparer<T> Instance = new OrderComparer<T, TOrder>();
             public int Compare(T x, T y)
                 => default(TOrder).LessThan(x, y) ? -1
