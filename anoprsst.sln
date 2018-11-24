@@ -4,10 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F3EB872C-6DE7-40A2-AFCE-AE933BEA7CE4}"
+	ProjectSection(SolutionItems) = preProject
+		results.txt = results.txt
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anoprsst", "src\Anorpsst\Anoprsst.csproj", "{DE958F33-86B5-4BC7-B115-6682AD968436}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnorpsstBench", "src\AnorpsstBench\AnorpsstBench.csproj", "{C329C872-CC9D-49F8-B153-F8BA05955630}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnorpsstBench", "src\AnorpsstBench\AnorpsstBench.csproj", "{C329C872-CC9D-49F8-B153-F8BA05955630}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
