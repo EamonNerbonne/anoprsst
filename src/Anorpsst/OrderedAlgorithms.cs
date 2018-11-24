@@ -97,10 +97,10 @@ namespace Anoprsst
             ref var byteRef = ref Unsafe.As<T, byte>(ref array.GetPinnableReference());
             fixed (byte* ptr = &byteRef) {
                 new QuickSort_Inclusive_ParallelArgs {
-                    countdownEvent = countdownEvent,
-                    ptr = ptr,
-                    splitAt = Math.Max(length >> ParallelismConstants.ParallelSplitScale, MinimalParallelQuickSortBatchSize),
-                    lastIdx = length - 1,
+                    CountdownEvent = countdownEvent,
+                    Ptr = ptr,
+                    SplitAt = Math.Max(length >> ParallelismConstants.ParallelSplitScale, MinimalParallelQuickSortBatchSize),
+                    LastIdx = length - 1,
                 }.Impl();
                 countdownEvent.Wait();
             }
@@ -108,28 +108,28 @@ namespace Anoprsst
 
         unsafe class QuickSort_Inclusive_ParallelArgs
         {
-            public CountdownEvent countdownEvent;
-            public void* ptr;
-            public int splitAt;
-            public int lastIdx;
+            public CountdownEvent CountdownEvent;
+            public void* Ptr;
+            public int SplitAt;
+            public int LastIdx;
             static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => ((QuickSort_Inclusive_ParallelArgs)o).Impl();
 
             public void Impl()
             {
-                ref var firstRef = ref Unsafe.AsRef<T>(ptr);
-                var lastIdx = this.lastIdx;
-                var splitAt = this.splitAt;
-                var countdownEvent = this.countdownEvent;
+                ref var firstRef = ref Unsafe.AsRef<T>(Ptr);
+                var lastIdx = LastIdx;
+                var splitAt = SplitAt;
+                var countdownEvent = CountdownEvent;
                 while (lastIdx >= splitAt) {
                     countdownEvent.AddCount(1);
                     var pivot = PartitionWithMedian_Unsafe(ref firstRef, lastIdx);
                     ThreadPool.UnsafeQueueUserWorkItem(
                         QuickSort_Inclusive_Par2_callback,
                         new QuickSort_Inclusive_ParallelArgs {
-                            countdownEvent = countdownEvent,
-                            ptr = Unsafe.AsPointer(ref Unsafe.Add(ref firstRef, pivot + 1)),
-                            splitAt = splitAt,
-                            lastIdx = lastIdx - (pivot + 1),
+                            CountdownEvent = countdownEvent,
+                            Ptr = Unsafe.AsPointer(ref Unsafe.Add(ref firstRef, pivot + 1)),
+                            SplitAt = splitAt,
+                            LastIdx = lastIdx - (pivot + 1),
                         });
                     lastIdx = pivot; //effectively QuickSort_Inclusive(array, firstIdx, pivot);
                 }
