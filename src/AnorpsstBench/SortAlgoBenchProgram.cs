@@ -15,9 +15,9 @@ namespace AnorpsstBench
     {
         static void Main()
         {
-            const double quality = 200_000_000_000.0;
+            const double quality = 400_000_000_000.0;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10, 1 << 13, /*1 << 16, 1 << 19, 1 << 22 /**/ }.Reverse();
+            var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10, 1 << 13, 1 << 16, 1 << 19, 1 << 22 /**/ };
             var all = targetSizes.SelectMany(targetSize => BenchSize(targetSize, quality)).ToArray();
 
             Console.WriteLine();
@@ -68,14 +68,14 @@ namespace AnorpsstBench
             }
 
             return new[] {
-                //BencherFor(default(BigStructOrderingAlgorithms.Order), Helpers.MapToBigStruct, 48),
+                BencherFor(default(BigStructOrderingAlgorithms.Order), Helpers.MapToBigStruct, 48),
                 BencherFor(default(SampleClassOrderingAlgorithms.Order), Helpers.MapToSampleClass, 32),
                 BencherFor(default(SmallStructOrderingAlgorithms.Order), Helpers.MapToSmallStruct, 16),
                 BencherFor(default(Int32OrderingAlgorithms.Int32Order), Helpers.MapToInt32, 4),
                 BencherFor(default(DoubleOrderingAlgorithms.Order), Helpers.MapToDouble, 8),
-                //BencherFor(default(UInt64OrderingAlgorithms.UInt64Ordering), Helpers.MapToUInt64, 8),
+                BencherFor(default(UInt64OrderingAlgorithms.UInt64Ordering), Helpers.MapToUInt64, 8),
                 //BencherFor(default(UInt32OrderingAlgorithms.UInt32Order), Helpers.MapToUInt32, 4),
-                //BencherFor(default(ComparableOrderingAlgorithms<int>.ComparableOrdering), Helpers.MapToInt32, 4),
+                BencherFor(default(ComparableOrderingAlgorithms<int>.ComparableOrdering), Helpers.MapToInt32, 4),
             }.Where(a => a != null).SelectMany(r => r).ToArray();
         }
     }
