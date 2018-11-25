@@ -9,14 +9,12 @@ namespace Anoprsst
         internal readonly Span<T> Block;
         internal readonly TOrder Order;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Orderable(Span<T> block, TOrder order)
         {
             Block = block;
             Order = order;
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void QuickSort()
-            => OrderedAlgorithms<T, TOrder>.QuickSort(Order, Block);
 
     }
 
@@ -25,21 +23,21 @@ namespace Anoprsst
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Sort<T, TOrder>(this Orderable<T, TOrder> orderable)
             where TOrder : struct, IOrdering<T>
-            => OrderedAlgorithms<T, TOrder>.ParallelQuickSort(orderable.Order, orderable.Block);
+            => OrderingsFor<T>.WithOrder<TOrder>.ParallelQuickSort(orderable.Order, orderable.Block);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ParallelQuickSort<T, TOrder>(this Orderable<T, TOrder> orderable)
             where TOrder : struct, IOrdering<T>
-            => OrderedAlgorithms<T, TOrder>.ParallelQuickSort(orderable.Order, orderable.Block);
+            => OrderingsFor<T>.WithOrder<TOrder>.ParallelQuickSort(orderable.Order, orderable.Block);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void QuickSort<T, TOrder>(this Orderable<T, TOrder> orderable)
             where TOrder : struct, IOrdering<T>
-            => OrderedAlgorithms<T, TOrder>.QuickSort(orderable.Order, orderable.Block);
+            => OrderingsFor<T>.WithOrder<TOrder>.QuickSort(orderable.Order, orderable.Block);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void MergeSort<T, TOrder>(this Orderable<T, TOrder> orderable)
             where TOrder : struct, IOrdering<T>
-            => OrderedAlgorithms<T, TOrder>.TopDownMergeSort(orderable.Order, orderable.Block);
+            => OrderingsFor<T>.WithOrder<TOrder>.TopDownMergeSort(orderable.Order, orderable.Block);
     }
 }
