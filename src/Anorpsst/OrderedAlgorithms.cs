@@ -197,31 +197,7 @@ namespace Anoprsst
             var pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
             ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
 #endif
-                while (true) {
-                    //on the first iteration,  the following loop bails at the lastest when it reaches the midpoint, so ref firstPtr < ref lastPtr
-                    while (ordering.LessThan(firstPtr, pivotValue)) {
-                        firstPtr = ref Unsafe.Add(ref firstPtr, 1);
-                    }
-
-                    //on the first iteration, the following loop either succeeds at least once (decrementing lastOffset), or it bails immediately
-                    while (ordering.LessThan(pivotValue, lastPtr)) {
-                        lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
-                        lastOffset--;
-                    }
-
-                    //on the first iteration, either lastOffset has been decremented, OR ref lastPtr > ref firstPtr; so if we break here, then lastOffset was decremented
-                    if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr)) {
-                        break; // TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
-                    }
-
-                    (firstPtr, lastPtr) = (lastPtr, firstPtr);
-                    firstPtr = ref Unsafe.Add(ref firstPtr, 1);
-                    lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
-                    //on the first iteration lastOffset was decremented at least once.
-                    lastOffset--;
-                }
-
-                return lastOffset;
+                return PartitionWithGivenValue(ordering, ref firstPtr, lastOffset, pivotValue, ref lastPtr);
             }
 
             static int PartitionWithMedian_Unsafe(TOrder ordering, ref T firstPtr, int lastOffset)
@@ -280,6 +256,12 @@ namespace Anoprsst
             firstPtr = ref Unsafe.Add(ref firstPtr, 1);
 #endif
 
+                return PartitionWithGivenValue(ordering, ref firstPtr, lastOffset, pivotValue, ref lastPtr);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static int PartitionWithGivenValue(TOrder ordering, ref T firstPtr, int lastOffset, T pivotValue, ref T lastPtr)
+            {
                 while (true) {
                     //on the first iteration,  the following loop bails at the lastest when it reaches the midpoint, so ref firstPtr < ref lastPtr
                     while (ordering.LessThan(firstPtr, pivotValue)) {
