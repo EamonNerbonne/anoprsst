@@ -11,6 +11,13 @@ namespace Anoprsst
         bool LessThan(T a, T b);
     }
 
+    public interface IScratchAllocator<T>
+    {
+        T[] RentAtLeast(int size);
+        void Return(T[] rentedArr);
+    }
+
+    struct ScratchAllocator<T> { }
 
     public static class OrderingsFor<T>
     {
