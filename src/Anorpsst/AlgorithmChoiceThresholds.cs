@@ -7,7 +7,8 @@ namespace Anoprsst
     {
         public int TopDownInsertionSortBatchSize;
         public int BottomUpInsertionSortBatchSize;
-        public int QuickSortFastMedianThreshold;
+        
+        public int QuickSortFastMedianThreshold;//must be greater than 1.
         public int MinimalParallelQuickSortBatchSize;
 
         public static AlgorithmChoiceThresholds<T> Defaults {
