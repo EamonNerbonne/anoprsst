@@ -7,7 +7,6 @@ namespace Anoprsst
     /// <summary>
     /// Avoid using this to wrap non-struct IComparables.  Although that works, doing so imposes large overheads, rendering any sorting algorithm pretty much as slow as Array.Sort.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public struct ComparableOrdering<T> : IOrdering<T>
         where T : IComparable<T>
     {
