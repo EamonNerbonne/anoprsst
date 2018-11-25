@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Anoprsst.Uncommon
 {
-    public static class OrderableExtensions
+    public static class OrderableUncommonExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DualPivotQuickSort<T, TOrder>(this Orderable<T, TOrder> orderable)
