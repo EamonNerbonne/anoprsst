@@ -281,15 +281,18 @@ namespace Anoprsst
 #endif
 
                 while (true) {
+                    //on the first iteration,  the following loop bails at the lastest when it reaches the midpoint, so ref firstPtr < ref lastPtr
                     while (ordering.LessThan(firstPtr, pivotValue)) {
                         firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                     }
 
+                    //on the first iteration, the following loop either succeeds at least once (decrementing lastOffset), or it bails immediately
                     while (ordering.LessThan(pivotValue, lastPtr)) {
                         lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
                         lastOffset--;
                     }
 
+                    //on the first iteration, either lastOffset has been decremented, OR ref lastPtr > ref firstPtr; so if we break here, then lastOffset was decremented
                     if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr)) {
                         break; // TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
                     }
