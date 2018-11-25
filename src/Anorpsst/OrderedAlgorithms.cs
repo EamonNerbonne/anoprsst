@@ -168,7 +168,7 @@ namespace Anoprsst
         ///     Precondition: memory in range [firstPtr, firstPtr+lastOffset] can be mutated, and lastOffset >= 1
         ///     Postcondition: returnvalue in range [0, lastOffset-1]
         /// </summary>
-        public static int Partition_Unsafe(TOrder ordering, ref T firstPtr, int lastOffset)
+        static int Partition_Unsafe(TOrder ordering, ref T firstPtr, int lastOffset)
         {
             //precondition: 1 <= lastOffset
             //so midpoint != lastOffset
