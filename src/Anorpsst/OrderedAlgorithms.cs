@@ -21,7 +21,7 @@ namespace Anoprsst
 
     public static class OrderingsFor<T>
     {
-        static readonly AlgorithmChoiceThresholds<T> Thresholds = AlgorithmChoiceThresholds<T>.Defaults;
+        static readonly AlgorithmChoiceThresholds<T> Thresholds;
         static OrderingsFor() => Thresholds = AlgorithmChoiceThresholds<T>.Defaults;
 
         public static class WithOrder<TOrder>
@@ -61,12 +61,10 @@ namespace Anoprsst
             public static void QuickSort(TOrder ordering, Span<T> array)
             {
                 var lastOffset = array.Length - 1;
-                if (array.Length > 1) {
-                    if (lastOffset >= Thresholds.QuickSortFastMedianThreshold) {
-                        QuickSort_Inclusive_Unsafe(ordering, ref array[0], lastOffset);
-                    } else {
-                        QuickSort_Inclusive_Small_Unsafe(ordering, ref array[0], lastOffset);
-                    }
+                if (lastOffset >= Thresholds.QuickSortFastMedianThreshold) {
+                    QuickSort_Inclusive_Unsafe(ordering, ref array[0], lastOffset);
+                } else if (lastOffset > 0) {
+                    QuickSort_Inclusive_Small_Unsafe(ordering, ref array[0], lastOffset);
                 }
             }
 
@@ -163,18 +161,12 @@ namespace Anoprsst
                 }
             }
 
-            //[MethodImpl(MethodImplOptions.NoInlining)]
+            [MethodImpl(MethodImplOptions.NoInlining)]
             static void QuickSort_Inclusive_Unsafe(TOrder ordering, ref T ptr, int lastOffset)
             {
                 while (true) {
                     var pivot = PartitionWithMedian_Unsafe(ordering, ref ptr, lastOffset);
-                    var subLastOffset = lastOffset - (pivot + 1);
-                    ref var subPtr = ref Unsafe.Add(ref ptr, pivot + 1);
-                    if (subLastOffset >= Thresholds.QuickSortFastMedianThreshold) {
-                        QuickSort_Inclusive_Unsafe(ordering, ref subPtr, subLastOffset);
-                    } else {
-                        QuickSort_Inclusive_Small_Unsafe(ordering, ref subPtr, subLastOffset);
-                    }
+                    QuickSort_Inclusive_MaybeSmall_Unsafe(ordering, ref Unsafe.Add(ref ptr, pivot + 1), lastOffset - (pivot + 1));
 
                     if (pivot >= Thresholds.QuickSortFastMedianThreshold) {
                         lastOffset = pivot; //sort of QuickSort_Inclusive_Unsafe(ordering, ref ptr, pivot);
@@ -189,7 +181,7 @@ namespace Anoprsst
             /// <summary>
             ///     precondition:memory in range [firstPtr, firstPtr+lastOffset] can be mutated, also implying lastOffset >= 0
             /// </summary>
-            //[MethodImpl(MethodImplOptions.NoInlining)]
+            [MethodImpl(MethodImplOptions.NoInlining)]
             static void QuickSort_Inclusive_Small_Unsafe(TOrder ordering, ref T firstPtr, int lastOffset)
             {
                 while (lastOffset >= Thresholds.TopDownInsertionSortBatchSize) {
