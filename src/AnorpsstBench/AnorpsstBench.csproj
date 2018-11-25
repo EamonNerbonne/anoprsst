@@ -2,16 +2,15 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp2.1;net471</TargetFrameworks>
+    <TargetFrameworks>net47;netcoreapp2.1</TargetFrameworks>
     <LangVersion>7.3</LangVersion>
-    <TieredCompilation>true</TieredCompilation>
+    <!--<TieredCompilation>true</TieredCompilation>-->
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IncrementalMeanVarianceAccumulator" Version="1.0.0" />
-    <PackageReference Include="ExpressionToCodeLib" Version="3.1.0" />
-    <ProjectReference Include="..\Anorpsst\Anoprsst.csproj" />
+      <ProjectReference Include="..\Anorpsst\Anoprsst.csproj" />
+      <PackageReference Include="IncrementalMeanVarianceAccumulator" Version="1.0.0" />
+      <PackageReference Include="ExpressionToCodeLib" Version="3.1.0" />
   </ItemGroup>
-
 
 </Project>
