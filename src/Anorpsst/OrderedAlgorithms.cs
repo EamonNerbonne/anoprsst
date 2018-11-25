@@ -66,13 +66,6 @@ namespace Anoprsst
                 }
             }
 
-            public static void QuickSort_ForSmallArrays(TOrder ordering, Span<T> array)
-            {
-                if (array.Length > 1) {
-                    QuickSort_Inclusive_Small_Unsafe(ordering, ref array[0], array.Length - 1);
-                }
-            }
-
             public static void InsertionSort_ForVerySmallArrays(TOrder ordering, Span<T> array)
             {
                 if (array.Length > 1) {
@@ -94,7 +87,7 @@ namespace Anoprsst
                 var length = array.Length;
                 if (length < Thresholds.MinimalParallelQuickSortBatchSize << 1) {
                     if (length > 1) {
-                        QuickSort_Inclusive_Small_Unsafe(ordering, ref array[0], array.Length - 1);
+                        QuickSort_Inclusive_Unsafe(ordering, ref array[0], array.Length - 1);
                     }
 
                     return;
@@ -132,7 +125,7 @@ namespace Anoprsst
                     var ordering = Ordering;
                     while (lastIdx >= splitAt) {
                         countdownEvent.AddCount(1);
-                        var pivot = PartitionWithMedian_Unsafe(ordering, ref firstRef, lastIdx);
+                        var pivot = Partition_Unsafe(ordering, ref firstRef, lastIdx);
                         ThreadPool.UnsafeQueueUserWorkItem(
                             QuickSort_Inclusive_Par2_callback,
                             new QuickSort_Inclusive_ParallelArgs {
@@ -149,29 +142,17 @@ namespace Anoprsst
                 }
             }
 
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            static void QuickSort_Inclusive_Unsafe(TOrder ordering, ref T ptr, int lastOffset)
-            {
-                while (lastOffset >= Thresholds.QuickSortFastMedianThreshold) {
-                    var pivot = PartitionWithMedian_Unsafe(ordering, ref ptr, lastOffset);
-                    QuickSort_Inclusive_Unsafe(ordering, ref Unsafe.Add(ref ptr, pivot + 1), lastOffset - (pivot + 1));
-                    lastOffset = pivot; //sort of QuickSort_Inclusive_Unsafe(ordering, ref ptr, pivot);
-                }
-
-                QuickSort_Inclusive_Small_Unsafe(ordering, ref ptr, lastOffset);
-            }
-
             /// <summary>
             ///     precondition:memory in range [firstPtr, firstPtr+lastOffset] can be mutated, also implying lastOffset >= 0
             /// </summary>
             [MethodImpl(MethodImplOptions.NoInlining)]
-            static void QuickSort_Inclusive_Small_Unsafe(TOrder ordering, ref T firstPtr, int lastOffset)
+            static void QuickSort_Inclusive_Unsafe(TOrder ordering, ref T firstPtr, int lastOffset)
             {
                 while (lastOffset >= Thresholds.TopDownInsertionSortBatchSize) {
                     //invariant: lastOffset >= 1
                     var pivotIdx = Partition_Unsafe(ordering, ref firstPtr, lastOffset);
                     //invariant: pivotIdx in [0, lastOffset-1]
-                    QuickSort_Inclusive_Small_Unsafe(ordering, ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - (pivotIdx + 1));
+                    QuickSort_Inclusive_Unsafe(ordering, ref Unsafe.Add(ref firstPtr, pivotIdx + 1), lastOffset - (pivotIdx + 1));
                     lastOffset = pivotIdx; //QuickSort(array, firstIdx, pivot);
                 }
 
@@ -186,77 +167,55 @@ namespace Anoprsst
             {
                 //precondition: 1 <= lastOffset
                 //so midpoint != lastOffset
-#if true
-                ref var midPtr = ref Unsafe.Add(ref firstPtr, lastOffset >> 1);
-                SortThreeIndexes(ordering, ref firstPtr, ref midPtr, ref Unsafe.Add(ref firstPtr, lastOffset));
-                var pivotValue = midPtr;
-                lastOffset--;
-                ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
-                firstPtr = ref Unsafe.Add(ref firstPtr, 1);
-#else
-            var pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
-            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
-#endif
-                return PartitionWithGivenValue(ordering, ref firstPtr, lastOffset, pivotValue, ref lastPtr);
-            }
+                T pivotValue;
+                ref var lastPtr = ref firstPtr; 
+                if (lastOffset < Thresholds.QuickSortFastMedianThreshold) {
+                    SortThreeIndexes(ordering, ref firstPtr, ref Unsafe.Add(ref firstPtr, lastOffset >> 1), ref Unsafe.Add(ref firstPtr, lastOffset));
+                    pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
+                    lastOffset--;
+                    lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+                    firstPtr = ref Unsafe.Add(ref firstPtr, 1);
+                } else {
+                    MedianOf7(
+                        ordering,
+                        ref firstPtr,
+                        ref Unsafe.Add(ref firstPtr, 1),
+                        ref Unsafe.Add(ref firstPtr, 2),
+                        ref Unsafe.Add(ref firstPtr, lastOffset >> 1),
+                        ref Unsafe.Add(ref firstPtr, lastOffset - 2),
+                        ref Unsafe.Add(ref firstPtr, lastOffset - 1),
+                        ref Unsafe.Add(ref firstPtr, lastOffset));
 
-            static int PartitionWithMedian_Unsafe(TOrder ordering, ref T firstPtr, int lastOffset)
-            {
-#if false
-//InsertionSort_InPlace_Unsafe_Inclusive(ref Unsafe.Add(ref firstPtr, midpoint-3),ref Unsafe.Add(ref firstPtr, midpoint+3));
-//var pivotValue = midPtr;
-//ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
-            MedianOf5(
-                ref firstPtr,
-                ref Unsafe.Add(ref firstPtr, 1),
-                ref Unsafe.Add(ref firstPtr, lastOffset >> 1),
-                ref Unsafe.Add(ref firstPtr, lastOffset - 1),
-                ref Unsafe.Add(ref firstPtr, lastOffset));
+                    pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
+                    lastOffset = lastOffset - 3;
+                    lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
+                    firstPtr = ref Unsafe.Add(ref firstPtr, 3);
+                }
+                //return PartitionWithGivenValue(ordering, ref firstPtr, lastOffset, pivotValue, ref lastPtr);
+                while (true) {
+                    //on the first iteration,  the following loop bails at the lastest when it reaches the midpoint, so ref firstPtr < ref lastPtr
+                    while (ordering.LessThan(firstPtr, pivotValue)) {
+                        firstPtr = ref Unsafe.Add(ref firstPtr, 1);
+                    }
 
-            var pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
-            lastOffset = lastOffset - 2;
-            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
-            firstPtr = ref Unsafe.Add(ref firstPtr, 2);
-#elif true
-                MedianOf7(
-                    ordering,
-                    ref firstPtr,
-                    ref Unsafe.Add(ref firstPtr, 1),
-                    ref Unsafe.Add(ref firstPtr, 2),
-                    ref Unsafe.Add(ref firstPtr, lastOffset >> 1),
-                    ref Unsafe.Add(ref firstPtr, lastOffset - 2),
-                    ref Unsafe.Add(ref firstPtr, lastOffset - 1),
-                    ref Unsafe.Add(ref firstPtr, lastOffset));
+                    //on the first iteration, the following loop either succeeds at least once (decrementing lastOffset), or it bails immediately
+                    while (ordering.LessThan(pivotValue, lastPtr)) {
+                        lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
+                        lastOffset--;
+                    }
 
-                var pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
-                lastOffset = lastOffset - 3;
-                ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
-                firstPtr = ref Unsafe.Add(ref firstPtr, 3);
-#else
-            SortThreeIndexes(
-                ref Unsafe.Add(ref firstPtr, 1),
-                ref firstPtr,
-                ref Unsafe.Add(ref firstPtr, 2));
-            SortThreeIndexes(
-                ref Unsafe.Add(ref firstPtr, (lastOffset >> 1)-1),
-                ref Unsafe.Add(ref firstPtr, lastOffset >> 1),
-                ref Unsafe.Add(ref firstPtr, (lastOffset >> 1)+1));
-            SortThreeIndexes(
-                ref Unsafe.Add(ref firstPtr, lastOffset - 2),
-                ref Unsafe.Add(ref firstPtr, lastOffset),
-                ref Unsafe.Add(ref firstPtr, lastOffset - 1));
-            SortThreeIndexes(
-                ref firstPtr,
-                ref Unsafe.Add(ref firstPtr, lastOffset >> 1),
-                ref Unsafe.Add(ref firstPtr, lastOffset));
+                    //on the first iteration, either lastOffset has been decremented, OR ref lastPtr > ref firstPtr; so if we break here, then lastOffset was decremented
+                    if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr)) {
+                        break; // TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
+                    }
 
-            var pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
-            lastOffset = lastOffset - 1;
-            ref var lastPtr = ref Unsafe.Add(ref firstPtr, lastOffset);
-            firstPtr = ref Unsafe.Add(ref firstPtr, 1);
-#endif
+                    lastOffset--;
+                    (firstPtr, lastPtr) = (lastPtr, firstPtr);
+                    firstPtr = ref Unsafe.Add(ref firstPtr, 1);
+                    lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
+                }
 
-                return PartitionWithGivenValue(ordering, ref firstPtr, lastOffset, pivotValue, ref lastPtr);
+                return lastOffset;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -674,7 +633,7 @@ namespace Anoprsst
             static void DualPivotQuickSort_Inclusive(TOrder ordering, ref T firstPtr, int lastOffset)
             {
                 if (lastOffset < 400) {
-                    QuickSort_Inclusive_Small_Unsafe(ordering, ref firstPtr, lastOffset);
+                    QuickSort_Inclusive_Unsafe(ordering, ref firstPtr, lastOffset);
                     //InsertionSort_InPlace(array, firstIdx, lastIdx + 1);
                 } else {
                     // lp means left pivot, and rp means right pivot.

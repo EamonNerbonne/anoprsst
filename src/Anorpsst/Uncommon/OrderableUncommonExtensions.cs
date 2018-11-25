@@ -17,11 +17,6 @@ namespace Anoprsst.Uncommon
             => OrderingsFor<T>.WithOrder<TOrder>.AltTopDownMergeSort(orderable.Order, orderable.Block);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void QuickSort_ForSmallArrays<T, TOrder>(this Orderable<T, TOrder> orderable)
-            where TOrder : struct, IOrdering<T>
-            => OrderingsFor<T>.WithOrder<TOrder>.QuickSort_ForSmallArrays(orderable.Order, orderable.Block);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void InsertionSort_ForVerySmallArrays<T, TOrder>(this Orderable<T, TOrder> orderable)
             where TOrder : struct, IOrdering<T>
             => OrderingsFor<T>.WithOrder<TOrder>.InsertionSort_ForVerySmallArrays(orderable.Order, orderable.Block);
