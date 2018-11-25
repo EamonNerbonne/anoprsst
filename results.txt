@@ -4,695 +4,696 @@ type (int, long, DateTime, string, Guid): total size 48.5 bytes of which value 4
 (int, long, DateTime, string, Guid): 11/16000/1000
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of (int, long, DateTime, string, Guid) with 32.0 elements (average over 2520142 benchmarked arrays).
-ArraySort_OrderComparer: mean 102.008~0.02 ns/item; median 109.6; overhead: 25.9%
-     DualPivotQuickSort: mean 43.9133~0.0095 ns/item; median 48.2; overhead: 43.9%
-      ParallelQuickSort: mean 44.013~0.017 ns/item; median 48.2; overhead: 43.9%
-              QuickSort: mean 43.8544~0.0094 ns/item; median 48.2; overhead: 44.1%
-      BottomUpMergeSort: mean 60.7996~0.018 ns/item; median 63.5; overhead: 36.9%
-       TopDownMergeSort: mean 52.7256~0.012 ns/item; median 58.0; overhead: 39.0%
-    AltTopDownMergeSort: mean 51.211~0.03 ns/item; median 56.2; overhead: 39.9%
+ArraySort_OrderComparer: mean 102.148~0.018 ns/item; median 109.6; overhead: 25.7%
+     DualPivotQuickSort: mean 46.7259~0.01 ns/item; median 51.6; overhead: 41.9%
+      ParallelQuickSort: mean 46.922~0.02 ns/item; median 51.7; overhead: 41.9%
+              QuickSort: mean 46.5308~0.0099 ns/item; median 51.5; overhead: 42.1%
+      BottomUpMergeSort: mean 64.6825~0.018 ns/item; median 66.6; overhead: 36.2%
+       TopDownMergeSort: mean 54.363~0.019 ns/item; median 59.4; overhead: 38.1%
+    AltTopDownMergeSort: mean 52.3766~0.011 ns/item; median 57.7; overhead: 39.2%
 
 type SampleClass: total size 32.0 bytes of which value 16.0 and heap size 16.0
 SampleClass: 24/10000/1500
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of SampleClass with 32.0 elements (average over 2520142 benchmarked arrays).
-ArraySort_OrderComparer: mean 30.9056~0.0091 ns/item; median 30.7; overhead: 29.3%
-     DualPivotQuickSort: mean 17.931~0.007 ns/item; median 18.7; overhead: 39.4%
-      ParallelQuickSort: mean 18.072~0.0075 ns/item; median 18.9; overhead: 39.2%
-              QuickSort: mean 17.996~0.0069 ns/item; median 18.9; overhead: 39.4%
-      BottomUpMergeSort: mean 23.027~0.0095 ns/item; median 22.3; overhead: 36.0%
-       TopDownMergeSort: mean 19.556~0.0072 ns/item; median 20.6; overhead: 37.1%
-    AltTopDownMergeSort: mean 18.954~0.0071 ns/item; median 19.8; overhead: 38.3%
+ArraySort_OrderComparer: mean 31.2415~0.0087 ns/item; median 31.2; overhead: 28.9%
+     DualPivotQuickSort: mean 18.075~0.0072 ns/item; median 18.9; overhead: 39.2%
+      ParallelQuickSort: mean 18.045~0.0072 ns/item; median 18.9; overhead: 39.5%
+              QuickSort: mean 17.991~0.0071 ns/item; median 18.9; overhead: 39.6%
+      BottomUpMergeSort: mean 23.162~0.0093 ns/item; median 22.3; overhead: 35.8%
+       TopDownMergeSort: mean 20.085~0.0074 ns/item; median 21.1; overhead: 37.0%
+    AltTopDownMergeSort: mean 19.576~0.017 ns/item; median 20.4; overhead: 38.0%
 
 type (int, int, int): total size 16.0 bytes of which value 16.0 and heap size 0.0
 (int, int, int): 34/16000/1000
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of (int, int, int) with 32.0 elements (average over 2520142 benchmarked arrays).
-ArraySort_OrderComparer: mean 26.702~0.022 ns/item; median 28.6; overhead: 34.1%
-     DualPivotQuickSort: mean 14.011~0.0062 ns/item; median 15.4; overhead: 47.7%
-      ParallelQuickSort: mean 13.874~0.006 ns/item; median 15.4; overhead: 48.0%
-              QuickSort: mean 13.32~0.0062 ns/item; median 14.6; overhead: 49.2%
-      BottomUpMergeSort: mean 16.792~0.01 ns/item; median 16.4; overhead: 45.6%
-       TopDownMergeSort: mean 13.035~0.0061 ns/item; median 14.6; overhead: 49.0%
-    AltTopDownMergeSort: mean 14.019~0.0062 ns/item; median 15.4; overhead: 47.6%
+ArraySort_OrderComparer: mean 27.014~0.0088 ns/item; median 29.4; overhead: 33.9%
+     DualPivotQuickSort: mean 13.352~0.0062 ns/item; median 14.6; overhead: 49.1%
+      ParallelQuickSort: mean 20.783~0.0099 ns/item; median 19.0; overhead: 35.7%
+              QuickSort: mean 13.095~0.006 ns/item; median 14.6; overhead: 49.6%
+      BottomUpMergeSort: mean 19.006~0.0098 ns/item; median 18.5; overhead: 43.5%
+       TopDownMergeSort: mean 13.233~0.0061 ns/item; median 14.8; overhead: 48.9%
+    AltTopDownMergeSort: mean 15.954~0.0069 ns/item; median 19.0; overhead: 43.7%
 
 type int: total size 4.0 bytes of which value 16.0 and heap size -12.0
 int: 64/13000/1100
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of int with 32.0 elements (average over 2520142 benchmarked arrays).
-    ArraySort_Primitive: mean 11.676~0.0057 ns/item; median 12.2; overhead: 44.8%
-     DualPivotQuickSort: mean 7.8262~0.0058 ns/item; median 7.4; overhead: 56.4%
-      ParallelQuickSort: mean 7.8255~0.0058 ns/item; median 7.4; overhead: 56.3%
-              QuickSort: mean 7.7271~0.0057 ns/item; median 7.3; overhead: 57.0%
-      BottomUpMergeSort: mean 11.134~0.0084 ns/item; median 10.5; overhead: 49.3%
-       TopDownMergeSort: mean 7.8068~0.0057 ns/item; median 7.4; overhead: 56.2%
-    AltTopDownMergeSort: mean 7.9206~0.0058 ns/item; median 7.6; overhead: 56.4%
+    ArraySort_Primitive: mean 11.629~0.0056 ns/item; median 12.2; overhead: 44.2%
+     DualPivotQuickSort: mean 7.591~0.0056 ns/item; median 7.3; overhead: 56.2%
+      ParallelQuickSort: mean 7.6673~0.0057 ns/item; median 7.3; overhead: 56.2%
+              QuickSort: mean 7.4946~0.0056 ns/item; median 7.1; overhead: 56.8%
+      BottomUpMergeSort: mean 10.935~0.021 ns/item; median 10.4; overhead: 49.1%
+       TopDownMergeSort: mean 7.5627~0.0056 ns/item; median 7.3; overhead: 56.3%
+    AltTopDownMergeSort: mean 7.6484~0.0057 ns/item; median 7.3; overhead: 56.1%
 
 type double: total size 8.0 bytes of which value 16.0 and heap size -8.0
 double: 64/13000/1100
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of double with 32.0 elements (average over 2520142 benchmarked arrays).
-    ArraySort_Primitive: mean 14.88~0.011 ns/item; median 15.8; overhead: 40.3%
-     DualPivotQuickSort: mean 8.6987~0.0059 ns/item; median 8.5; overhead: 54.0%
-      ParallelQuickSort: mean 8.6763~0.0057 ns/item; median 8.5; overhead: 53.9%
-              QuickSort: mean 8.5823~0.0057 ns/item; median 8.3; overhead: 54.5%
-      BottomUpMergeSort: mean 12.044~0.0076 ns/item; median 11.4; overhead: 47.8%
-       TopDownMergeSort: mean 8.6446~0.0061 ns/item; median 8.5; overhead: 54.1%
-    AltTopDownMergeSort: mean 8.667~0.0058 ns/item; median 8.5; overhead: 54.3%
+    ArraySort_Primitive: mean 14.698~0.0058 ns/item; median 15.8; overhead: 40.0%
+     DualPivotQuickSort: mean 8.4008~0.0057 ns/item; median 8.3; overhead: 54.3%
+      ParallelQuickSort: mean 8.3894~0.0057 ns/item; median 8.3; overhead: 54.6%
+              QuickSort: mean 8.3455~0.0057 ns/item; median 8.1; overhead: 55.0%
+      BottomUpMergeSort: mean 11.904~0.0077 ns/item; median 11.4; overhead: 47.8%
+       TopDownMergeSort: mean 8.3563~0.0056 ns/item; median 8.3; overhead: 54.5%
+    AltTopDownMergeSort: mean 8.4042~0.0057 ns/item; median 8.3; overhead: 54.6%
 
 type ulong: total size 8.0 bytes of which value 16.0 and heap size -8.0
 ulong: 64/13000/1100
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of ulong with 32.0 elements (average over 2520142 benchmarked arrays).
-    ArraySort_Primitive: mean 12.933~0.0058 ns/item; median 13.6; overhead: 42.5%
-     DualPivotQuickSort: mean 8.1129~0.0059 ns/item; median 7.9; overhead: 55.2%
-      ParallelQuickSort: mean 8.05~0.0058 ns/item; median 7.8; overhead: 55.4%
-              QuickSort: mean 8.0403~0.0057 ns/item; median 7.8; overhead: 55.6%
-      BottomUpMergeSort: mean 11.147~0.0079 ns/item; median 10.5; overhead: 49.4%
-       TopDownMergeSort: mean 8.0217~0.0057 ns/item; median 7.8; overhead: 55.4%
-    AltTopDownMergeSort: mean 8.1189~0.0057 ns/item; median 7.9; overhead: 55.4%
+    ArraySort_Primitive: mean 12.619~0.0058 ns/item; median 13.3; overhead: 43.0%
+     DualPivotQuickSort: mean 7.5575~0.0056 ns/item; median 7.3; overhead: 57.1%
+      ParallelQuickSort: mean 7.6638~0.0056 ns/item; median 7.3; overhead: 57.1%
+              QuickSort: mean 7.5789~0.0056 ns/item; median 7.3; overhead: 57.5%
+      BottomUpMergeSort: mean 11.197~0.0085 ns/item; median 10.7; overhead: 49.0%
+       TopDownMergeSort: mean 7.5637~0.0056 ns/item; median 7.3; overhead: 57.5%
+    AltTopDownMergeSort: mean 7.6341~0.0056 ns/item; median 7.3; overhead: 57.4%
 
 type uint: total size 4.0 bytes of which value 16.0 and heap size -12.0
 uint: 64/13000/1100
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of uint with 32.0 elements (average over 2520142 benchmarked arrays).
-    ArraySort_Primitive: mean 12.717~0.0059 ns/item; median 13.3; overhead: 42.6%
-     DualPivotQuickSort: mean 7.7372~0.0058 ns/item; median 7.3; overhead: 56.3%
-      ParallelQuickSort: mean 7.6944~0.0057 ns/item; median 7.3; overhead: 56.4%
-              QuickSort: mean 7.6869~0.018 ns/item; median 7.3; overhead: 57.0%
-      BottomUpMergeSort: mean 11.03~0.0077 ns/item; median 10.4; overhead: 49.4%
-       TopDownMergeSort: mean 7.7143~0.0057 ns/item; median 7.3; overhead: 56.5%
-    AltTopDownMergeSort: mean 7.7901~0.0058 ns/item; median 7.4; overhead: 56.6%
+    ArraySort_Primitive: mean 12.71~0.024 ns/item; median 13.3; overhead: 42.8%
+     DualPivotQuickSort: mean 7.7129~0.0057 ns/item; median 7.3; overhead: 56.5%
+      ParallelQuickSort: mean 7.6632~0.0057 ns/item; median 7.3; overhead: 56.7%
+              QuickSort: mean 7.7313~0.0056 ns/item; median 7.4; overhead: 56.6%
+      BottomUpMergeSort: mean 10.895~0.0076 ns/item; median 10.4; overhead: 49.5%
+       TopDownMergeSort: mean 7.5818~0.0056 ns/item; median 7.3; overhead: 56.9%
+    AltTopDownMergeSort: mean 7.6728~0.0057 ns/item; median 7.3; overhead: 57.1%
 
 type int: total size 4.0 bytes of which value 16.0 and heap size -12.0
 int: 64/13000/1100
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of int with 32.0 elements (average over 2520142 benchmarked arrays).
-    ArraySort_Primitive: mean 11.684~0.0057 ns/item; median 12.2; overhead: 46.2%
-     DualPivotQuickSort: mean 8.5988~0.0058 ns/item; median 8.3; overhead: 54.4%
-      ParallelQuickSort: mean 8.6409~0.0058 ns/item; median 8.5; overhead: 54.4%
-              QuickSort: mean 8.6334~0.0058 ns/item; median 8.5; overhead: 54.7%
-      BottomUpMergeSort: mean 11.299~0.008 ns/item; median 10.7; overhead: 50.1%
-       TopDownMergeSort: mean 8.6449~0.0058 ns/item; median 8.5; overhead: 54.1%
-    AltTopDownMergeSort: mean 8.6558~0.0058 ns/item; median 8.5; overhead: 54.4%
+    ArraySort_Primitive: mean 11.541~0.0056 ns/item; median 12.0; overhead: 46.3%
+     DualPivotQuickSort: mean 8.2988~0.0058 ns/item; median 7.9; overhead: 55.6%
+      ParallelQuickSort: mean 8.2178~0.0057 ns/item; median 7.9; overhead: 56.1%
+              QuickSort: mean 8.1861~0.0056 ns/item; median 7.9; overhead: 56.2%
+      BottomUpMergeSort: mean 11.318~0.0078 ns/item; median 10.7; overhead: 50.0%
+       TopDownMergeSort: mean 8.1111~0.0057 ns/item; median 7.9; overhead: 56.3%
+    AltTopDownMergeSort: mean 8.4083~0.0058 ns/item; median 8.1; overhead: 55.7%
 
 
 type (int, long, DateTime, string, Guid): total size 48.0 bytes of which value 48.0 and heap size 0.0
 (int, long, DateTime, string, Guid): 11/16000/1000
 This implies a working set size of 0.1MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of (int, long, DateTime, string, Guid) with 128.0 elements (average over 732494 benchmarked arrays).
-ArraySort_OrderComparer: mean 143.555~0.039 ns/item; median 144.1; overhead: 18.6%
-     DualPivotQuickSort: mean 62.9097~0.014 ns/item; median 63.3; overhead: 34.0%
-      ParallelQuickSort: mean 62.9195~0.014 ns/item; median 63.3; overhead: 33.9%
-              QuickSort: mean 63.001~0.025 ns/item; median 63.3; overhead: 34.0%
-      BottomUpMergeSort: mean 85.6544~0.025 ns/item; median 84.8; overhead: 28.0%
-       TopDownMergeSort: mean 79.0023~0.016 ns/item; median 78.0; overhead: 28.7%
-    AltTopDownMergeSort: mean 76.5421~0.02 ns/item; median 76.6; overhead: 29.5%
+ArraySort_OrderComparer: mean 145.047~0.039 ns/item; median 145.5; overhead: 18.7%
+     DualPivotQuickSort: mean 67.8687~0.014 ns/item; median 68.3; overhead: 32.9%
+      ParallelQuickSort: mean 67.8893~0.018 ns/item; median 68.3; overhead: 32.9%
+              QuickSort: mean 67.7251~0.016 ns/item; median 68.2; overhead: 32.9%
+      BottomUpMergeSort: mean 87.1947~0.025 ns/item; median 86.2; overhead: 28.1%
+       TopDownMergeSort: mean 80.8~0.03   ns/item; median 79.6; overhead: 28.8%
+    AltTopDownMergeSort: mean 78.0388~0.015 ns/item; median 78.0; overhead: 29.6%
 
 type SampleClass: total size 32.0 bytes of which value 8.0 and heap size 24.0
 SampleClass: 24/10000/1500
 This implies a working set size of 0.1MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of SampleClass with 128.0 elements (average over 732494 benchmarked arrays).
-ArraySort_OrderComparer: mean 38.8269~0.012 ns/item; median 37.4; overhead: 18.2%
-     DualPivotQuickSort: mean 25.789~0.0099 ns/item; median 25.5; overhead: 24.0%
-      ParallelQuickSort: mean 25.889~0.01 ns/item; median 25.5; overhead: 24.0%
-              QuickSort: mean 25.864~0.0099 ns/item; median 25.5; overhead: 24.0%
-      BottomUpMergeSort: mean 30.943~0.012 ns/item; median 29.5; overhead: 21.9%
-       TopDownMergeSort: mean 29.201~0.016 ns/item; median 29.5; overhead: 22.0%
-    AltTopDownMergeSort: mean 28.358~0.01 ns/item; median 28.1; overhead: 22.4%
+ArraySort_OrderComparer: mean 39.4411~0.011 ns/item; median 38.0; overhead: 18.0%
+     DualPivotQuickSort: mean 26.429~0.01 ns/item; median 26.1; overhead: 24.0%
+      ParallelQuickSort: mean 26.577~0.01 ns/item; median 26.2; overhead: 23.8%
+              QuickSort: mean 26.15~0.023 ns/item; median 25.7; overhead: 24.0%
+      BottomUpMergeSort: mean 30.635~0.012 ns/item; median 29.2; overhead: 22.1%
+       TopDownMergeSort: mean 29.143~0.011 ns/item; median 29.4; overhead: 22.1%
+    AltTopDownMergeSort: mean 28.437~0.011 ns/item; median 28.0; overhead: 22.5%
 
 type (int, int, int): total size 16.0 bytes of which value 16.0 and heap size 0.0
 (int, int, int): 34/16000/1000
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of (int, int, int) with 128.0 elements (average over 732494 benchmarked arrays).
-ArraySort_OrderComparer: mean 39.1117~0.011 ns/item; median 39.1; overhead: 21.4%
-     DualPivotQuickSort: mean 22.701~0.0091 ns/item; median 23.0; overhead: 31.2%
-      ParallelQuickSort: mean 22.687~0.0091 ns/item; median 23.0; overhead: 31.2%
-              QuickSort: mean 22.068~0.009 ns/item; median 22.5; overhead: 32.1%
-      BottomUpMergeSort: mean 24.706~0.014 ns/item; median 23.8; overhead: 30.5%
-       TopDownMergeSort: mean 21.81~0.009 ns/item; median 22.0; overhead: 31.9%
-    AltTopDownMergeSort: mean 23.097~0.017 ns/item; median 23.3; overhead: 30.9%
+ArraySort_OrderComparer: mean 39.7113~0.011 ns/item; median 39.7; overhead: 21.6%
+     DualPivotQuickSort: mean 22.285~0.0092 ns/item; median 22.6; overhead: 32.0%
+      ParallelQuickSort: mean 34.22~0.017 ns/item; median 32.7; overhead: 24.1%
+              QuickSort: mean 22.023~0.0091 ns/item; median 22.4; overhead: 32.1%
+      BottomUpMergeSort: mean 26.688~0.032 ns/item; median 25.7; overhead: 30.0%
+       TopDownMergeSort: mean 22.062~0.0092 ns/item; median 22.1; overhead: 32.5%
+    AltTopDownMergeSort: mean 27.802~0.01 ns/item; median 28.7; overhead: 27.4%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of int with 128.0 elements (average over 732494 benchmarked arrays).
-    ArraySort_Primitive: mean 17.834~0.0084 ns/item; median 17.4; overhead: 26.5%
-     DualPivotQuickSort: mean 13.25~0.0087 ns/item; median 13.1; overhead: 31.9%
-      ParallelQuickSort: mean 13.162~0.0087 ns/item; median 13.1; overhead: 32.0%
-              QuickSort: mean 13.148~0.0086 ns/item; median 13.1; overhead: 32.1%
-      BottomUpMergeSort: mean 15.858~0.011 ns/item; median 14.8; overhead: 29.5%
-       TopDownMergeSort: mean 13.602~0.0086 ns/item; median 13.5; overhead: 31.4%
-    AltTopDownMergeSort: mean 13.647~0.0086 ns/item; median 13.6; overhead: 31.4%
+    ArraySort_Primitive: mean 17.815~0.0083 ns/item; median 17.4; overhead: 25.8%
+     DualPivotQuickSort: mean 13.519~0.0085 ns/item; median 13.5; overhead: 31.4%
+      ParallelQuickSort: mean 12.941~0.0085 ns/item; median 13.0; overhead: 31.5%
+              QuickSort: mean 12.904~0.0084 ns/item; median 12.9; overhead: 31.6%
+      BottomUpMergeSort: mean 15.473~0.011 ns/item; median 14.5; overhead: 29.1%
+       TopDownMergeSort: mean 13.182~0.0087 ns/item; median 13.1; overhead: 31.3%
+    AltTopDownMergeSort: mean 13.39~0.0085 ns/item; median 13.3; overhead: 31.0%
 
 type double: total size 8.0 bytes of which value 8.0 and heap size 0.0
 double: 64/13000/1100
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of double with 128.0 elements (average over 732494 benchmarked arrays).
-    ArraySort_Primitive: mean 21.731~0.0087 ns/item; median 21.3; overhead: 24.2%
-     DualPivotQuickSort: mean 14.476~0.0087 ns/item; median 14.6; overhead: 31.1%
-      ParallelQuickSort: mean 14.535~0.0088 ns/item; median 14.6; overhead: 30.9%
-              QuickSort: mean 14.526~0.0087 ns/item; median 14.6; overhead: 31.0%
-      BottomUpMergeSort: mean 17.442~0.012 ns/item; median 16.6; overhead: 28.4%
-       TopDownMergeSort: mean 15.029~0.0087 ns/item; median 15.2; overhead: 30.1%
-    AltTopDownMergeSort: mean 15.239~0.014 ns/item; median 15.2; overhead: 30.1%
+    ArraySort_Primitive: mean 21.613~0.0086 ns/item; median 21.2; overhead: 24.2%
+     DualPivotQuickSort: mean 14.441~0.0085 ns/item; median 14.5; overhead: 30.9%
+      ParallelQuickSort: mean 14.521~0.019 ns/item; median 14.6; overhead: 30.8%
+              QuickSort: mean 14.364~0.0084 ns/item; median 14.5; overhead: 30.9%
+      BottomUpMergeSort: mean 17.298~0.011 ns/item; median 16.5; overhead: 31.0%
+       TopDownMergeSort: mean 14.909~0.0085 ns/item; median 15.1; overhead: 32.9%
+    AltTopDownMergeSort: mean 14.995~0.0084 ns/item; median 15.1; overhead: 32.8%
 
 type ulong: total size 8.0 bytes of which value 8.0 and heap size 0.0
 ulong: 64/13000/1100
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of ulong with 128.0 elements (average over 732494 benchmarked arrays).
-    ArraySort_Primitive: mean 19.285~0.0086 ns/item; median 18.8; overhead: 25.3%
-     DualPivotQuickSort: mean 13.453~0.0085 ns/item; median 13.4; overhead: 32.1%
-      ParallelQuickSort: mean 13.494~0.0085 ns/item; median 13.5; overhead: 32.0%
-              QuickSort: mean 13.33~0.0084 ns/item; median 13.3; overhead: 32.4%
-      BottomUpMergeSort: mean 15.862~0.011 ns/item; median 14.9; overhead: 29.6%
-       TopDownMergeSort: mean 13.983~0.0087 ns/item; median 14.0; overhead: 31.1%
-    AltTopDownMergeSort: mean 14.068~0.0088 ns/item; median 14.0; overhead: 31.0%
+    ArraySort_Primitive: mean 19.1~0.0084 ns/item; median 18.7; overhead: 25.5%
+     DualPivotQuickSort: mean 12.866~0.0084 ns/item; median 12.9; overhead: 32.7%
+      ParallelQuickSort: mean 12.904~0.0084 ns/item; median 12.9; overhead: 32.7%
+              QuickSort: mean 12.858~0.0084 ns/item; median 12.9; overhead: 32.8%
+      BottomUpMergeSort: mean 15.89~0.011 ns/item; median 14.9; overhead: 29.5%
+       TopDownMergeSort: mean 13.236~0.0084 ns/item; median 13.2; overhead: 32.2%
+    AltTopDownMergeSort: mean 13.441~0.0085 ns/item; median 13.3; overhead: 32.0%
 
 type uint: total size 4.0 bytes of which value 4.0 and heap size 0.0
 uint: 64/13000/1100
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of uint with 128.0 elements (average over 732494 benchmarked arrays).
-    ArraySort_Primitive: mean 19.002~0.0085 ns/item; median 18.6; overhead: 24.8%
-     DualPivotQuickSort: mean 12.92~0.0088 ns/item; median 12.9; overhead: 31.7%
-      ParallelQuickSort: mean 12.913~0.0084 ns/item; median 12.9; overhead: 31.7%
-              QuickSort: mean 13.013~0.0087 ns/item; median 13.0; overhead: 31.7%
-      BottomUpMergeSort: mean 15.523~0.011 ns/item; median 14.5; overhead: 29.2%
-       TopDownMergeSort: mean 13.227~0.0086 ns/item; median 13.2; overhead: 31.4%
-    AltTopDownMergeSort: mean 13.433~0.03 ns/item; median 13.2; overhead: 31.3%
+    ArraySort_Primitive: mean 19.041~0.0083 ns/item; median 18.7; overhead: 25.5%
+     DualPivotQuickSort: mean 12.902~0.0084 ns/item; median 12.9; overhead: 32.6%
+      ParallelQuickSort: mean 12.966~0.022 ns/item; median 12.9; overhead: 32.6%
+              QuickSort: mean 12.823~0.0084 ns/item; median 12.9; overhead: 32.8%
+      BottomUpMergeSort: mean 15.631~0.011 ns/item; median 14.7; overhead: 29.4%
+       TopDownMergeSort: mean 13.3~0.0088 ns/item; median 13.3; overhead: 31.7%
+    AltTopDownMergeSort: mean 13.491~0.0086 ns/item; median 13.3; overhead: 31.8%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 0.0MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of int with 128.0 elements (average over 732494 benchmarked arrays).
-    ArraySort_Primitive: mean 17.855~0.0083 ns/item; median 17.4; overhead: 28.1%
-     DualPivotQuickSort: mean 14.074~0.0086 ns/item; median 14.0; overhead: 32.5%
-      ParallelQuickSort: mean 14.066~0.0085 ns/item; median 14.1; overhead: 32.4%
-              QuickSort: mean 14.07~0.0084 ns/item; median 14.1; overhead: 32.5%
-      BottomUpMergeSort: mean 16.217~0.011 ns/item; median 15.3; overhead: 30.7%
-       TopDownMergeSort: mean 14.625~0.0085 ns/item; median 14.6; overhead: 31.5%
-    AltTopDownMergeSort: mean 14.547~0.0088 ns/item; median 14.5; overhead: 31.7%
+    ArraySort_Primitive: mean 17.788~0.0083 ns/item; median 17.4; overhead: 28.2%
+     DualPivotQuickSort: mean 13.821~0.0085 ns/item; median 13.8; overhead: 33.0%
+      ParallelQuickSort: mean 13.432~0.0085 ns/item; median 13.4; overhead: 33.5%
+              QuickSort: mean 13.73~0.0083 ns/item; median 13.8; overhead: 33.1%
+      BottomUpMergeSort: mean 16.108~0.012 ns/item; median 15.2; overhead: 30.9%
+       TopDownMergeSort: mean 14.251~0.0087 ns/item; median 14.2; overhead: 32.4%
+    AltTopDownMergeSort: mean 14.228~0.0085 ns/item; median 14.2; overhead: 32.4%
 
 
 type (int, long, DateTime, string, Guid): total size 48.0 bytes of which value 48.0 and heap size 0.0
 (int, long, DateTime, string, Guid): 11/16000/1000
 This implies a working set size of 0.8MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of (int, long, DateTime, string, Guid) with 1022.7 elements (average over 90094 benchmarked arrays).
-ArraySort_OrderComparer: mean 228.82~0.22 ns/item; median 206.7; overhead: 13.7%
-     DualPivotQuickSort: mean 102.65~0.094 ns/item; median 93.5; overhead: 25.9%
-      ParallelQuickSort: mean 97.588~0.1  ns/item; median 88.0; overhead: 27.7%
-              QuickSort: mean 98.198~0.099 ns/item; median 88.0; overhead: 27.2%
-      BottomUpMergeSort: mean 134.88~0.16 ns/item; median 118.1; overhead: 21.5%
-       TopDownMergeSort: mean 128.46~0.12 ns/item; median 120.0; overhead: 22.1%
-    AltTopDownMergeSort: mean 124.84~0.12 ns/item; median 114.3; overhead: 22.5%
+ArraySort_OrderComparer: mean 227.72~0.22 ns/item; median 205.6; overhead: 13.7%
+     DualPivotQuickSort: mean 108.57~0.1  ns/item; median 98.5; overhead: 24.9%
+      ParallelQuickSort: mean 105.54~0.11 ns/item; median 95.0; overhead: 26.4%
+              QuickSort: mean 104.61~0.11 ns/item; median 93.5; overhead: 25.9%
+      BottomUpMergeSort: mean 136.53~0.18 ns/item; median 119.2; overhead: 21.3%
+       TopDownMergeSort: mean 129.81~0.13 ns/item; median 120.9; overhead: 21.9%
+    AltTopDownMergeSort: mean 126.05~0.12 ns/item; median 115.2; overhead: 22.3%
 
 type SampleClass: total size 32.0 bytes of which value 8.0 and heap size 24.0
 SampleClass: 24/10000/1500
 This implies a working set size of 0.5MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of SampleClass with 1022.7 elements (average over 90094 benchmarked arrays).
-ArraySort_OrderComparer: mean 59.846~0.069 ns/item; median 53.2; overhead: 12.3%
-     DualPivotQuickSort: mean 42.272~0.045 ns/item; median 38.3; overhead: 16.3%
-      ParallelQuickSort: mean 41.601~0.045 ns/item; median 37.4; overhead: 16.7%
-              QuickSort: mean 41.301~0.044 ns/item; median 37.2; overhead: 16.7%
-      BottomUpMergeSort: mean 48.744~0.059 ns/item; median 43.7; overhead: 14.7%
-       TopDownMergeSort: mean 47.426~0.049 ns/item; median 41.6; overhead: 14.8%
-    AltTopDownMergeSort: mean 46.651~0.053 ns/item; median 41.5; overhead: 15.0%
+ArraySort_OrderComparer: mean 60.472~0.067 ns/item; median 53.7; overhead: 12.2%
+     DualPivotQuickSort: mean 42.563~0.046 ns/item; median 38.5; overhead: 16.2%
+      ParallelQuickSort: mean 41.343~0.045 ns/item; median 37.1; overhead: 16.8%
+              QuickSort: mean 41.382~0.047 ns/item; median 37.1; overhead: 16.7%
+      BottomUpMergeSort: mean 48.69~0.075 ns/item; median 43.6; overhead: 14.7%
+       TopDownMergeSort: mean 47.796~0.052 ns/item; median 41.8; overhead: 14.8%
+    AltTopDownMergeSort: mean 46.762~0.05 ns/item; median 41.5; overhead: 15.1%
 
 type (int, int, int): total size 16.0 bytes of which value 16.0 and heap size 0.0
 (int, int, int): 34/16000/1000
 This implies a working set size of 0.3MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of (int, int, int) with 1022.7 elements (average over 90094 benchmarked arrays).
-ArraySort_OrderComparer: mean 64.271~0.06 ns/item; median 58.6; overhead: 14.5%
-     DualPivotQuickSort: mean 38.715~0.038 ns/item; median 35.5; overhead: 21.8%
-      ParallelQuickSort: mean 38.261~0.038 ns/item; median 35.4; overhead: 22.2%
-              QuickSort: mean 37.564~0.036 ns/item; median 34.6; overhead: 22.2%
-      BottomUpMergeSort: mean 40.642~0.053 ns/item; median 35.6; overhead: 21.4%
-       TopDownMergeSort: mean 37.743~0.038 ns/item; median 35.0; overhead: 22.2%
-    AltTopDownMergeSort: mean 39.05~0.046 ns/item; median 35.6; overhead: 21.7%
+ArraySort_OrderComparer: mean 64.521~0.063 ns/item; median 58.4; overhead: 14.5%
+     DualPivotQuickSort: mean 41.9~0.038  ns/item; median 39.4; overhead: 20.3%
+      ParallelQuickSort: mean 45.655~0.075 ns/item; median 38.4; overhead: 20.9%
+              QuickSort: mean 38.171~0.038 ns/item; median 35.1; overhead: 22.0%
+      BottomUpMergeSort: mean 42.815~0.057 ns/item; median 37.0; overhead: 20.6%
+       TopDownMergeSort: mean 38.388~0.038 ns/item; median 35.9; overhead: 21.9%
+    AltTopDownMergeSort: mean 45.85~0.049 ns/item; median 41.3; overhead: 19.4%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 0.1MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of int with 1022.7 elements (average over 90094 benchmarked arrays).
-    ArraySort_Primitive: mean 28.618~0.032 ns/item; median 25.8; overhead: 17.2%
-     DualPivotQuickSort: mean 23.12~0.027 ns/item; median 21.3; overhead: 20.0%
-      ParallelQuickSort: mean 22.957~0.027 ns/item; median 21.2; overhead: 20.1%
-              QuickSort: mean 22.997~0.029 ns/item; median 21.2; overhead: 20.1%
-      BottomUpMergeSort: mean 25.55~0.037 ns/item; median 23.4; overhead: 19.1%
-       TopDownMergeSort: mean 24.501~0.028 ns/item; median 22.7; overhead: 19.0%
-    AltTopDownMergeSort: mean 24.954~0.027 ns/item; median 23.3; overhead: 18.9%
+    ArraySort_Primitive: mean 28.597~0.032 ns/item; median 25.8; overhead: 16.7%
+     DualPivotQuickSort: mean 23.918~0.029 ns/item; median 22.1; overhead: 19.5%
+      ParallelQuickSort: mean 22.623~0.025 ns/item; median 20.9; overhead: 19.7%
+              QuickSort: mean 22.669~0.027 ns/item; median 20.9; overhead: 19.7%
+      BottomUpMergeSort: mean 25.046~0.035 ns/item; median 23.2; overhead: 18.8%
+       TopDownMergeSort: mean 23.697~0.027 ns/item; median 22.0; overhead: 19.0%
+    AltTopDownMergeSort: mean 24.274~0.029 ns/item; median 22.6; overhead: 18.6%
 
 type double: total size 8.0 bytes of which value 8.0 and heap size 0.0
 double: 64/13000/1100
 This implies a working set size of 0.1MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of double with 1022.7 elements (average over 90094 benchmarked arrays).
-    ArraySort_Primitive: mean 34.236~0.038 ns/item; median 30.8; overhead: 16.0%
-     DualPivotQuickSort: mean 27.077~0.031 ns/item; median 25.1; overhead: 19.3%
-      ParallelQuickSort: mean 25.905~0.051 ns/item; median 23.9; overhead: 19.4%
-              QuickSort: mean 25.786~0.029 ns/item; median 23.9; overhead: 19.5%
-      BottomUpMergeSort: mean 28.912~0.037 ns/item; median 26.7; overhead: 18.3%
-       TopDownMergeSort: mean 27.467~0.03 ns/item; median 25.6; overhead: 18.4%
-    AltTopDownMergeSort: mean 27.782~0.029 ns/item; median 26.1; overhead: 18.3%
+    ArraySort_Primitive: mean 34.196~0.038 ns/item; median 30.8; overhead: 15.9%
+     DualPivotQuickSort: mean 25.868~0.028 ns/item; median 24.1; overhead: 19.2%
+      ParallelQuickSort: mean 25.604~0.028 ns/item; median 23.8; overhead: 19.4%
+              QuickSort: mean 25.553~0.026 ns/item; median 23.8; overhead: 19.4%
+      BottomUpMergeSort: mean 28.907~0.038 ns/item; median 26.8; overhead: 18.2%
+       TopDownMergeSort: mean 27.279~0.03 ns/item; median 25.6; overhead: 18.4%
+    AltTopDownMergeSort: mean 27.642~0.028 ns/item; median 26.0; overhead: 18.2%
 
 type ulong: total size 8.0 bytes of which value 8.0 and heap size 0.0
 ulong: 64/13000/1100
 This implies a working set size of 0.1MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of ulong with 1022.7 elements (average over 90094 benchmarked arrays).
-    ArraySort_Primitive: mean 30.585~0.036 ns/item; median 27.5; overhead: 16.6%
-     DualPivotQuickSort: mean 23.588~0.027 ns/item; median 21.8; overhead: 20.1%
-      ParallelQuickSort: mean 23.384~0.03 ns/item; median 21.5; overhead: 20.4%
-              QuickSort: mean 23.184~0.027 ns/item; median 21.4; overhead: 20.4%
-      BottomUpMergeSort: mean 26.053~0.038 ns/item; median 23.7; overhead: 19.2%
-       TopDownMergeSort: mean 24.945~0.029 ns/item; median 23.1; overhead: 19.1%
-    AltTopDownMergeSort: mean 24.944~0.028 ns/item; median 23.4; overhead: 19.2%
+    ArraySort_Primitive: mean 30.483~0.034 ns/item; median 27.5; overhead: 16.7%
+     DualPivotQuickSort: mean 22.844~0.028 ns/item; median 21.2; overhead: 20.5%
+      ParallelQuickSort: mean 22.618~0.027 ns/item; median 20.9; overhead: 20.6%
+              QuickSort: mean 22.58~0.025 ns/item; median 20.9; overhead: 20.6%
+      BottomUpMergeSort: mean 25.788~0.037 ns/item; median 23.8; overhead: 19.4%
+       TopDownMergeSort: mean 24.019~0.027 ns/item; median 22.4; overhead: 19.6%
+    AltTopDownMergeSort: mean 24.569~0.027 ns/item; median 23.0; overhead: 19.2%
 
 type uint: total size 4.0 bytes of which value 4.0 and heap size 0.0
 uint: 64/13000/1100
 This implies a working set size of 0.1MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of uint with 1022.7 elements (average over 90094 benchmarked arrays).
-    ArraySort_Primitive: mean 30.084~0.034 ns/item; median 27.1; overhead: 16.0%
-     DualPivotQuickSort: mean 23.101~0.028 ns/item; median 21.4; overhead: 19.4%
-      ParallelQuickSort: mean 22.644~0.027 ns/item; median 20.9; overhead: 19.8%
-              QuickSort: mean 22.738~0.027 ns/item; median 21.0; overhead: 19.7%
-      BottomUpMergeSort: mean 25.132~0.036 ns/item; median 23.2; overhead: 18.8%
-       TopDownMergeSort: mean 23.691~0.029 ns/item; median 22.0; overhead: 19.0%
-    AltTopDownMergeSort: mean 24.155~0.028 ns/item; median 22.5; overhead: 18.7%
+    ArraySort_Primitive: mean 29.987~0.034 ns/item; median 27.1; overhead: 17.4%
+     DualPivotQuickSort: mean 23.796~0.027 ns/item; median 22.1; overhead: 20.3%
+      ParallelQuickSort: mean 22.657~0.027 ns/item; median 20.9; overhead: 20.6%
+              QuickSort: mean 22.542~0.026 ns/item; median 20.9; overhead: 20.6%
+      BottomUpMergeSort: mean 25.407~0.036 ns/item; median 23.5; overhead: 19.3%
+       TopDownMergeSort: mean 24.045~0.027 ns/item; median 22.4; overhead: 19.4%
+    AltTopDownMergeSort: mean 24.656~0.029 ns/item; median 23.0; overhead: 19.1%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 0.1MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of int with 1022.7 elements (average over 90094 benchmarked arrays).
-    ArraySort_Primitive: mean 28.608~0.032 ns/item; median 25.8; overhead: 18.7%
-     DualPivotQuickSort: mean 25.009~0.028 ns/item; median 23.2; overhead: 20.3%
-      ParallelQuickSort: mean 24.151~0.028 ns/item; median 22.3; overhead: 21.1%
-              QuickSort: mean 24.15~0.026 ns/item; median 22.3; overhead: 21.1%
-      BottomUpMergeSort: mean 26.473~0.038 ns/item; median 24.1; overhead: 20.1%
-       TopDownMergeSort: mean 25.87~0.029 ns/item; median 23.8; overhead: 19.9%
-    AltTopDownMergeSort: mean 25.843~0.029 ns/item; median 24.2; overhead: 19.9%
+    ArraySort_Primitive: mean 28.636~0.033 ns/item; median 25.8; overhead: 18.8%
+     DualPivotQuickSort: mean 24.563~0.026 ns/item; median 22.9; overhead: 20.5%
+      ParallelQuickSort: mean 23.555~0.028 ns/item; median 21.7; overhead: 21.5%
+              QuickSort: mean 23.595~0.028 ns/item; median 21.7; overhead: 21.4%
+      BottomUpMergeSort: mean 25.964~0.036 ns/item; median 23.7; overhead: 20.5%
+       TopDownMergeSort: mean 25.073~0.029 ns/item; median 23.2; overhead: 20.4%
+    AltTopDownMergeSort: mean 25.249~0.029 ns/item; median 23.6; overhead: 20.3%
 
 
 type (int, long, DateTime, string, Guid): total size 48.0 bytes of which value 48.0 and heap size 0.0
 (int, long, DateTime, string, Guid): 11/16000/1000
 This implies a working set size of 6.0MB, and a per-sort memory usage of on average 0.4MB upto twice that; and merge-sorts will need 0.4MB scratch.
 Sorting arrays of (int, long, DateTime, string, Guid) with 8179.7 elements (average over 10278 benchmarked arrays).
-ArraySort_OrderComparer: mean 322.9~1.5   ns/item; median 271.0; overhead: 11.6%
-     DualPivotQuickSort: mean 150~0.65    ns/item; median 127.2; overhead: 22.0%
-      ParallelQuickSort: mean 65.92~0.9   ns/item; median 31.4; overhead: 53.2%
-              QuickSort: mean 136.1~0.64  ns/item; median 113.3; overhead: 23.9%
-      BottomUpMergeSort: mean 189.7~1.2   ns/item; median 159.1; overhead: 18.8%
-       TopDownMergeSort: mean 181.6~0.82  ns/item; median 147.6; overhead: 18.8%
-    AltTopDownMergeSort: mean 181.3~0.81  ns/item; median 150.9; overhead: 19.3%
+ArraySort_OrderComparer: mean 322~1.5     ns/item; median 270.1; overhead: 11.5%
+     DualPivotQuickSort: mean 155~0.68    ns/item; median 130.8; overhead: 21.1%
+      ParallelQuickSort: mean 70.25~0.93  ns/item; median 34.0; overhead: 51.2%
+              QuickSort: mean 143.4~0.69  ns/item; median 118.9; overhead: 22.8%
+      BottomUpMergeSort: mean 191.9~1.2   ns/item; median 160.5; overhead: 18.5%
+       TopDownMergeSort: mean 183.7~0.83  ns/item; median 149.2; overhead: 18.5%
+    AltTopDownMergeSort: mean 179.3~0.8   ns/item; median 148.8; overhead: 18.7%
 
 type SampleClass: total size 32.0 bytes of which value 8.0 and heap size 24.0
 SampleClass: 24/10000/1500
 This implies a working set size of 4.0MB, and a per-sort memory usage of on average 0.3MB upto twice that; and merge-sorts will need 0.1MB scratch.
 Sorting arrays of SampleClass with 8179.7 elements (average over 10278 benchmarked arrays).
-ArraySort_OrderComparer: mean 84.79~0.42  ns/item; median 70.8; overhead: 10.8%
-     DualPivotQuickSort: mean 61.23~0.27  ns/item; median 51.6; overhead: 14.3%
-      ParallelQuickSort: mean 33.06~0.39  ns/item; median 16.6; overhead: 35.3%
-              QuickSort: mean 58.63~0.26  ns/item; median 49.0; overhead: 14.9%
-      BottomUpMergeSort: mean 71.21~0.47  ns/item; median 60.3; overhead: 12.9%
-       TopDownMergeSort: mean 68.56~0.3   ns/item; median 58.8; overhead: 13.1%
-    AltTopDownMergeSort: mean 67.64~0.31  ns/item; median 57.8; overhead: 13.4%
+ArraySort_OrderComparer: mean 85.54~0.43  ns/item; median 71.4; overhead: 10.8%
+     DualPivotQuickSort: mean 61.86~0.27  ns/item; median 52.2; overhead: 14.2%
+      ParallelQuickSort: mean 33.91~0.47  ns/item; median 17.0; overhead: 35.0%
+              QuickSort: mean 59.34~0.28  ns/item; median 49.5; overhead: 14.8%
+      BottomUpMergeSort: mean 71.22~0.5   ns/item; median 60.3; overhead: 13.0%
+       TopDownMergeSort: mean 69.02~0.32  ns/item; median 58.9; overhead: 13.2%
+    AltTopDownMergeSort: mean 67.69~0.32  ns/item; median 57.7; overhead: 13.3%
 
 type (int, int, int): total size 16.0 bytes of which value 16.0 and heap size 0.0
 (int, int, int): 34/16000/1000
 This implies a working set size of 2.0MB, and a per-sort memory usage of on average 0.1MB upto twice that; and merge-sorts will need 0.1MB scratch.
 Sorting arrays of (int, int, int) with 8179.7 elements (average over 10278 benchmarked arrays).
-ArraySort_OrderComparer: mean 91.45~0.4   ns/item; median 77.2; overhead: 11.3%
-     DualPivotQuickSort: mean 56.06~0.24  ns/item; median 47.7; overhead: 17.1%
-      ParallelQuickSort: mean 28.37~0.33  ns/item; median 14.9; overhead: 41.5%
-              QuickSort: mean 53.98~0.23  ns/item; median 45.8; overhead: 17.7%
-      BottomUpMergeSort: mean 58.78~0.33  ns/item; median 49.6; overhead: 16.9%
-       TopDownMergeSort: mean 54.98~0.23  ns/item; median 46.6; overhead: 17.4%
-    AltTopDownMergeSort: mean 56.09~0.26  ns/item; median 47.4; overhead: 17.6%
+ArraySort_OrderComparer: mean 90.54~0.4   ns/item; median 76.2; overhead: 11.9%
+     DualPivotQuickSort: mean 58.86~0.25  ns/item; median 49.5; overhead: 17.2%
+      ParallelQuickSort: mean 30.38~0.43  ns/item; median 14.8; overhead: 41.3%
+              QuickSort: mean 54.45~0.23  ns/item; median 46.0; overhead: 17.7%
+      BottomUpMergeSort: mean 61.4~0.47   ns/item; median 51.5; overhead: 16.5%
+       TopDownMergeSort: mean 55.56~0.23  ns/item; median 46.7; overhead: 17.2%
+    AltTopDownMergeSort: mean 64.75~0.3   ns/item; median 54.0; overhead: 15.4%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 0.5MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of int with 8179.7 elements (average over 10278 benchmarked arrays).
-    ArraySort_Primitive: mean 39.98~0.19  ns/item; median 33.6; overhead: 14.0%
-     DualPivotQuickSort: mean 33.73~0.14  ns/item; median 28.8; overhead: 15.9%
-      ParallelQuickSort: mean 17.98~0.22  ns/item; median 9.8; overhead: 37.3%
-              QuickSort: mean 33.95~0.14  ns/item; median 28.9; overhead: 16.0%
-      BottomUpMergeSort: mean 36.97~0.19  ns/item; median 30.7; overhead: 14.4%
-       TopDownMergeSort: mean 36.11~0.14  ns/item; median 31.5; overhead: 14.5%
-    AltTopDownMergeSort: mean 36.24~0.15  ns/item; median 30.9; overhead: 14.5%
+    ArraySort_Primitive: mean 39.91~0.18  ns/item; median 33.6; overhead: 13.2%
+     DualPivotQuickSort: mean 33.33~0.13  ns/item; median 28.6; overhead: 15.1%
+      ParallelQuickSort: mean 18.25~0.2   ns/item; median 10.2; overhead: 35.1%
+              QuickSort: mean 33.04~0.13  ns/item; median 28.3; overhead: 15.2%
+      BottomUpMergeSort: mean 36.33~0.18  ns/item; median 29.9; overhead: 14.2%
+       TopDownMergeSort: mean 35.09~0.15  ns/item; median 30.2; overhead: 14.5%
+    AltTopDownMergeSort: mean 35.5~0.15   ns/item; median 30.4; overhead: 14.4%
 
 type double: total size 8.0 bytes of which value 8.0 and heap size 0.0
 double: 64/13000/1100
 This implies a working set size of 1.0MB, and a per-sort memory usage of on average 0.1MB upto twice that; and merge-sorts will need 0.1MB scratch.
 Sorting arrays of double with 8179.7 elements (average over 10278 benchmarked arrays).
-    ArraySort_Primitive: mean 47.14~0.22  ns/item; median 39.5; overhead: 12.9%
-     DualPivotQuickSort: mean 38.46~0.18  ns/item; median 32.9; overhead: 14.9%
-      ParallelQuickSort: mean 20.4~0.22   ns/item; median 11.3; overhead: 35.6%
-              QuickSort: mean 37.81~0.15  ns/item; median 32.4; overhead: 15.2%
-      BottomUpMergeSort: mean 42.64~0.21  ns/item; median 35.4; overhead: 13.9%
-       TopDownMergeSort: mean 40.89~0.16  ns/item; median 35.5; overhead: 14.2%
-    AltTopDownMergeSort: mean 41.18~0.17  ns/item; median 35.3; overhead: 14.1%
+    ArraySort_Primitive: mean 47.09~0.22  ns/item; median 39.4; overhead: 12.7%
+     DualPivotQuickSort: mean 38.25~0.15  ns/item; median 32.9; overhead: 14.7%
+      ParallelQuickSort: mean 20.77~0.22  ns/item; median 11.7; overhead: 34.9%
+              QuickSort: mean 37.54~0.15  ns/item; median 32.2; overhead: 15.0%
+      BottomUpMergeSort: mean 42.44~0.2   ns/item; median 35.2; overhead: 13.7%
+       TopDownMergeSort: mean 40.79~0.17  ns/item; median 35.4; overhead: 14.0%
+    AltTopDownMergeSort: mean 40.95~0.16  ns/item; median 35.1; overhead: 14.0%
 
 type ulong: total size 8.0 bytes of which value 8.0 and heap size 0.0
 ulong: 64/13000/1100
 This implies a working set size of 1.0MB, and a per-sort memory usage of on average 0.1MB upto twice that; and merge-sorts will need 0.1MB scratch.
 Sorting arrays of ulong with 8179.7 elements (average over 10278 benchmarked arrays).
-    ArraySort_Primitive: mean 42.24~0.19  ns/item; median 35.5; overhead: 13.3%
-     DualPivotQuickSort: mean 34.31~0.14  ns/item; median 29.4; overhead: 15.5%
-      ParallelQuickSort: mean 18.34~0.2   ns/item; median 10.1; overhead: 36.7%
-              QuickSort: mean 33.57~0.14  ns/item; median 28.7; overhead: 15.8%
-      BottomUpMergeSort: mean 37.96~0.22  ns/item; median 31.4; overhead: 14.6%
-       TopDownMergeSort: mean 36.61~0.15  ns/item; median 31.9; overhead: 14.7%
-    AltTopDownMergeSort: mean 36.62~0.15  ns/item; median 31.2; overhead: 14.7%
+    ArraySort_Primitive: mean 42.23~0.2   ns/item; median 35.4; overhead: 13.3%
+     DualPivotQuickSort: mean 33.46~0.13  ns/item; median 28.7; overhead: 15.8%
+      ParallelQuickSort: mean 17.94~0.2   ns/item; median 10.0; overhead: 36.5%
+              QuickSort: mean 33.04~0.13  ns/item; median 28.3; overhead: 16.0%
+      BottomUpMergeSort: mean 37.8~0.23   ns/item; median 30.8; overhead: 14.6%
+       TopDownMergeSort: mean 35.61~0.14  ns/item; median 30.8; overhead: 15.0%
+    AltTopDownMergeSort: mean 36.19~0.15  ns/item; median 31.0; overhead: 14.9%
 
 type uint: total size 4.0 bytes of which value 4.0 and heap size 0.0
 uint: 64/13000/1100
 This implies a working set size of 0.5MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of uint with 8179.7 elements (average over 10278 benchmarked arrays).
-    ArraySort_Primitive: mean 41.61~0.2   ns/item; median 34.9; overhead: 12.8%
-     DualPivotQuickSort: mean 34.01~0.14  ns/item; median 29.2; overhead: 14.9%
-      ParallelQuickSort: mean 18.03~0.22  ns/item; median 9.8; overhead: 35.9%
-              QuickSort: mean 33.05~0.14  ns/item; median 28.2; overhead: 15.3%
-      BottomUpMergeSort: mean 36.45~0.19  ns/item; median 29.9; overhead: 14.2%
-       TopDownMergeSort: mean 35.07~0.15  ns/item; median 30.2; overhead: 14.5%
-    AltTopDownMergeSort: mean 35.47~0.14  ns/item; median 30.4; overhead: 14.4%
+    ArraySort_Primitive: mean 41.58~0.19  ns/item; median 34.9; overhead: 13.2%
+     DualPivotQuickSort: mean 34~0.13     ns/item; median 29.2; overhead: 15.3%
+      ParallelQuickSort: mean 17.85~0.2   ns/item; median 10.0; overhead: 35.9%
+              QuickSort: mean 33.11~0.13  ns/item; median 28.4; overhead: 15.7%
+      BottomUpMergeSort: mean 36.9~0.18   ns/item; median 30.4; overhead: 14.5%
+       TopDownMergeSort: mean 35.61~0.14  ns/item; median 30.7; overhead: 14.8%
+    AltTopDownMergeSort: mean 36.17~0.16  ns/item; median 30.9; overhead: 14.7%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 0.5MB, and a per-sort memory usage of on average 0.0MB upto twice that; and merge-sorts will need 0.0MB scratch.
 Sorting arrays of int with 8179.7 elements (average over 10278 benchmarked arrays).
-    ArraySort_Primitive: mean 39.96~0.18  ns/item; median 33.6; overhead: 14.9%
-     DualPivotQuickSort: mean 36.77~0.15  ns/item; median 31.5; overhead: 15.7%
-      ParallelQuickSort: mean 18.77~0.22  ns/item; median 10.1; overhead: 38.4%
-              QuickSort: mean 34.66~0.16  ns/item; median 29.4; overhead: 16.6%
-      BottomUpMergeSort: mean 38.08~0.19  ns/item; median 31.8; overhead: 15.5%
-       TopDownMergeSort: mean 37.55~0.15  ns/item; median 32.4; overhead: 15.4%
-    AltTopDownMergeSort: mean 37.74~0.16  ns/item; median 32.0; overhead: 15.4%
+    ArraySort_Primitive: mean 39.93~0.18  ns/item; median 33.6; overhead: 14.9%
+     DualPivotQuickSort: mean 36.42~0.14  ns/item; median 31.5; overhead: 15.7%
+      ParallelQuickSort: mean 18.42~0.2   ns/item; median 10.2; overhead: 37.9%
+              QuickSort: mean 34.25~0.14  ns/item; median 29.2; overhead: 16.7%
+      BottomUpMergeSort: mean 37.6~0.21   ns/item; median 31.1; overhead: 15.6%
+       TopDownMergeSort: mean 36.68~0.16  ns/item; median 31.7; overhead: 15.8%
+    AltTopDownMergeSort: mean 36.77~0.16  ns/item; median 31.3; overhead: 15.7%
 
 
 type (int, long, DateTime, string, Guid): total size 48.0 bytes of which value 48.0 and heap size 0.0
 (int, long, DateTime, string, Guid): 11/16000/1000
 This implies a working set size of 48.0MB, and a per-sort memory usage of on average 3.0MB upto twice that; and merge-sorts will need 3.0MB scratch.
 Sorting arrays of (int, long, DateTime, string, Guid) with 63711.0 elements (average over 1165 benchmarked arrays).
-ArraySort_OrderComparer: mean 409.2~6.7   ns/item; median 329.5; overhead: 9.9%
-     DualPivotQuickSort: mean 195.9~3     ns/item; median 160.5; overhead: 18.4%
-      ParallelQuickSort: mean 47.4~2.6    ns/item; median 28.3; overhead: 54.4%
-              QuickSort: mean 173.2~2.9   ns/item; median 139.6; overhead: 19.2%
-      BottomUpMergeSort: mean 250.9~4.7   ns/item; median 198.3; overhead: 14.3%
-       TopDownMergeSort: mean 234.7~3.9   ns/item; median 192.8; overhead: 15.1%
-    AltTopDownMergeSort: mean 230.1~3.7   ns/item; median 187.4; overhead: 15.3%
+ArraySort_OrderComparer: mean 412.2~6.7   ns/item; median 331.8; overhead: 9.9%
+     DualPivotQuickSort: mean 202.2~3.2   ns/item; median 165.1; overhead: 18.2%
+      ParallelQuickSort: mean 49.7~2.8    ns/item; median 29.0; overhead: 53.4%
+              QuickSort: mean 181.7~3.1   ns/item; median 146.2; overhead: 18.4%
+      BottomUpMergeSort: mean 254.4~5     ns/item; median 199.8; overhead: 14.1%
+       TopDownMergeSort: mean 236.9~3.9   ns/item; median 195.1; overhead: 14.8%
+    AltTopDownMergeSort: mean 232.1~3.8   ns/item; median 189.4; overhead: 15.1%
 
 type SampleClass: total size 32.0 bytes of which value 8.0 and heap size 24.0
 SampleClass: 24/10000/1500
 This implies a working set size of 32.0MB, and a per-sort memory usage of on average 2.0MB upto twice that; and merge-sorts will need 0.5MB scratch.
 Sorting arrays of SampleClass with 63711.0 elements (average over 1165 benchmarked arrays).
-ArraySort_OrderComparer: mean 115.4~1.7   ns/item; median 96.5; overhead: 10.2%
-     DualPivotQuickSort: mean 84.04~1.2   ns/item; median 71.0; overhead: 13.2%
-      ParallelQuickSort: mean 23.4~1.2    ns/item; median 13.7; overhead: 36.1%
-              QuickSort: mean 80.08~1.2   ns/item; median 67.4; overhead: 10.2%
-      BottomUpMergeSort: mean 96.95~1.5   ns/item; median 79.9; overhead: 8.7%
-       TopDownMergeSort: mean 93.8~1.4    ns/item; median 76.6; overhead: 8.7%
-    AltTopDownMergeSort: mean 92.73~1.4   ns/item; median 76.1; overhead: 8.9%
+ArraySort_OrderComparer: mean 117~1.8     ns/item; median 97.7; overhead: 10.2%
+     DualPivotQuickSort: mean 84.77~1.2   ns/item; median 71.6; overhead: 13.3%
+      ParallelQuickSort: mean 23.7~1.2    ns/item; median 13.7; overhead: 36.7%
+              QuickSort: mean 79.94~1.2   ns/item; median 67.2; overhead: 10.2%
+      BottomUpMergeSort: mean 97.95~1.7   ns/item; median 79.9; overhead: 9.0%
+       TopDownMergeSort: mean 93.75~1.4   ns/item; median 76.5; overhead: 8.7%
+    AltTopDownMergeSort: mean 92.64~1.4   ns/item; median 76.0; overhead: 9.1%
 
 type (int, int, int): total size 16.0 bytes of which value 16.0 and heap size 0.0
 (int, int, int): 34/16000/1000
 This implies a working set size of 16.0MB, and a per-sort memory usage of on average 1.0MB upto twice that; and merge-sorts will need 1.0MB scratch.
 Sorting arrays of (int, int, int) with 63711.0 elements (average over 1165 benchmarked arrays).
-ArraySort_OrderComparer: mean 118.1~1.9   ns/item; median 95.0; overhead: 9.7%
-     DualPivotQuickSort: mean 78.95~1.3   ns/item; median 62.9; overhead: 14.1%
-      ParallelQuickSort: mean 20.6~1      ns/item; median 12.3; overhead: 42.5%
-              QuickSort: mean 79.59~1.2   ns/item; median 65.2; overhead: 12.0%
-      BottomUpMergeSort: mean 75.69~1.2   ns/item; median 60.1; overhead: 12.9%
-       TopDownMergeSort: mean 82.62~1.3   ns/item; median 66.7; overhead: 11.8%
-    AltTopDownMergeSort: mean 73.27~1.2   ns/item; median 59.3; overhead: 13.1%
+ArraySort_OrderComparer: mean 116.2~1.9   ns/item; median 93.5; overhead: 9.7%
+     DualPivotQuickSort: mean 79.13~1.2   ns/item; median 64.6; overhead: 13.6%
+      ParallelQuickSort: mean 20.8~1.1    ns/item; median 12.3; overhead: 43.5%
+              QuickSort: mean 71.13~1.2   ns/item; median 57.7; overhead: 14.4%
+      BottomUpMergeSort: mean 76.23~1.2   ns/item; median 60.7; overhead: 13.8%
+       TopDownMergeSort: mean 73.83~1.2   ns/item; median 60.2; overhead: 14.0%
+    AltTopDownMergeSort: mean 73.2~1.2    ns/item; median 59.0; overhead: 14.1%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 4.0MB, and a per-sort memory usage of on average 0.3MB upto twice that; and merge-sorts will need 0.3MB scratch.
 Sorting arrays of int with 63711.0 elements (average over 1165 benchmarked arrays).
-    ArraySort_Primitive: mean 51.14~0.85  ns/item; median 41.2; overhead: 11.7%
-     DualPivotQuickSort: mean 44.4~0.7    ns/item; median 35.9; overhead: 13.0%
-      ParallelQuickSort: mean 13.4~0.64   ns/item; median 7.9; overhead: 29.4%
-              QuickSort: mean 44.06~0.7   ns/item; median 35.6; overhead: 8.3%
-      BottomUpMergeSort: mean 48.51~0.77  ns/item; median 39.9; overhead: 7.7%
-       TopDownMergeSort: mean 48.38~0.75  ns/item; median 39.5; overhead: 7.6%
-    AltTopDownMergeSort: mean 48.6~0.76   ns/item; median 39.8; overhead: 7.6%
+    ArraySort_Primitive: mean 51.14~0.86  ns/item; median 41.1; overhead: 11.1%
+     DualPivotQuickSort: mean 43.76~0.69  ns/item; median 35.4; overhead: 12.7%
+      ParallelQuickSort: mean 13.4~0.63   ns/item; median 8.0; overhead: 27.3%
+              QuickSort: mean 43.72~0.69  ns/item; median 35.5; overhead: 7.6%
+      BottomUpMergeSort: mean 47.64~0.75  ns/item; median 39.4; overhead: 7.1%
+       TopDownMergeSort: mean 47~0.72     ns/item; median 38.3; overhead: 7.0%
+    AltTopDownMergeSort: mean 47.73~0.75  ns/item; median 39.0; overhead: 7.0%
 
 type double: total size 8.0 bytes of which value 8.0 and heap size 0.0
 double: 64/13000/1100
 This implies a working set size of 8.0MB, and a per-sort memory usage of on average 0.5MB upto twice that; and merge-sorts will need 0.5MB scratch.
 Sorting arrays of double with 63711.0 elements (average over 1165 benchmarked arrays).
-    ArraySort_Primitive: mean 59.66~1     ns/item; median 47.7; overhead: 11.0%
-     DualPivotQuickSort: mean 50.74~0.79  ns/item; median 41.3; overhead: 12.4%
-      ParallelQuickSort: mean 15.2~0.71   ns/item; median 9.2; overhead: 30.2%
-              QuickSort: mean 49.91~0.78  ns/item; median 40.6; overhead: 8.7%
-      BottomUpMergeSort: mean 56.21~0.88  ns/item; median 46.3; overhead: 7.9%
-       TopDownMergeSort: mean 55.2~0.85   ns/item; median 45.0; overhead: 7.9%
-    AltTopDownMergeSort: mean 55.49~0.85  ns/item; median 45.6; overhead: 7.9%
+    ArraySort_Primitive: mean 59.63~1     ns/item; median 47.8; overhead: 10.8%
+     DualPivotQuickSort: mean 50.67~0.79  ns/item; median 41.2; overhead: 12.2%
+      ParallelQuickSort: mean 15.3~0.72   ns/item; median 9.2; overhead: 30.7%
+              QuickSort: mean 49.8~0.78   ns/item; median 40.5; overhead: 8.8%
+      BottomUpMergeSort: mean 56~0.88     ns/item; median 46.2; overhead: 8.2%
+       TopDownMergeSort: mean 54.87~0.84  ns/item; median 44.8; overhead: 8.0%
+    AltTopDownMergeSort: mean 55.38~0.85  ns/item; median 45.4; overhead: 8.0%
 
 type ulong: total size 8.0 bytes of which value 8.0 and heap size 0.0
 ulong: 64/13000/1100
 This implies a working set size of 8.0MB, and a per-sort memory usage of on average 0.5MB upto twice that; and merge-sorts will need 0.5MB scratch.
 Sorting arrays of ulong with 63711.0 elements (average over 1165 benchmarked arrays).
-    ArraySort_Primitive: mean 53.55~0.9   ns/item; median 43.0; overhead: 11.4%
-     DualPivotQuickSort: mean 45.34~0.72  ns/item; median 36.7; overhead: 13.0%
-      ParallelQuickSort: mean 13.7~0.66   ns/item; median 8.1; overhead: 28.4%
-              QuickSort: mean 44.16~0.7   ns/item; median 35.9; overhead: 7.9%
-      BottomUpMergeSort: mean 49.36~0.79  ns/item; median 40.5; overhead: 7.4%
-       TopDownMergeSort: mean 48.87~0.76  ns/item; median 39.8; overhead: 7.2%
-    AltTopDownMergeSort: mean 48.96~0.77  ns/item; median 40.1; overhead: 7.2%
+    ArraySort_Primitive: mean 53.54~0.9   ns/item; median 43.0; overhead: 11.4%
+     DualPivotQuickSort: mean 44.18~0.69  ns/item; median 35.8; overhead: 13.2%
+      ParallelQuickSort: mean 13.4~0.63   ns/item; median 7.9; overhead: 28.7%
+              QuickSort: mean 43.59~0.69  ns/item; median 35.3; overhead: 8.0%
+      BottomUpMergeSort: mean 49.06~0.79  ns/item; median 40.6; overhead: 7.4%
+       TopDownMergeSort: mean 47.93~0.74  ns/item; median 39.0; overhead: 7.3%
+    AltTopDownMergeSort: mean 48.65~0.75  ns/item; median 39.8; overhead: 7.2%
 
 type uint: total size 4.0 bytes of which value 4.0 and heap size 0.0
 uint: 64/13000/1100
 This implies a working set size of 4.0MB, and a per-sort memory usage of on average 0.3MB upto twice that; and merge-sorts will need 0.3MB scratch.
 Sorting arrays of uint with 63711.0 elements (average over 1165 benchmarked arrays).
-    ArraySort_Primitive: mean 52.92~0.89  ns/item; median 42.5; overhead: 10.8%
-     DualPivotQuickSort: mean 45.05~0.7   ns/item; median 36.6; overhead: 12.3%
-      ParallelQuickSort: mean 13.3~0.63   ns/item; median 8.0; overhead: 27.5%
-              QuickSort: mean 43.48~0.69  ns/item; median 35.3; overhead: 7.6%
-      BottomUpMergeSort: mean 47.67~0.75  ns/item; median 39.5; overhead: 7.1%
-       TopDownMergeSort: mean 47.01~0.73  ns/item; median 38.2; overhead: 7.1%
-    AltTopDownMergeSort: mean 47.68~0.75  ns/item; median 38.9; overhead: 7.0%
+    ArraySort_Primitive: mean 52.85~0.88  ns/item; median 42.5; overhead: 11.2%
+     DualPivotQuickSort: mean 45.11~0.7   ns/item; median 36.7; overhead: 12.7%
+      ParallelQuickSort: mean 13.5~0.63   ns/item; median 8.0; overhead: 27.2%
+              QuickSort: mean 43.74~0.69  ns/item; median 35.7; overhead: 7.6%
+      BottomUpMergeSort: mean 48.51~0.76  ns/item; median 40.3; overhead: 7.0%
+       TopDownMergeSort: mean 47.83~0.73  ns/item; median 39.0; overhead: 6.9%
+    AltTopDownMergeSort: mean 48.62~0.75  ns/item; median 39.8; overhead: 6.8%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 4.0MB, and a per-sort memory usage of on average 0.3MB upto twice that; and merge-sorts will need 0.3MB scratch.
 Sorting arrays of int with 63711.0 elements (average over 1165 benchmarked arrays).
-    ArraySort_Primitive: mean 51.13~0.85  ns/item; median 41.1; overhead: 12.6%
-     DualPivotQuickSort: mean 48.41~0.75  ns/item; median 39.3; overhead: 13.0%
-      ParallelQuickSort: mean 13.6~0.66   ns/item; median 8.0; overhead: 28.9%
-              QuickSort: mean 44.83~0.72  ns/item; median 36.3; overhead: 8.0%
-      BottomUpMergeSort: mean 49.8~0.8    ns/item; median 40.5; overhead: 7.4%
-       TopDownMergeSort: mean 49.51~0.77  ns/item; median 40.5; overhead: 7.3%
-    AltTopDownMergeSort: mean 49.57~0.78  ns/item; median 40.6; overhead: 7.3%
+    ArraySort_Primitive: mean 51.11~0.85  ns/item; median 41.2; overhead: 12.6%
+     DualPivotQuickSort: mean 48.88~0.74  ns/item; median 39.9; overhead: 12.9%
+      ParallelQuickSort: mean 13.8~0.67   ns/item; median 8.2; overhead: 30.5%
+              QuickSort: mean 44.99~0.72  ns/item; median 36.5; overhead: 8.4%
+      BottomUpMergeSort: mean 49.17~0.79  ns/item; median 40.4; overhead: 8.0%
+       TopDownMergeSort: mean 48.68~0.75  ns/item; median 39.7; overhead: 7.6%
+    AltTopDownMergeSort: mean 49.01~0.77  ns/item; median 40.1; overhead: 7.7%
 
 
 type (int, long, DateTime, string, Guid): total size 48.0 bytes of which value 48.0 and heap size 0.0
 (int, long, DateTime, string, Guid): 11/16000/1000
 This implies a working set size of 384.0MB, and a per-sort memory usage of on average 24.0MB upto twice that; and merge-sorts will need 24.0MB scratch.
 Sorting arrays of (int, long, DateTime, string, Guid) with 488154.3 elements (average over 137 benchmarked arrays).
-ArraySort_OrderComparer: mean 519~28      ns/item; median 427.3; overhead: 7.7%
-     DualPivotQuickSort: mean 251~13      ns/item; median 209.4; overhead: 14.7%
-      ParallelQuickSort: mean 44.4~4.3    ns/item; median 33.3; overhead: 51.9%
-              QuickSort: mean 220~12      ns/item; median 181.1; overhead: 16.5%
-      BottomUpMergeSort: mean 314~17      ns/item; median 259.1; overhead: 12.2%
-       TopDownMergeSort: mean 297~16      ns/item; median 237.8; overhead: 12.8%
-    AltTopDownMergeSort: mean 291~16      ns/item; median 237.3; overhead: 13.0%
+ArraySort_OrderComparer: mean 517~28      ns/item; median 425.1; overhead: 7.7%
+     DualPivotQuickSort: mean 257~14      ns/item; median 213.6; overhead: 14.4%
+      ParallelQuickSort: mean 45.5~4.1    ns/item; median 34.5; overhead: 51.0%
+              QuickSort: mean 228~13      ns/item; median 187.5; overhead: 15.9%
+      BottomUpMergeSort: mean 317~18      ns/item; median 261.3; overhead: 12.1%
+       TopDownMergeSort: mean 299~17      ns/item; median 239.8; overhead: 12.6%
+    AltTopDownMergeSort: mean 294~16      ns/item; median 238.6; overhead: 12.8%
 
 type SampleClass: total size 32.0 bytes of which value 8.0 and heap size 24.0
 SampleClass: 24/10000/1500
 This implies a working set size of 256.0MB, and a per-sort memory usage of on average 16.0MB upto twice that; and merge-sorts will need 4.0MB scratch.
 Sorting arrays of SampleClass with 488154.3 elements (average over 137 benchmarked arrays).
-ArraySort_OrderComparer: mean 155~7.2     ns/item; median 129.9; overhead: 13.4%
-     DualPivotQuickSort: mean 113~5.2     ns/item; median 94.7; overhead: 16.4%
-      ParallelQuickSort: mean 23.4~2.5    ns/item; median 16.9; overhead: 50.6%
-              QuickSort: mean 107~5       ns/item; median 90.0; overhead: 17.0%
-      BottomUpMergeSort: mean 139~6       ns/item; median 120.3; overhead: 13.3%
-       TopDownMergeSort: mean 126~5.9     ns/item; median 106.0; overhead: 15.4%
-    AltTopDownMergeSort: mean 124~5.8     ns/item; median 105.0; overhead: 15.5%
+ArraySort_OrderComparer: mean 157~7.4     ns/item; median 131.7; overhead: 13.3%
+     DualPivotQuickSort: mean 114~5.2     ns/item; median 95.1; overhead: 16.5%
+      ParallelQuickSort: mean 23.3~2.4    ns/item; median 17.0; overhead: 50.8%
+              QuickSort: mean 107~5       ns/item; median 90.3; overhead: 17.2%
+      BottomUpMergeSort: mean 138~5.9     ns/item; median 119.2; overhead: 13.3%
+       TopDownMergeSort: mean 126~5.9     ns/item; median 106.0; overhead: 15.3%
+    AltTopDownMergeSort: mean 124~5.8     ns/item; median 104.8; overhead: 15.6%
 
 type (int, int, int): total size 16.0 bytes of which value 16.0 and heap size 0.0
 (int, int, int): 34/16000/1000
 This implies a working set size of 128.0MB, and a per-sort memory usage of on average 8.0MB upto twice that; and merge-sorts will need 8.0MB scratch.
 Sorting arrays of (int, int, int) with 488154.3 elements (average over 137 benchmarked arrays).
-ArraySort_OrderComparer: mean 145~8.1     ns/item; median 118.7; overhead: 7.6%
-     DualPivotQuickSort: mean 93.4~5.4    ns/item; median 75.7; overhead: 11.4%
-      ParallelQuickSort: mean 18.9~1.9    ns/item; median 13.7; overhead: 41.6%
-              QuickSort: mean 97.3~5.4    ns/item; median 78.5; overhead: 11.0%
-      BottomUpMergeSort: mean 95.6~5      ns/item; median 80.6; overhead: 11.1%
-       TopDownMergeSort: mean 103~5.7     ns/item; median 84.0; overhead: 10.6%
-    AltTopDownMergeSort: mean 92.6~5.1    ns/item; median 76.0; overhead: 11.5%
+ArraySort_OrderComparer: mean 143~8       ns/item; median 116.9; overhead: 7.7%
+     DualPivotQuickSort: mean 93.2~5      ns/item; median 76.8; overhead: 11.2%
+      ParallelQuickSort: mean 18.6~1.8    ns/item; median 13.7; overhead: 41.9%
+              QuickSort: mean 89.5~4.8    ns/item; median 73.8; overhead: 11.6%
+      BottomUpMergeSort: mean 96.5~5.2    ns/item; median 80.5; overhead: 11.0%
+       TopDownMergeSort: mean 92.3~5      ns/item; median 76.1; overhead: 11.5%
+    AltTopDownMergeSort: mean 92.4~5.1    ns/item; median 75.5; overhead: 11.5%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 32.0MB, and a per-sort memory usage of on average 2.0MB upto twice that; and merge-sorts will need 2.0MB scratch.
 Sorting arrays of int with 488154.3 elements (average over 137 benchmarked arrays).
     ArraySort_Primitive: mean 62.6~3.5    ns/item; median 50.8; overhead: 5.8%
-     DualPivotQuickSort: mean 55.4~3      ns/item; median 45.2; overhead: 6.4%
-      ParallelQuickSort: mean 12.1~1.4    ns/item; median 8.8; overhead: 26.9%
-              QuickSort: mean 54.8~3.1    ns/item; median 44.4; overhead: 6.5%
-      BottomUpMergeSort: mean 61~3.3      ns/item; median 49.2; overhead: 5.9%
-       TopDownMergeSort: mean 60.6~3.2    ns/item; median 50.2; overhead: 5.9%
-    AltTopDownMergeSort: mean 60.8~3.2    ns/item; median 50.1; overhead: 5.9%
+     DualPivotQuickSort: mean 54.3~3      ns/item; median 44.5; overhead: 6.6%
+      ParallelQuickSort: mean 11.9~1.2    ns/item; median 8.7; overhead: 27.0%
+              QuickSort: mean 54.3~2.9    ns/item; median 44.4; overhead: 6.6%
+      BottomUpMergeSort: mean 59.9~3.3    ns/item; median 48.3; overhead: 6.0%
+       TopDownMergeSort: mean 59~3.1      ns/item; median 48.9; overhead: 6.1%
+    AltTopDownMergeSort: mean 59.5~3.2    ns/item; median 49.3; overhead: 6.0%
 
 type double: total size 8.0 bytes of which value 8.0 and heap size 0.0
 double: 64/13000/1100
 This implies a working set size of 64.0MB, and a per-sort memory usage of on average 4.0MB upto twice that; and merge-sorts will need 4.0MB scratch.
 Sorting arrays of double with 488154.3 elements (average over 137 benchmarked arrays).
-    ArraySort_Primitive: mean 72.6~4.1    ns/item; median 59.1; overhead: 6.8%
-     DualPivotQuickSort: mean 63.3~3.4    ns/item; median 51.9; overhead: 7.5%
-      ParallelQuickSort: mean 13.8~1.5    ns/item; median 10.1; overhead: 29.8%
-              QuickSort: mean 62.2~3.3    ns/item; median 50.8; overhead: 7.7%
-      BottomUpMergeSort: mean 71.3~3.8    ns/item; median 57.5; overhead: 6.8%
-       TopDownMergeSort: mean 69.4~3.7    ns/item; median 57.4; overhead: 7.0%
-    AltTopDownMergeSort: mean 69.6~3.7    ns/item; median 57.4; overhead: 7.0%
+    ArraySort_Primitive: mean 72.5~4.2    ns/item; median 58.7; overhead: 6.8%
+     DualPivotQuickSort: mean 63.4~3.4    ns/item; median 52.0; overhead: 7.6%
+      ParallelQuickSort: mean 13.8~1.4    ns/item; median 10.0; overhead: 30.3%
+              QuickSort: mean 61.8~3.3    ns/item; median 50.4; overhead: 7.8%
+      BottomUpMergeSort: mean 71.1~3.8    ns/item; median 57.2; overhead: 6.9%
+       TopDownMergeSort: mean 69.1~3.6    ns/item; median 57.1; overhead: 7.1%
+    AltTopDownMergeSort: mean 69.4~3.7    ns/item; median 57.4; overhead: 7.1%
 
 type ulong: total size 8.0 bytes of which value 8.0 and heap size 0.0
 ulong: 64/13000/1100
 This implies a working set size of 64.0MB, and a per-sort memory usage of on average 4.0MB upto twice that; and merge-sorts will need 4.0MB scratch.
 Sorting arrays of ulong with 488154.3 elements (average over 137 benchmarked arrays).
-    ArraySort_Primitive: mean 65.3~3.7    ns/item; median 52.9; overhead: 6.1%
-     DualPivotQuickSort: mean 56.6~3.1    ns/item; median 46.4; overhead: 6.8%
-      ParallelQuickSort: mean 12.2~1.3    ns/item; median 8.9; overhead: 28.5%
-              QuickSort: mean 55~3        ns/item; median 44.9; overhead: 7.0%
-      BottomUpMergeSort: mean 62.5~3.4    ns/item; median 50.4; overhead: 6.4%
-       TopDownMergeSort: mean 61.2~3.3    ns/item; median 50.6; overhead: 6.5%
-    AltTopDownMergeSort: mean 61.4~3.3    ns/item; median 50.3; overhead: 6.5%
+    ArraySort_Primitive: mean 65.2~3.7    ns/item; median 52.9; overhead: 6.0%
+     DualPivotQuickSort: mean 55.1~3      ns/item; median 45.2; overhead: 6.9%
+      ParallelQuickSort: mean 12~1.2      ns/item; median 8.8; overhead: 28.4%
+              QuickSort: mean 54.3~2.9    ns/item; median 44.4; overhead: 7.0%
+      BottomUpMergeSort: mean 62.2~3.4    ns/item; median 49.6; overhead: 6.4%
+       TopDownMergeSort: mean 60.2~3.2    ns/item; median 49.7; overhead: 6.6%
+    AltTopDownMergeSort: mean 60.7~3.2    ns/item; median 50.2; overhead: 6.5%
 
 type uint: total size 4.0 bytes of which value 4.0 and heap size 0.0
 uint: 64/13000/1100
 This implies a working set size of 32.0MB, and a per-sort memory usage of on average 2.0MB upto twice that; and merge-sorts will need 2.0MB scratch.
 Sorting arrays of uint with 488154.3 elements (average over 137 benchmarked arrays).
-    ArraySort_Primitive: mean 64.7~3.6    ns/item; median 52.4; overhead: 5.6%
-     DualPivotQuickSort: mean 56.4~3      ns/item; median 46.4; overhead: 6.3%
-      ParallelQuickSort: mean 12~1.3      ns/item; median 8.7; overhead: 27.0%
-              QuickSort: mean 54.1~2.9    ns/item; median 44.3; overhead: 6.6%
-      BottomUpMergeSort: mean 59.9~3.3    ns/item; median 48.2; overhead: 6.0%
-       TopDownMergeSort: mean 59.1~3.2    ns/item; median 48.5; overhead: 6.1%
-    AltTopDownMergeSort: mean 59.4~3.1    ns/item; median 49.1; overhead: 6.1%
+    ArraySort_Primitive: mean 64.6~3.6    ns/item; median 52.3; overhead: 5.6%
+     DualPivotQuickSort: mean 56.4~3      ns/item; median 46.2; overhead: 6.3%
+      ParallelQuickSort: mean 12.1~1.3    ns/item; median 8.8; overhead: 26.8%
+              QuickSort: mean 54.6~3      ns/item; median 44.5; overhead: 6.5%
+      BottomUpMergeSort: mean 61.1~3.3    ns/item; median 49.1; overhead: 5.9%
+       TopDownMergeSort: mean 60.1~3.2    ns/item; median 49.7; overhead: 6.0%
+    AltTopDownMergeSort: mean 60.6~3.2    ns/item; median 50.3; overhead: 5.9%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 32.0MB, and a per-sort memory usage of on average 2.0MB upto twice that; and merge-sorts will need 2.0MB scratch.
 Sorting arrays of int with 488154.3 elements (average over 137 benchmarked arrays).
-    ArraySort_Primitive: mean 62.6~3.5    ns/item; median 50.8; overhead: 6.3%
-     DualPivotQuickSort: mean 60.5~3.3    ns/item; median 49.6; overhead: 6.4%
-      ParallelQuickSort: mean 12.2~1.3    ns/item; median 8.9; overhead: 28.3%
-              QuickSort: mean 55.6~3.1    ns/item; median 45.5; overhead: 6.9%
-      BottomUpMergeSort: mean 61.8~3.4    ns/item; median 50.2; overhead: 6.3%
-       TopDownMergeSort: mean 61.6~3.3    ns/item; median 50.9; overhead: 6.3%
-    AltTopDownMergeSort: mean 61.8~3.4    ns/item; median 50.8; overhead: 6.3%
+    ArraySort_Primitive: mean 62.6~3.5    ns/item; median 50.8; overhead: 6.8%
+     DualPivotQuickSort: mean 61.7~3.3    ns/item; median 50.7; overhead: 6.6%
+      ParallelQuickSort: mean 12.3~1.3    ns/item; median 9.0; overhead: 30.0%
+              QuickSort: mean 55.8~3.1    ns/item; median 45.3; overhead: 7.4%
+      BottomUpMergeSort: mean 61.5~3.3    ns/item; median 49.6; overhead: 7.0%
+       TopDownMergeSort: mean 60.9~3.2    ns/item; median 50.3; overhead: 7.0%
+    AltTopDownMergeSort: mean 61.2~3.3    ns/item; median 50.4; overhead: 7.0%
 
 
 type (int, long, DateTime, string, Guid): total size 48.0 bytes of which value 48.0 and heap size 0.0
 (int, long, DateTime, string, Guid): 11/16000/1000
 This implies a working set size of 3072.0MB, and a per-sort memory usage of on average 192.0MB upto twice that; and merge-sorts will need 192.0MB scratch.
 Sorting arrays of (int, long, DateTime, string, Guid) with 3635405.3 elements (average over 21 benchmarked arrays).
-ArraySort_OrderComparer: mean 530~39      ns/item; median 486.4; overhead: 6.8%
-     DualPivotQuickSort: mean 260~19      ns/item; median 239.8; overhead: 12.8%
-      ParallelQuickSort: mean 40.8~3.2    ns/item; median 35.8; overhead: 48.7%
-              QuickSort: mean 223~17      ns/item; median 203.1; overhead: 14.6%
-      BottomUpMergeSort: mean 325~23      ns/item; median 301.9; overhead: 10.6%
-       TopDownMergeSort: mean 315~24      ns/item; median 290.9; overhead: 10.8%
-    AltTopDownMergeSort: mean 329~30      ns/item; median 286.2; overhead: 10.6%
+ArraySort_OrderComparer: mean 527~39      ns/item; median 483.5; overhead: 6.8%
+     DualPivotQuickSort: mean 266~20      ns/item; median 244.9; overhead: 12.5%
+      ParallelQuickSort: mean 41.9~3.3    ns/item; median 36.9; overhead: 47.8%
+              QuickSort: mean 231~17      ns/item; median 210.2; overhead: 14.1%
+      BottomUpMergeSort: mean 326~24      ns/item; median 303.4; overhead: 10.4%
+       TopDownMergeSort: mean 317~24      ns/item; median 292.4; overhead: 10.9%
+    AltTopDownMergeSort: mean 331~31      ns/item; median 288.1; overhead: 10.4%
 
 type SampleClass: total size 32.0 bytes of which value 8.0 and heap size 24.0
 SampleClass: 24/10000/1500
 This implies a working set size of 2048.0MB, and a per-sort memory usage of on average 128.0MB upto twice that; and merge-sorts will need 32.0MB scratch.
 Sorting arrays of SampleClass with 3635405.3 elements (average over 21 benchmarked arrays).
-ArraySort_OrderComparer: mean 206~11      ns/item; median 196.9; overhead: 15.3%
-     DualPivotQuickSort: mean 150~8.1     ns/item; median 142.7; overhead: 16.4%
-      ParallelQuickSort: mean 34.4~1.3    ns/item; median 33.2; overhead: 44.8%
-              QuickSort: mean 142~7.3     ns/item; median 134.6; overhead: 17.1%
-      BottomUpMergeSort: mean 195~11      ns/item; median 182.5; overhead: 13.3%
-       TopDownMergeSort: mean 162~9       ns/item; median 152.7; overhead: 15.5%
-    AltTopDownMergeSort: mean 160~8.7     ns/item; median 150.6; overhead: 15.6%
+ArraySort_OrderComparer: mean 209~11      ns/item; median 198.7; overhead: 15.4%
+     DualPivotQuickSort: mean 150~8.1     ns/item; median 143.4; overhead: 16.7%
+      ParallelQuickSort: mean 34.2~1.4    ns/item; median 33.0; overhead: 45.6%
+              QuickSort: mean 142~7.3     ns/item; median 133.6; overhead: 17.4%
+      BottomUpMergeSort: mean 197~11      ns/item; median 184.1; overhead: 13.5%
+       TopDownMergeSort: mean 162~8.9     ns/item; median 153.2; overhead: 15.8%
+    AltTopDownMergeSort: mean 160~8.7     ns/item; median 150.5; overhead: 15.8%
 
 type (int, int, int): total size 16.0 bytes of which value 16.0 and heap size 0.0
 (int, int, int): 34/16000/1000
 This implies a working set size of 1024.0MB, and a per-sort memory usage of on average 64.0MB upto twice that; and merge-sorts will need 64.0MB scratch.
 Sorting arrays of (int, int, int) with 3635405.3 elements (average over 21 benchmarked arrays).
-ArraySort_OrderComparer: mean 148~11      ns/item; median 136.3; overhead: 6.8%
-     DualPivotQuickSort: mean 92.8~6.9    ns/item; median 84.6; overhead: 10.5%
-      ParallelQuickSort: mean 16.5~1.3    ns/item; median 14.3; overhead: 40.1%
-              QuickSort: mean 94.6~7.3    ns/item; median 85.6; overhead: 10.4%
-      BottomUpMergeSort: mean 103~7.1     ns/item; median 93.8; overhead: 9.5%
-       TopDownMergeSort: mean 105~7.7     ns/item; median 97.9; overhead: 9.5%
-    AltTopDownMergeSort: mean 98.9~7.1    ns/item; median 96.0; overhead: 9.9%
+ArraySort_OrderComparer: mean 146~11      ns/item; median 134.1; overhead: 6.9%
+     DualPivotQuickSort: mean 95.8~7      ns/item; median 87.7; overhead: 10.2%
+      ParallelQuickSort: mean 16.2~1.3    ns/item; median 14.2; overhead: 40.7%
+              QuickSort: mean 92.3~6.7    ns/item; median 84.1; overhead: 10.4%
+      BottomUpMergeSort: mean 103~7.2     ns/item; median 94.7; overhead: 9.4%
+       TopDownMergeSort: mean 96.8~7.1    ns/item; median 89.7; overhead: 10.2%
+    AltTopDownMergeSort: mean 99.1~7.1    ns/item; median 96.1; overhead: 9.8%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 256.0MB, and a per-sort memory usage of on average 16.0MB upto twice that; and merge-sorts will need 16.0MB scratch.
 Sorting arrays of int with 3635405.3 elements (average over 21 benchmarked arrays).
-    ArraySort_Primitive: mean 64.2~4.7    ns/item; median 58.7; overhead: 5.3%
-     DualPivotQuickSort: mean 57.7~4.2    ns/item; median 52.8; overhead: 5.8%
-      ParallelQuickSort: mean 10.3~0.83   ns/item; median 8.9; overhead: 26.2%
-              QuickSort: mean 56.8~4.2    ns/item; median 51.5; overhead: 5.9%
-      BottomUpMergeSort: mean 64.9~4.6    ns/item; median 60.2; overhead: 5.2%
-       TopDownMergeSort: mean 64.7~4.6    ns/item; median 58.9; overhead: 5.2%
-    AltTopDownMergeSort: mean 65.2~4.7    ns/item; median 59.0; overhead: 5.2%
+    ArraySort_Primitive: mean 64.1~4.7    ns/item; median 58.6; overhead: 5.3%
+     DualPivotQuickSort: mean 56.6~4.1    ns/item; median 51.7; overhead: 5.9%
+      ParallelQuickSort: mean 10.3~0.83   ns/item; median 8.9; overhead: 26.3%
+              QuickSort: mean 56.6~4.2    ns/item; median 51.3; overhead: 5.9%
+      BottomUpMergeSort: mean 63.7~4.6    ns/item; median 59.4; overhead: 5.3%
+       TopDownMergeSort: mean 63.1~4.5    ns/item; median 57.5; overhead: 5.4%
+    AltTopDownMergeSort: mean 64~4.6      ns/item; median 57.5; overhead: 5.3%
 
 type double: total size 8.0 bytes of which value 8.0 and heap size 0.0
 double: 64/13000/1100
 This implies a working set size of 512.0MB, and a per-sort memory usage of on average 32.0MB upto twice that; and merge-sorts will need 32.0MB scratch.
 Sorting arrays of double with 3635405.3 elements (average over 21 benchmarked arrays).
-    ArraySort_Primitive: mean 74~5.4      ns/item; median 67.7; overhead: 6.2%
-     DualPivotQuickSort: mean 66.3~4.8    ns/item; median 60.7; overhead: 6.9%
-      ParallelQuickSort: mean 12~0.95     ns/item; median 10.5; overhead: 29.1%
-              QuickSort: mean 65.3~4.8    ns/item; median 59.3; overhead: 6.9%
-      BottomUpMergeSort: mean 77.4~5.4    ns/item; median 72.7; overhead: 5.9%
-       TopDownMergeSort: mean 74.9~5.3    ns/item; median 68.6; overhead: 6.0%
-    AltTopDownMergeSort: mean 75.5~5.4    ns/item; median 68.3; overhead: 6.0%
+    ArraySort_Primitive: mean 73.9~5.4    ns/item; median 67.7; overhead: 6.3%
+     DualPivotQuickSort: mean 66.4~4.8    ns/item; median 60.7; overhead: 7.0%
+      ParallelQuickSort: mean 12~0.96     ns/item; median 10.7; overhead: 29.8%
+              QuickSort: mean 65~4.8      ns/item; median 58.9; overhead: 7.1%
+      BottomUpMergeSort: mean 77~5.4      ns/item; median 72.4; overhead: 6.0%
+       TopDownMergeSort: mean 74.8~5.3    ns/item; median 68.5; overhead: 6.2%
+    AltTopDownMergeSort: mean 75.5~5.4    ns/item; median 68.2; overhead: 6.2%
 
 type ulong: total size 8.0 bytes of which value 8.0 and heap size 0.0
 ulong: 64/13000/1100
 This implies a working set size of 512.0MB, and a per-sort memory usage of on average 32.0MB upto twice that; and merge-sorts will need 32.0MB scratch.
 Sorting arrays of ulong with 3635405.3 elements (average over 21 benchmarked arrays).
-    ArraySort_Primitive: mean 66.6~4.9    ns/item; median 61.0; overhead: 5.7%
-     DualPivotQuickSort: mean 59~4.3      ns/item; median 54.1; overhead: 6.4%
-      ParallelQuickSort: mean 10.5~0.85   ns/item; median 9.3; overhead: 28.2%
-              QuickSort: mean 57.7~4.2    ns/item; median 52.4; overhead: 6.5%
-      BottomUpMergeSort: mean 67.9~4.7    ns/item; median 63.7; overhead: 5.6%
-       TopDownMergeSort: mean 66.1~4.7    ns/item; median 60.7; overhead: 5.9%
-    AltTopDownMergeSort: mean 66.4~4.8    ns/item; median 60.4; overhead: 5.7%
+    ArraySort_Primitive: mean 66.5~4.9    ns/item; median 61.0; overhead: 5.7%
+     DualPivotQuickSort: mean 57.8~4.2    ns/item; median 53.1; overhead: 6.5%
+      ParallelQuickSort: mean 10.4~0.83   ns/item; median 9.2; overhead: 28.3%
+              QuickSort: mean 56.8~4.1    ns/item; median 51.6; overhead: 6.6%
+      BottomUpMergeSort: mean 67.6~4.7    ns/item; median 63.9; overhead: 5.6%
+       TopDownMergeSort: mean 65.4~4.6    ns/item; median 59.8; overhead: 5.8%
+    AltTopDownMergeSort: mean 66.3~4.7    ns/item; median 59.6; overhead: 5.7%
 
 type uint: total size 4.0 bytes of which value 4.0 and heap size 0.0
 uint: 64/13000/1100
 This implies a working set size of 256.0MB, and a per-sort memory usage of on average 16.0MB upto twice that; and merge-sorts will need 16.0MB scratch.
 Sorting arrays of uint with 3635405.3 elements (average over 21 benchmarked arrays).
     ArraySort_Primitive: mean 66~4.8      ns/item; median 60.3; overhead: 5.1%
-     DualPivotQuickSort: mean 58.8~4.3    ns/item; median 53.7; overhead: 5.7%
-      ParallelQuickSort: mean 10.3~0.83   ns/item; median 9.0; overhead: 26.2%
-              QuickSort: mean 56.5~4.2    ns/item; median 51.1; overhead: 5.9%
-      BottomUpMergeSort: mean 63.6~4.5    ns/item; median 59.2; overhead: 5.3%
-       TopDownMergeSort: mean 63.1~4.5    ns/item; median 57.6; overhead: 5.4%
-    AltTopDownMergeSort: mean 64~4.6      ns/item; median 57.5; overhead: 5.3%
+     DualPivotQuickSort: mean 59~4.3      ns/item; median 53.8; overhead: 5.7%
+      ParallelQuickSort: mean 10.4~0.84   ns/item; median 9.0; overhead: 26.1%
+              QuickSort: mean 57.1~4.2    ns/item; median 51.7; overhead: 5.9%
+      BottomUpMergeSort: mean 64.8~4.6    ns/item; median 60.4; overhead: 5.2%
+       TopDownMergeSort: mean 64.3~4.6    ns/item; median 58.5; overhead: 5.3%
+    AltTopDownMergeSort: mean 65.3~4.7    ns/item; median 58.6; overhead: 5.2%
 
 type int: total size 4.0 bytes of which value 4.0 and heap size 0.0
 int: 64/13000/1100
 This implies a working set size of 256.0MB, and a per-sort memory usage of on average 16.0MB upto twice that; and merge-sorts will need 16.0MB scratch.
 Sorting arrays of int with 3635405.3 elements (average over 21 benchmarked arrays).
-    ArraySort_Primitive: mean 64.2~4.7    ns/item; median 58.7; overhead: 5.7%
-     DualPivotQuickSort: mean 63.4~4.6    ns/item; median 57.9; overhead: 5.7%
-      ParallelQuickSort: mean 10.5~0.86   ns/item; median 9.1; overhead: 27.5%
-              QuickSort: mean 57.7~4.3    ns/item; median 52.3; overhead: 6.2%
-      BottomUpMergeSort: mean 65.4~4.7    ns/item; median 60.7; overhead: 5.6%
-       TopDownMergeSort: mean 65.7~4.7    ns/item; median 60.1; overhead: 5.5%
-    AltTopDownMergeSort: mean 66.1~4.8    ns/item; median 60.1; overhead: 5.5%
+    ArraySort_Primitive: mean 64.1~4.7    ns/item; median 58.6; overhead: 6.0%
+     DualPivotQuickSort: mean 64.8~4.8    ns/item; median 59.0; overhead: 6.0%
+      ParallelQuickSort: mean 10.4~0.84   ns/item; median 9.0; overhead: 28.7%
+              QuickSort: mean 57.5~4.2    ns/item; median 52.1; overhead: 6.7%
+      BottomUpMergeSort: mean 65.1~4.6    ns/item; median 60.6; overhead: 6.1%
+       TopDownMergeSort: mean 65~4.6      ns/item; median 59.4; overhead: 6.1%
+    AltTopDownMergeSort: mean 65.5~4.7    ns/item; median 59.5; overhead: 6.0%
 
 
-(int, long, DateTime, string, Guid): 175.8ns/item
-SampleClass: 72.4ns/item
-(int, int, int): 57.5ns/item
-int: 33.6ns/item
-double: 37.9ns/item
-ulong: 33.8ns/item
-uint: 32.9ns/item
+(int, long, DateTime, string, Guid): 178.8ns/item
+SampleClass: 72.7ns/item
+(int, int, int): 57.9ns/item
+int: 33.2ns/item
+double: 37.8ns/item
+ulong: 33.3ns/item
+uint: 33.2ns/item
 
 ArraySort: 89.9ns/item
-DualPivotQuickSort: 57.1ns/item
-ParallelQuickSort: 22.7ns/item
-QuickSort: 54.1ns/item
-BottomUpMergeSort: 66.9ns/item
-TopDownMergeSort: 63.8ns/item
-AltTopDownMergeSort: 63.3ns/item
+DualPivotQuickSort: 57.8ns/item
+ParallelQuickSort: 23.5ns/item
+QuickSort: 54.5ns/item
+BottomUpMergeSort: 67.4ns/item
+TopDownMergeSort: 63.3ns/item
+AltTopDownMergeSort: 63.7ns/item
 
-OVERALL: 59.7ns/item
+OVERALL: 60.0ns/item
+
