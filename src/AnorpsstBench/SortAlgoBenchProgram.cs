@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Anoprsst;
+using Anoprsst.Uncommon;
 using IncrementalMeanVarianceAccumulator;
 
 // ReSharper disable UnusedMember.Global
@@ -73,14 +74,14 @@ namespace AnorpsstBench
             }
 
             return new[] {
-                BencherFor(default(BigStructOrderingAlgorithms.Order), Helpers.MapToBigStruct, 48),
-                BencherFor(default(SampleClassOrderingAlgorithms.Order), Helpers.MapToSampleClass, 32),
-                BencherFor(default(SmallStructOrderingAlgorithms.Order), Helpers.MapToSmallStruct, 16),
-                BencherFor(default(Int32OrderingAlgorithms.Int32Order), Helpers.MapToInt32, 4),
-                BencherFor(default(DoubleOrderingAlgorithms.Order), Helpers.MapToDouble, 8),
-                BencherFor(default(UInt64OrderingAlgorithms.UInt64Ordering), Helpers.MapToUInt64, 8),
-                //BencherFor(default(UInt32OrderingAlgorithms.UInt32Order), Helpers.MapToUInt32, 4),
-                BencherFor(default(ComparableOrderingAlgorithms<int>.ComparableOrdering), Helpers.MapToInt32, 4),
+                BencherFor(default(BigTupleOrder), Helpers.MapToBigStruct, 48),
+                BencherFor(default(SampleClassOrder), Helpers.MapToSampleClass, 32),
+                BencherFor(default(SmallTupleOrder), Helpers.MapToSmallStruct, 16),
+                BencherFor(default(Int32Order), Helpers.MapToInt32, 4),
+                BencherFor(default(DoubleOrder), Helpers.MapToDouble, 8),
+                BencherFor(default(UInt64Order), Helpers.MapToUInt64, 8),
+                BencherFor(default(UInt32Order), Helpers.MapToUInt32, 4),
+                BencherFor(default(ComparableOrdering<int>), Helpers.MapToInt32, 4),
             }.Where(a => a != null).SelectMany(r => r).ToArray();
         }
     }
@@ -103,46 +104,14 @@ namespace AnorpsstBench
             Console.WriteLine();
         }
 
-        static void ParallelQuickSort(T[] arr, int len)
-        {
-            OrderedAlgorithms<T, TOrder>.ParallelQuickSort(default, arr.AsSpan(0, len));
-        }
-
-        static void AltTopDownMergeSort(T[] arr, int len)
-        {
-            OrderedAlgorithms<T, TOrder>.AltTopDownMergeSort(default, arr.AsSpan(0, len));
-        }
-
-        static void TopDownMergeSort(T[] arr, int len)
-        {
-            OrderedAlgorithms<T, TOrder>.TopDownMergeSort(default, arr.AsSpan(0, len));
-        }
-
-        static void DualPivotQuickSort(T[] arr, int len)
-        {
-            OrderedAlgorithms<T, TOrder>.DualPivotQuickSort(default, arr.AsSpan(0, len));
-        }
-
-        static void BottomUpMergeSort(T[] arr, int len)
-        {
-            OrderedAlgorithms<T, TOrder>.BottomUpMergeSort(default, arr.AsSpan(0, len));
-        }
-
-        static void QuickSort(T[] arr, int len)
-        {
-            OrderedAlgorithms<T, TOrder>.QuickSort(default, arr.AsSpan(0, len));
-        }
-
-        static void ArraySort_Primitive(T[] arr, int len)
-        {
-            Array.Sort(arr, 0, len);
-        }
-
-        static void ArraySort_OrderComparer(T[] arr, int len)
-        {
-            Array.Sort(arr, 0, len, Helpers.ComparerFor<T, TOrder>());
-        }
-
+        static void ParallelQuickSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).ParallelQuickSort();
+        static void AltTopDownMergeSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).AltTopDownMergeSort();
+        static void TopDownMergeSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).MergeSort();
+        static void DualPivotQuickSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).DualPivotQuickSort();
+        static void BottomUpMergeSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).BottomUpMergeSort();
+        static void QuickSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).QuickSort();
+        static void ArraySort_Primitive(T[] arr, int len) => Array.Sort(arr, 0, len);
+        static void ArraySort_OrderComparer(T[] arr, int len) => Array.Sort(arr, 0, len, Helpers.ComparerFor<T, TOrder>());
         static readonly Action<T[], int> SystemArraySort = typeof(T).IsPrimitive ? (Action<T[], int>)ArraySort_Primitive : ArraySort_OrderComparer;
 
         public SortAlgorithmBench(T[] sourceData, int iterations)
@@ -166,10 +135,7 @@ namespace AnorpsstBench
             }
         }
 
-        void RefreshData((int offset, int len) subsegment)
-        {
-            Array.Copy(SourceData, subsegment.offset, workspace, 0, subsegment.len);
-        }
+        void RefreshData((int offset, int len) subsegment) => Array.Copy(SourceData, subsegment.offset, workspace, 0, subsegment.len);
 
         public (string method, Type type, double nsPerArrayItem, double nsStdErr) BenchSort(Action<T[], int> action)
         {
@@ -218,6 +184,7 @@ namespace AnorpsstBench
                 if (checkSum != 0) {
                     Console.WriteLine(method + " has differing elements before and after sort");
                 }
+
                 for (var j = 1; j < len; j++) {
                     if (default(TOrder).LessThan(workspace[j], workspace[j - 1])) {
                         Console.WriteLine(method + " did not sort.");
@@ -239,75 +206,46 @@ namespace AnorpsstBench
         }
     }
 
-    public abstract class ComparableOrderingAlgorithms<T> : OrderedAlgorithms<T, ComparableOrderingAlgorithms<T>.ComparableOrdering>
-        where T : IComparable<T>
+    public struct UInt64Order : IOrdering<ulong>
     {
-        public struct ComparableOrdering : IOrdering<T>
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool LessThan(T a, T b)
-                => a.CompareTo(b) < 0;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool LessThan(ulong a, ulong b)
+            => a < b;
     }
 
-    public abstract class UInt64OrderingAlgorithms : OrderedAlgorithms<ulong, UInt64OrderingAlgorithms.UInt64Ordering>
+    public struct UInt32Order : IOrdering<uint>
     {
-        public struct UInt64Ordering : IOrdering<ulong>
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool LessThan(ulong a, ulong b)
-                => a < b;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool LessThan(uint a, uint b)
+            => a < b;
     }
 
-    public abstract class UInt32OrderingAlgorithms : OrderedAlgorithms<uint, UInt32OrderingAlgorithms.UInt32Order>
+    public struct Int32Order : IOrdering<int>
     {
-        public struct UInt32Order : IOrdering<uint>
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool LessThan(uint a, uint b)
-                => a < b;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool LessThan(int a, int b)
+            => a < b;
     }
 
-    public abstract class Int32OrderingAlgorithms : OrderedAlgorithms<int, Int32OrderingAlgorithms.Int32Order>
+    public struct DoubleOrder : IOrdering<double>
     {
-        public struct Int32Order : IOrdering<int>
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool LessThan(int a, int b)
-                => a < b;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool LessThan(double a, double b)
+            => a < b || !(a >= b);
     }
 
-    public abstract class DoubleOrderingAlgorithms : OrderedAlgorithms<double, DoubleOrderingAlgorithms.Order>
+    public struct BigTupleOrder : IOrdering<(int, long, DateTime, string, Guid)>
     {
-        public struct Order : IOrdering<double>
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool LessThan(double a, double b)
-                => a < b || !(a >= b);
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool LessThan((int, long, DateTime, string, Guid) a, (int, long, DateTime, string, Guid) b)
+            => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
     }
 
-    public abstract class BigStructOrderingAlgorithms : OrderedAlgorithms<(int, long, DateTime, string, Guid), BigStructOrderingAlgorithms.Order>
+    public struct SmallTupleOrder : IOrdering<(int, int, int)>
     {
-        public struct Order : IOrdering<(int, long, DateTime, string, Guid)>
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool LessThan((int, long, DateTime, string, Guid) a, (int, long, DateTime, string, Guid) b)
-                => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
-        }
-    }
-
-    public abstract class SmallStructOrderingAlgorithms : OrderedAlgorithms<(int, int, int), SmallStructOrderingAlgorithms.Order>
-    {
-        public struct Order : IOrdering<(int, int, int)>
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool LessThan((int, int, int) a, (int, int, int) b)
-                => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool LessThan((int, int, int) a, (int, int, int) b)
+            => a.Item1 < b.Item1 || a.Item1 == b.Item1 && a.Item2 < b.Item2;
     }
 
     public class SampleClass : IComparable<SampleClass>
@@ -318,13 +256,10 @@ namespace AnorpsstBench
             => Value.CompareTo(other.Value);
     }
 
-    public abstract class SampleClassOrderingAlgorithms : OrderedAlgorithms<SampleClass, SampleClassOrderingAlgorithms.Order>
+    public struct SampleClassOrder : IOrdering<SampleClass>
     {
-        public struct Order : IOrdering<SampleClass>
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool LessThan(SampleClass a, SampleClass b)
-                => a.Value < b.Value;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool LessThan(SampleClass a, SampleClass b)
+            => a.Value < b.Value;
     }
 }

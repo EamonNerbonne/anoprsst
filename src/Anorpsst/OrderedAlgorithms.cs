@@ -11,13 +11,10 @@ namespace Anoprsst
         bool LessThan(T a, T b);
     }
 
-    public abstract class OrderedAlgorithms<T, TOrder>
+    public static class OrderedAlgorithms<T, TOrder>
         where TOrder : struct, IOrdering<T>
     {
         static readonly AlgorithmChoiceThresholds<T> Thresholds = AlgorithmChoiceThresholds<T>.Defaults;
-
-        protected OrderedAlgorithms()
-            => throw new NotSupportedException("allow subclassing so you can fix type parameters, but not instantiation.");
 
         public static void TopDownMergeSort(TOrder ordering, Span<T> array)
         {
@@ -54,6 +51,22 @@ namespace Anoprsst
         {
             if (array.Length > 1) {
                 QuickSort_Inclusive_Unsafe(ordering, ref array[0], array.Length - 1);
+            }
+        }
+
+        public static void QuickSort_ForSmallArrays(TOrder ordering, Span<T> array)
+        {
+            if (array.Length > 1) {
+                QuickSort_Inclusive_Small_Unsafe(ordering, ref array[0], array.Length - 1);
+            }
+        }
+
+        public static void InsertionSort_ForVerySmallArrays(TOrder ordering, Span<T> array)
+        {
+            if (array.Length > 1) {
+                ref var firstPtr = ref array[0];
+                ref var lastPtr = ref Unsafe.Add(ref firstPtr, array.Length - 1);
+                InsertionSort_InPlace_Unsafe_Inclusive(ordering, ref firstPtr, ref lastPtr);
             }
         }
 
