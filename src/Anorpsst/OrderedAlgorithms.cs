@@ -17,7 +17,9 @@ namespace Anoprsst
         void Return(T[] rentedArr);
     }
 
-    struct ScratchAllocator<T> { }
+    struct ScratchAllocator<T>
+    {
+    }
 
     public static class OrderingsFor<T>
     {
@@ -485,7 +487,8 @@ namespace Anoprsst
 
                 ref var writePtr = ref firstPtr;
                 ref var readPtr = ref Unsafe.Add(ref firstPtr, 1);
-                while (true) { //readIdx < idxEnd
+                while (true) {
+                    //readIdx < idxEnd
                     var readValue = readPtr;
                     if (ordering.LessThan(readValue, writePtr)) {
                         while (true) {
@@ -529,7 +532,8 @@ namespace Anoprsst
                     InsertionSort_InPlace_Unsafe_Inclusive(ordering, ref items[0], ref items[n - 1]);
                     return;
                 }
-                var mergeCount = 2;//It would be possible to do odd merge counts in a more balanced fashion by doing one extra copy, but that doesn't appear faster.
+
+                var mergeCount = 2; //It would be possible to do odd merge counts in a more balanced fashion by doing one extra copy, but that doesn't appear faster.
                 for (var s = (uint)Thresholds.TopDownInsertionSortBatchSize << 2; s < (uint)n; s <<= 2) {
                     mergeCount += 2;
                 }
