@@ -529,8 +529,7 @@ namespace Anoprsst
                     InsertionSort_InPlace_Unsafe_Inclusive(ordering, ref items[0], ref items[n - 1]);
                     return;
                 }
-#if true
-                var mergeCount = 2;
+                var mergeCount = 2;//It would be possible to do odd merge counts in a more balanced fashion by doing one extra copy, but that doesn't appear faster.
                 for (var s = (uint)Thresholds.TopDownInsertionSortBatchSize << 2; s < (uint)n; s <<= 2) {
                     mergeCount += 2;
                 }
@@ -542,22 +541,6 @@ namespace Anoprsst
                 AltTopDownSplitMerge_Unsafe(ordering, ref itemsPtr, ref Unsafe.Add(ref itemsPtr, n - 1), ref scratchPtr, ref Unsafe.Add(ref scratchPtr, n - 1), n, mergeCount);
                 Array.Clear(scratch, 0, n);
                 memPool.Return(scratch);
-#else
-            var mergeCount = 1;
-            for (var s = (uint)TopDownInsertionSortBatchSize << 1; s < (uint)n; s <<= 1)
-                mergeCount += 1;
-
-            ref var itemsPtr = ref items[0];
-            var scratch = new T[n];
-            ref var scratchPtr = ref scratch[0];
-
-            if((mergeCount&1) == 0)
-                AltTopDownSplitMerge_Unsafe(ref itemsPtr, ref Unsafe.Add(ref itemsPtr, n - 1), ref scratchPtr, ref Unsafe.Add(ref scratchPtr, n - 1), n, mergeCount);
-            else {
-                AltTopDownSplitMerge_Unsafe(ref scratchPtr, ref Unsafe.Add(ref scratchPtr, n - 1), ref itemsPtr, ref Unsafe.Add(ref itemsPtr, n - 1), n, mergeCount);
-                CopyInclusiveRefRange_Unsafe(ref scratchPtr, ref Unsafe.Add(ref scratchPtr, n - 1), ref itemsPtr);
-            }
-#endif
             }
 
             static void AltTopDownSplitMerge_Unsafe(
