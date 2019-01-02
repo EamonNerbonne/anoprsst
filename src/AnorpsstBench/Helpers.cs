@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Anoprsst;
 using IncrementalMeanVarianceAccumulator;
 
-namespace AnorpsstBench
+namespace AnoprsstBench
 {
     public static class Helpers
     {

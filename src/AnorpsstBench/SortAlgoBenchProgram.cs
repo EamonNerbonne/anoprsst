@@ -10,7 +10,7 @@ using IncrementalMeanVarianceAccumulator;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
-namespace AnorpsstBench
+namespace AnoprsstBench
 {
     static class SortAlgoBenchProgram
     {
