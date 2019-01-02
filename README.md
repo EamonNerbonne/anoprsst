@@ -1,5 +1,5 @@
 # anoprsst
-Sorts Span&lt;T> and arrays more quickly than Array.Sort (around 30% faster for small arrays, and upto a core-count-based parallelisation speedup for large arrays, though [details matter](https://github.com/EamonNerbonne/anoprsst/blob/master/results.txt)).
+Sorts `Span<T>` and `T[]` more quickly than `Array.Sort` (around 30% faster for small arrays, and upto a core-count-based parallelisation speedup for large arrays, though [details matter](https://github.com/EamonNerbonne/anoprsst/blob/master/results.txt)).
 
 Usage:  
 
