@@ -231,13 +231,6 @@ namespace AnoprsstBench
             => a < b;
     }
 
-    public struct DoubleOrder : IOrdering<double>
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool LessThan(double a, double b)
-            => a < b || !(a >= b);
-    }
-
     public struct BigTupleOrder : IOrdering<(int, long, DateTime, string, Guid)>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

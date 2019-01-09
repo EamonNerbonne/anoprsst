@@ -59,5 +59,15 @@ namespace Anoprsst
         public static SortableSpan<T, ComparableOrdering<T>> WithIComparableOrder<T>(this Span<T> block)
             where T : struct, IComparable<T>
             => new SortableSpan<T, ComparableOrdering<T>>(block, default);
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static SortableSpan<double, DoubleOrdering> WithIComparableOrder(this double[] block)
+            => new SortableSpan<double, DoubleOrdering>(block, default);
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static SortableSpan<double, DoubleOrdering> WithIComparableOrder(this Span<double> block)
+            => new SortableSpan<double, DoubleOrdering>(block, default);
     }
 }
