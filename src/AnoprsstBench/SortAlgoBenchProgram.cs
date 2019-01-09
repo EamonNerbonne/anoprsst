@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Anoprsst;
+using Anoprsst.BuiltinOrderings;
 using Anoprsst.Uncommon;
 using IncrementalMeanVarianceAccumulator;
 
@@ -16,9 +17,9 @@ namespace AnoprsstBench
     {
         static void Main()
         {
-            const double quality = 400_000_000_000.0;
+            const double quality = 4_000_000_000.0;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10, 1 << 13, 1 << 16, 1 << 19, 1 << 22 /**/ };
+            var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10,/* 1 << 13, 1 << 16, 1 << 19, 1 << 22 /**/ };
             var all = targetSizes.SelectMany(targetSize => BenchSize(targetSize, quality)).ToArray();
 
             Console.WriteLine();
@@ -74,14 +75,17 @@ namespace AnoprsstBench
             }
 
             return new[] {
-                BencherFor(default(BigTupleOrder), Helpers.MapToBigStruct, 48),
-                BencherFor(default(SampleClassOrder), Helpers.MapToSampleClass, 32),
-                BencherFor(default(SmallTupleOrder), Helpers.MapToSmallStruct, 16),
                 BencherFor(default(Int32Order), Helpers.MapToInt32, 4),
-                BencherFor(default(DoubleOrder), Helpers.MapToDouble, 8),
-                BencherFor(default(UInt64Order), Helpers.MapToUInt64, 8),
                 BencherFor(default(UInt32Order), Helpers.MapToUInt32, 4),
+                BencherFor(default(UInt64Order), Helpers.MapToUInt64, 8),
+                BencherFor(default(DoubleOrdering), Helpers.MapToDouble, 8),
                 BencherFor(default(ComparableOrdering<int>), Helpers.MapToInt32, 4),
+                BencherFor(default(ComparableOrdering<uint>), Helpers.MapToUInt32, 4),
+                BencherFor(default(ComparableOrdering<ulong>), Helpers.MapToUInt64, 8),
+                BencherFor(default(ComparableOrdering<double>), Helpers.MapToDouble, 8),
+                BencherFor(default(SmallTupleOrder), Helpers.MapToSmallStruct, 16),
+                BencherFor(default(SampleClassOrder), Helpers.MapToSampleClass, 32),
+                BencherFor(default(BigTupleOrder), Helpers.MapToBigStruct, 48),
             }.Where(a => a != null).SelectMany(r => r).ToArray();
         }
     }
@@ -94,22 +98,22 @@ namespace AnoprsstBench
             var meanLen = SubArrays().Average(o => o.len);
             Console.WriteLine($"Sorting arrays of {typeof(T).ToCSharpFriendlyTypeName()} with {meanLen:f1} elements (average over {Iterations} benchmarked arrays).");
             yield return BenchSort(SystemArraySort);
-            yield return BenchSort(DualPivotQuickSort);
             yield return BenchSort(ParallelQuickSort);
             yield return BenchSort(QuickSort);
-            yield return BenchSort(BottomUpMergeSort);
-            yield return BenchSort(TopDownMergeSort);
-            yield return BenchSort(AltTopDownMergeSort);
+            //yield return BenchSort(TopDownMergeSort);
+            //yield return BenchSort(BottomUpMergeSort);
+            //yield return BenchSort(DualPivotQuickSort);
+            //yield return BenchSort(AltTopDownMergeSort);
 
             Console.WriteLine();
         }
 
-        static void ParallelQuickSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).ParallelQuickSort();
-        static void AltTopDownMergeSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).AltTopDownMergeSort();
-        static void TopDownMergeSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).MergeSort();
-        static void DualPivotQuickSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).DualPivotQuickSort();
-        static void BottomUpMergeSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).BottomUpMergeSort();
-        static void QuickSort(T[] arr, int len) => arr.AsSpan(0, len).SortUsing(default(TOrder)).QuickSort();
+        static void ParallelQuickSort(T[] arr, int len) => arr.AsSpan(0, len).WithOrder(default(TOrder)).ParallelQuickSort();
+        static void AltTopDownMergeSort(T[] arr, int len) => arr.AsSpan(0, len).WithOrder(default(TOrder)).AltTopDownMergeSort();
+        static void TopDownMergeSort(T[] arr, int len) => arr.AsSpan(0, len).WithOrder(default(TOrder)).MergeSort();
+        static void DualPivotQuickSort(T[] arr, int len) => arr.AsSpan(0, len).WithOrder(default(TOrder)).DualPivotQuickSort();
+        static void BottomUpMergeSort(T[] arr, int len) => arr.AsSpan(0, len).WithOrder(default(TOrder)).BottomUpMergeSort();
+        static void QuickSort(T[] arr, int len) => arr.AsSpan(0, len).WithOrder(default(TOrder)).QuickSort();
         static void ArraySort_Primitive(T[] arr, int len) => Array.Sort(arr, 0, len);
         static void ArraySort_OrderComparer(T[] arr, int len) => Array.Sort(arr, 0, len, Helpers.ComparerFor<T, TOrder>());
         static readonly Action<T[], int> SystemArraySort = typeof(T).IsPrimitive ? (Action<T[], int>)ArraySort_Primitive : ArraySort_OrderComparer;
