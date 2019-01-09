@@ -6,7 +6,7 @@
     <Title>Anoprsst</Title>
     <Description>Sorts Span&lt;T&gt; (and arrays) more quickly than System.Array.Sort</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Initial nuget version</PackageReleaseNotes>
+    <PackageReleaseNotes>Renamed extension method SortUsing => WithOrder; made it simpler to sort doubles efficiently</PackageReleaseNotes>
     <PackageTags>Span QuickSort MergeSort InsertionSort</PackageTags>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/EamonNerbonne/anoprsst</PackageProjectUrl>
