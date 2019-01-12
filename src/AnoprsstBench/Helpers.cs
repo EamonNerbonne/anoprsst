@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Anoprsst;
 using IncrementalMeanVarianceAccumulator;
 
@@ -53,11 +54,17 @@ namespace AnoprsstBench
         public static uint MapToUInt32(ulong data)
             => (uint)(data >> 32);
 
+        public static string MapToString(ulong data)
+            => MapToUInt32(data).ToString("x8", CultureInfo.InvariantCulture);
+
         public static SampleClass MapToSampleClass(ulong data)
             => new SampleClass { Value = (int)(data >> 32) };
 
         public static double MapToDouble(ulong data)
             => (long)data / (double)(1L << 31);
+
+        public static float MapToFloat(ulong data)
+            => (long)data / (float)(1L << 31);
 
         public static IComparer<T> ComparerFor<T, TOrder>()
             where TOrder : IOrdering<T>
