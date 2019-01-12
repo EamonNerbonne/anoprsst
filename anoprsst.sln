@@ -8,7 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		src\.editorconfig = src\.editorconfig
 		dotnet1.psess = dotnet1.psess
 		README.md = README.md
-		results.txt = results.txt
+		old results\results-0.1-netcore2.1.txt = old results\results-0.1-netcore2.1.txt
+		results-1.0-netcore2.2.txt = results-1.0-netcore2.2.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anoprsst", "src\Anoprsst\Anoprsst.csproj", "{DE958F33-86B5-4BC7-B115-6682AD968436}"
