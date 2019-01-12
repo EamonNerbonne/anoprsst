@@ -101,7 +101,6 @@ namespace AnoprsstBench
             }
 
             return new[] {
-                    BencherFor(default(BigTupleOrder), Helpers.MapToBigStruct, 48),
                     BencherFor(default(Int32Order), Helpers.MapToInt32, 4),
                     BencherFor(default(UInt32Order), Helpers.MapToUInt32, 4),
                     BencherFor(default(UInt64Order), Helpers.MapToUInt64, 8),
@@ -112,6 +111,7 @@ namespace AnoprsstBench
                     BencherFor(default(ComparableOrdering<double>), Helpers.MapToDouble, 8),
                     BencherFor(default(SmallTupleOrder), Helpers.MapToSmallStruct, 16),
                     BencherFor(default(SampleClassOrder), Helpers.MapToSampleClass, 32),
+                    BencherFor(default(BigTupleOrder), Helpers.MapToBigStruct, 48),
                 }.Where(a => a != null)
                 .SelectMany(r => r)
                 .ToArray();
