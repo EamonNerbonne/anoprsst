@@ -17,13 +17,13 @@ namespace AnoprsstBench
 {
     static class SortAlgoBenchProgram
     {
-        const double quality = 1000_000_000_000.0;
+        const double quality = 1_000_000_000_000.0;
         const int maxIters = 200_000;
 
         static void Main()
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10, 1 << 11, 1 << 13, 1 << 16, 1 << 19, 1 << 22 /**/ };
+            var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10, 1 << 13, 1 << 16, 1 << 19, 1 << 22 /**/ };
             Console.WriteLine("Benchmarking on "
                 + Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName
                 + "; "
