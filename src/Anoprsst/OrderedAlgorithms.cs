@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Threading;
+// ReSharper disable ImpureMethodCallOnReadonlyValueField
 
 namespace Anoprsst
 {
@@ -14,17 +15,38 @@ namespace Anoprsst
     public interface IScratchAllocator<T>
     {
         T[] RentAtLeast(int size);
-        void Return(T[] rentedArr);
+        void Return(T[] rentedArr, int size);
     }
 
-    struct ScratchAllocator<T>
+    struct PlainGcAllocator<T> : IScratchAllocator<T>
     {
+        public T[] RentAtLeast(int size)
+            => new T[size];
+
+        public void Return(T[] rentedArr, int size) { }
+    }
+
+    struct MemoryPoolAllocator<T> : IScratchAllocator<T>
+    {
+        static readonly ArrayPool<T> memPool = ArrayPool<T>.Shared;
+
+        public T[] RentAtLeast(int size)
+            => memPool.Rent(size);
+
+        public void Return(T[] rentedArr, int size)
+        {
+            Array.Clear(rentedArr, 0, size);
+            memPool.Return(rentedArr);
+        }
     }
 
     public static class OrderingsFor<T>
     {
         static readonly AlgorithmChoiceThresholds<T> Thresholds;
-        static OrderingsFor() => Thresholds = AlgorithmChoiceThresholds<T>.Defaults;
+        static readonly PlainGcAllocator<T> memPool = new PlainGcAllocator<T>();
+
+        static OrderingsFor()
+            => Thresholds = AlgorithmChoiceThresholds<T>.Defaults;
 
         public static class WithOrder<TOrder>
             where TOrder : struct, IOrdering<T>
@@ -40,23 +62,21 @@ namespace Anoprsst
                         return;
                     }
 
-                    var scratch = memPool.Rent(endIdx);
+                    var scratch = memPool.RentAtLeast(endIdx);
                     ref var firstScratchPtr = ref scratch[0];
                     ref var lastScratchPtr = ref Unsafe.Add(ref firstScratchPtr, endIdx - 1);
                     TopDownSplitMerge_toItems(ordering, ref firstItemsPtr, ref lastItemsPtr, ref firstScratchPtr, ref lastScratchPtr, endIdx);
-                    Array.Clear(scratch, 0, endIdx);
-                    memPool.Return(scratch);
+                    memPool.Return(scratch, endIdx);
                 }
             }
 
             public static void BottomUpMergeSort(TOrder ordering, Span<T> array)
             {
                 if (array.Length > 1) {
-                    var scratch = memPool.Rent(array.Length);
+                    var scratch = memPool.RentAtLeast(array.Length);
 
                     BottomUpMergeSort(ordering, array, new T[array.Length]);
-                    Array.Clear(scratch, 0, array.Length);
-                    memPool.Return(scratch);
+                    memPool.Return(scratch, array.Length);
                 }
             }
 
@@ -519,8 +539,6 @@ namespace Anoprsst
                 }
             }
 
-            static readonly ArrayPool<T> memPool = ArrayPool<T>.Shared;
-
             public static void AltTopDownMergeSort(TOrder ordering, Span<T> items)
             {
                 if (!(items.Length > 1)) {
@@ -539,12 +557,11 @@ namespace Anoprsst
                 }
 
                 ref var itemsPtr = ref items[0];
-                var scratch = memPool.Rent(n);
+                var scratch = memPool.RentAtLeast(n);
                 ref var scratchPtr = ref scratch[0];
 
                 AltTopDownSplitMerge_Unsafe(ordering, ref itemsPtr, ref Unsafe.Add(ref itemsPtr, n - 1), ref scratchPtr, ref Unsafe.Add(ref scratchPtr, n - 1), n, mergeCount);
-                Array.Clear(scratch, 0, n);
-                memPool.Return(scratch);
+                memPool.Return(scratch, n);
             }
 
             static void AltTopDownSplitMerge_Unsafe(
