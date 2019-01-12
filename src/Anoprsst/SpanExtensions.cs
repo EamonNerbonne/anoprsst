@@ -36,12 +36,12 @@ namespace Anoprsst
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SortableSpan<double, DoubleOrdering> WithIComparableOrder(this double[] block)
+        public static SortableSpan<double, DoubleOrdering> WithIComparableOrder(this Span<double> block)
             => new SortableSpan<double, DoubleOrdering>(block, default);
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SortableSpan<double, DoubleOrdering> WithIComparableOrder(this Span<double> block)
-            => new SortableSpan<double, DoubleOrdering>(block, default);
+        public static SortableSpan<float, FloatOrdering> WithIComparableOrder(this Span<float> block)
+            => new SortableSpan<float, FloatOrdering>(block, default);
     }
 }
