@@ -2,8 +2,8 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Threading;
-// ReSharper disable ImpureMethodCallOnReadonlyValueField
 
+// ReSharper disable ImpureMethodCallOnReadonlyValueField
 namespace Anoprsst
 {
     public interface IOrdering<in T>
@@ -242,35 +242,6 @@ namespace Anoprsst
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static int PartitionWithGivenValue(TOrder ordering, ref T firstPtr, int lastOffset, T pivotValue, ref T lastPtr)
-            {
-                while (true) {
-                    //on the first iteration,  the following loop bails at the lastest when it reaches the midpoint, so ref firstPtr < ref lastPtr
-                    while (ordering.LessThan(firstPtr, pivotValue)) {
-                        firstPtr = ref Unsafe.Add(ref firstPtr, 1);
-                    }
-
-                    //on the first iteration, the following loop either succeeds at least once (decrementing lastOffset), or it bails immediately
-                    while (ordering.LessThan(pivotValue, lastPtr)) {
-                        lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
-                        lastOffset--;
-                    }
-
-                    //on the first iteration, either lastOffset has been decremented, OR ref lastPtr > ref firstPtr; so if we break here, then lastOffset was decremented
-                    if (!Unsafe.IsAddressGreaterThan(ref lastPtr, ref firstPtr)) {
-                        break; // TODO: Workaround for https://github.com/dotnet/coreclr/issues/9692
-                    }
-
-                    lastOffset--;
-                    (firstPtr, lastPtr) = (lastPtr, firstPtr);
-                    firstPtr = ref Unsafe.Add(ref firstPtr, 1);
-                    lastPtr = ref Unsafe.Subtract(ref lastPtr, 1);
-                }
-
-                return lastOffset;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static void MedianOf5(TOrder ordering, ref T v0, ref T v1, ref T v2, ref T v3, ref T v4)
             {
                 if (ordering.LessThan(v4, v0)) (v4, v0) = (v0, v4);
@@ -308,7 +279,7 @@ namespace Anoprsst
                 if (ordering.LessThan(v6, v3)) (v6, v3) = (v3, v6);
                 if (ordering.LessThan(v4, v3)) (v4, v3) = (v3, v4);
             }
-
+#if false
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             // ReSharper disable once UnusedMember.Local
             static void Sort11Indexes(TOrder ordering, ref T v0, ref T v1, ref T v2, ref T v3, ref T v4, ref T v5, ref T v6, ref T v7, ref T v8, ref T v9, ref T v10)
@@ -383,7 +354,7 @@ namespace Anoprsst
                 if (ordering.LessThan(v8, v6)) (v8, v6) = (v6, v8);
                 if (ordering.LessThan(v6, v5)) (v6, v5) = (v5, v6);
             }
-
+#endif
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static void SortThreeIndexes(TOrder ordering, ref T v0, ref T v1, ref T v2)
             {
