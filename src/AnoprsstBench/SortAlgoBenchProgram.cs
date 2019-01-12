@@ -65,7 +65,7 @@ namespace AnoprsstBench
 
                 var beforeMap = GC.GetTotalMemory(true);
                 var mappedData = new T[data.Length];
-                var afterArray = GC.GetTotalMemory(false);
+                var afterArray = GC.GetTotalMemory(true);
                 for (var i = 0; i < mappedData.Length; i++) {
                     mappedData[i] = map(data[i]);
                 }
