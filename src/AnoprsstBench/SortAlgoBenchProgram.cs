@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 using Anoprsst;
 using Anoprsst.BuiltinOrderings;
 using Anoprsst.Uncommon;
@@ -20,10 +22,16 @@ namespace AnoprsstBench
             const double quality = 400_000_000_000.0;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
             var targetSizes = new[] {1 << 5, 1 << 7, 1 << 10, 1 << 11, 1 << 13, 1 << 16, 1 << 19, 1 << 22 /**/};
+            Console.WriteLine("Benchmarking on "
+                              + Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName
+                              + "; "
+                              + Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER")
+                              + " with quality constant "
+                              + quality);
+            Console.WriteLine("With arrays lengths approximating: " + string.Join(", ", targetSizes));
+            Console.WriteLine();
 
             var all = targetSizes.SelectMany(targetSize => BenchSize(targetSize, quality)).ToArray();
-            Console.WriteLine("Benchmarked on " + Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") + " with quality constant " + quality);
-            Console.WriteLine("With arrays lengths approximating: " + string.Join(", ", targetSizes));
 
             Console.WriteLine();
             foreach (var byType in all.GroupBy(o => o.type)) {
@@ -61,8 +69,9 @@ namespace AnoprsstBench
                 for (var i = 0; i < mappedData.Length; i++) {
                     mappedData[i] = map(data[i]);
                 }
+
                 var afterMap = GC.GetTotalMemory(true);
-                GC.KeepAlive(map);//so mem mesurement on previous line isn't disturbed by freeing this object.
+                GC.KeepAlive(map); //so mem mesurement on previous line isn't disturbed by freeing this object.
 
                 var maximumTargetLength = mappedData.Length >> 3;
                 var estimatedPerObjectCost = (afterMap - beforeMap - 24) / (double)mappedData.Length;
