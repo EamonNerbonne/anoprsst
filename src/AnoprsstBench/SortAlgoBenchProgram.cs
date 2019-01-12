@@ -1,5 +1,4 @@
 ﻿using System;
-using ExpressionToCodeLib;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Runtime.CompilerServices;
 using Anoprsst;
 using Anoprsst.BuiltinOrderings;
 using Anoprsst.Uncommon;
+using ExpressionToCodeLib;
 using IncrementalMeanVarianceAccumulator;
 
 // ReSharper disable UnusedMember.Global
@@ -17,10 +17,13 @@ namespace AnoprsstBench
     {
         static void Main()
         {
-            const double quality = 4_000_000_000.0;
+            const double quality = 400_000_000_000.0;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10,/* 1 << 13, 1 << 16, 1 << 19, 1 << 22 /**/ };
+            var targetSizes = new[] {1 << 5, 1 << 7, 1 << 10, 1 << 11, 1 << 13, 1 << 16, 1 << 19, 1 << 22 /**/};
+
             var all = targetSizes.SelectMany(targetSize => BenchSize(targetSize, quality)).ToArray();
+            Console.WriteLine("Benchmarked on " + Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") + " with quality constant " + quality);
+            Console.WriteLine("With arrays lengths approximating: " + string.Join(", ", targetSizes));
 
             Console.WriteLine();
             foreach (var byType in all.GroupBy(o => o.type)) {
@@ -51,42 +54,68 @@ namespace AnoprsstBench
                 if (guesstimatedSizeInBytes * (long)backingArraySize > uint.MaxValue) {
                     return null;
                 }
+
                 var beforeMap = GC.GetTotalMemory(true);
                 var mappedData = new T[data.Length];
                 var afterArray = GC.GetTotalMemory(false);
-                for (var i = 0; i < data.Length; i++) {
+                for (var i = 0; i < mappedData.Length; i++) {
                     mappedData[i] = map(data[i]);
                 }
                 var afterMap = GC.GetTotalMemory(true);
-                GC.KeepAlive(map);
-                var estimatedPerObjectCost = (afterMap - beforeMap - 24) / (double)data.Length;
-                var estimatedSizeInArray = (afterArray - beforeMap - 24) / (double)data.Length;
-                var estimatedSizeInHeap = (afterMap - afterArray) / (double)data.Length;
-                Console.WriteLine(
-                    $"type {typeof(T).ToCSharpFriendlyTypeName()}: total size {estimatedPerObjectCost:f1} bytes of which value {estimatedSizeInArray:f1} and heap size {estimatedSizeInHeap:f1}");
+                GC.KeepAlive(map);//so mem mesurement on previous line isn't disturbed by freeing this object.
+
+                var maximumTargetLength = mappedData.Length >> 3;
+                var estimatedPerObjectCost = (afterMap - beforeMap - 24) / (double)mappedData.Length;
+                var estimatedSizeInArray = (afterArray - beforeMap - 24) / (double)mappedData.Length;
+                var estimatedSizeInHeap = (afterMap - afterArray) / (double)mappedData.Length;
+
+                var slices = SubArrays(mappedData, maximumTargetLength, iterations);
+                // ReSharper disable once PossibleMultipleEnumeration
+                var meanLen = slices.Average(o => o.Length);
+                var typeName = typeof(T).ToCSharpFriendlyTypeName();
+                var orderName = typeof(TOrder).ToCSharpFriendlyTypeName();
                 var algorithmThesholds = AlgorithmChoiceThresholds<T>.Defaults;
-                Console.WriteLine(
-                    $"{typeof(T).ToCSharpFriendlyTypeName()}: {algorithmThesholds.TopDownInsertionSortBatchSize}/{algorithmThesholds.QuickSortFastMedianThreshold}/{algorithmThesholds.MinimalParallelQuickSortBatchSize}");
+                Console.WriteLine($"Sorting arrays of {typeName} with {meanLen:f1} elements by {orderName} (average over {iterations} benchmarked arrays).");
+                Console.WriteLine($"Insertion sorts below {algorithmThesholds.TopDownInsertionSortBatchSize};"
+                                  + $" faster quicksort median below {algorithmThesholds.QuickSortFastMedianThreshold};"
+                                  + $" no parallelism below {algorithmThesholds.MinimalParallelQuickSortBatchSize} items.");
 
-                Console.WriteLine(
-                    $"This implies a working set size of {backingArraySize * estimatedPerObjectCost / 1024.0 / 1024.0:f1}MB, and a per-sort memory usage of on average {targetSize * estimatedPerObjectCost / (1 << 20):f1}MB upto twice that; and merge-sorts will need {targetSize * estimatedSizeInArray / (1 << 20):f1}MB scratch.");
+                Console.WriteLine($"type {typeName}: total size {estimatedPerObjectCost:f1} bytes of which value {estimatedSizeInArray:f1} and heap size {estimatedSizeInHeap:f1}.  ");
 
-                return new SortAlgorithmBench<T, TOrder>(mappedData, iterations).BenchVariousAlgos().ToArray();
+                var perSortMB = targetSize * estimatedPerObjectCost / (1 << 20);
+                var benchmarkMB = mappedData.Length * estimatedPerObjectCost / (1 << 20);
+                var mergeSortScratchMB = targetSize * estimatedSizeInArray / (1 << 20);
+                Console.WriteLine($"Per-sort working set on average {perSortMB:f1}MB (max upto twice that), overall benchmark ~{benchmarkMB:f1}MB; mergesort scratch needs an extra {mergeSortScratchMB:f1}MB.");
+
+                // ReSharper disable once PossibleMultipleEnumeration
+                return new SortAlgorithmBench<T, TOrder>(slices, maximumTargetLength).BenchVariousAlgos().ToArray();
             }
 
             return new[] {
-                BencherFor(default(Int32Order), Helpers.MapToInt32, 4),
-                BencherFor(default(UInt32Order), Helpers.MapToUInt32, 4),
-                BencherFor(default(UInt64Order), Helpers.MapToUInt64, 8),
-                BencherFor(default(DoubleOrdering), Helpers.MapToDouble, 8),
-                BencherFor(default(ComparableOrdering<int>), Helpers.MapToInt32, 4),
-                BencherFor(default(ComparableOrdering<uint>), Helpers.MapToUInt32, 4),
-                BencherFor(default(ComparableOrdering<ulong>), Helpers.MapToUInt64, 8),
-                BencherFor(default(ComparableOrdering<double>), Helpers.MapToDouble, 8),
-                BencherFor(default(SmallTupleOrder), Helpers.MapToSmallStruct, 16),
-                BencherFor(default(SampleClassOrder), Helpers.MapToSampleClass, 32),
-                BencherFor(default(BigTupleOrder), Helpers.MapToBigStruct, 48),
-            }.Where(a => a != null).SelectMany(r => r).ToArray();
+                    BencherFor(default(BigTupleOrder), Helpers.MapToBigStruct, 48),
+                    BencherFor(default(Int32Order), Helpers.MapToInt32, 4),
+                    BencherFor(default(UInt32Order), Helpers.MapToUInt32, 4),
+                    BencherFor(default(UInt64Order), Helpers.MapToUInt64, 8),
+                    BencherFor(default(DoubleOrdering), Helpers.MapToDouble, 8),
+                    BencherFor(default(ComparableOrdering<int>), Helpers.MapToInt32, 4),
+                    BencherFor(default(ComparableOrdering<uint>), Helpers.MapToUInt32, 4),
+                    BencherFor(default(ComparableOrdering<ulong>), Helpers.MapToUInt64, 8),
+                    BencherFor(default(ComparableOrdering<double>), Helpers.MapToDouble, 8),
+                    BencherFor(default(SmallTupleOrder), Helpers.MapToSmallStruct, 16),
+                    BencherFor(default(SampleClassOrder), Helpers.MapToSampleClass, 32),
+                }.Where(a => a != null)
+                .SelectMany(r => r)
+                .ToArray();
+        }
+
+        public static IEnumerable<Memory<T>> SubArrays<T>(T[] sourceData, int maximumTargetLength, int iterations)
+        {
+            var random = new Random(42);
+            for (var k = 0; k < iterations; k++) {
+                var len = random.Next(maximumTargetLength + 1);
+                var offset = random.Next(sourceData.Length - len + 1);
+                yield return sourceData.AsMemory(offset, len);
+            }
         }
     }
 
@@ -95,15 +124,13 @@ namespace AnoprsstBench
     {
         public IEnumerable<(string method, Type type, double nsPerArrayItem, double nsStdErr)> BenchVariousAlgos()
         {
-            var meanLen = SubArrays().Average(o => o.len);
-            Console.WriteLine($"Sorting arrays of {typeof(T).ToCSharpFriendlyTypeName()} with {meanLen:f1} elements (average over {Iterations} benchmarked arrays).");
             yield return BenchSort(SystemArraySort);
             yield return BenchSort(ParallelQuickSort);
             yield return BenchSort(QuickSort);
-            //yield return BenchSort(TopDownMergeSort);
-            //yield return BenchSort(BottomUpMergeSort);
-            //yield return BenchSort(DualPivotQuickSort);
-            //yield return BenchSort(AltTopDownMergeSort);
+            yield return BenchSort(TopDownMergeSort);
+            yield return BenchSort(BottomUpMergeSort);
+            yield return BenchSort(DualPivotQuickSort);
+            yield return BenchSort(AltTopDownMergeSort);
 
             Console.WriteLine();
         }
@@ -116,30 +143,20 @@ namespace AnoprsstBench
         static void QuickSort(T[] arr, int len) => arr.AsSpan(0, len).WithOrder(default(TOrder)).QuickSort();
         static void ArraySort_Primitive(T[] arr, int len) => Array.Sort(arr, 0, len);
         static void ArraySort_OrderComparer(T[] arr, int len) => Array.Sort(arr, 0, len, Helpers.ComparerFor<T, TOrder>());
-        static readonly Action<T[], int> SystemArraySort = typeof(T).IsPrimitive ? (Action<T[], int>)ArraySort_Primitive : ArraySort_OrderComparer;
 
-        public SortAlgorithmBench(T[] sourceData, int iterations)
+        static readonly Action<T[], int> SystemArraySort = typeof(T).IsPrimitive && (!typeof(TOrder).IsGenericType || typeof(TOrder).GetGenericTypeDefinition() != typeof(ComparableOrdering<>))
+            ? (Action<T[], int>)ArraySort_Primitive
+            : ArraySort_OrderComparer;
+
+        public SortAlgorithmBench(IEnumerable<Memory<T>> slices, int maximumTargetLength)
         {
-            SourceData = sourceData;
-            Iterations = iterations;
-            workspace = new T[sourceData.Length >> 3];
+            workspace = new T[maximumTargetLength];
+            Slices = slices;
         }
 
         readonly T[] workspace;
-        readonly T[] SourceData;
-        readonly int Iterations;
+        readonly IEnumerable<Memory<T>> Slices;
 
-        IEnumerable<(int offset, int len)> SubArrays()
-        {
-            var random = new Random(42);
-            for (var k = 0; k < Iterations; k++) {
-                var len = random.Next(workspace.Length + 1);
-                var offset = random.Next(SourceData.Length - len + 1);
-                yield return (offset, len);
-            }
-        }
-
-        void RefreshData((int offset, int len) subsegment) => Array.Copy(SourceData, subsegment.offset, workspace, 0, subsegment.len);
 
         public (string method, Type type, double nsPerArrayItem, double nsStdErr) BenchSort(Action<T[], int> action)
         {
@@ -149,9 +166,10 @@ namespace AnoprsstBench
             var sw = new Stopwatch();
             var swOverhead = Stopwatch.StartNew();
             double totalActualMilliseconds = 0;
-            foreach (var subsegment in SubArrays()) {
-                RefreshData(subsegment);
-                var len = subsegment.len;
+
+            foreach (var subsegment in Slices) {
+                subsegment.Span.CopyTo(workspace);
+                var len = subsegment.Length;
                 long checkSum = 0;
                 for (var j = 0; j < len; j++) {
                     var l = workspace[j];
