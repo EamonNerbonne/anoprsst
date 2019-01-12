@@ -7,13 +7,20 @@ namespace Anoprsst
     {
         public int TopDownInsertionSortBatchSize;
         public int BottomUpInsertionSortBatchSize;
-        
-        public int QuickSortFastMedianThreshold;//must be greater than 1.
+        public int QuickSortFastMedianThreshold; //must be greater than 1.
         public int MinimalParallelQuickSortBatchSize;
 
         public static AlgorithmChoiceThresholds<T> Defaults {
             get {
                 if (!typeof(T).IsValueType) {
+                    if (typeof(T) == typeof(string)) {
+                        return new AlgorithmChoiceThresholds<T> {
+                            TopDownInsertionSortBatchSize = 18,
+                            BottomUpInsertionSortBatchSize = 12,
+                            QuickSortFastMedianThreshold = 2_000,
+                            MinimalParallelQuickSortBatchSize = 800,
+                        };
+                    }
                     return new AlgorithmChoiceThresholds<T> {
                         TopDownInsertionSortBatchSize = 24,
                         BottomUpInsertionSortBatchSize = 16,
