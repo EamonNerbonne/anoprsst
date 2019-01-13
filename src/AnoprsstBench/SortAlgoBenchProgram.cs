@@ -176,23 +176,23 @@ namespace AnoprsstBench
         static void QuickSort(T[] arr, int len)
             => arr.AsSpan(0, len).WithOrder(default(TOrder)).QuickSort();
 
-        static void ArraySort_Primitive(T[] arr, int len)
+        static void PrimitiveArraySort(T[] arr, int len)
             => Array.Sort(arr, 0, len);
 
-        static void ArraySort_OrderComparer(T[] arr, int len)
+        static void IComparableArraySort(T[] arr, int len)
             => Array.Sort(arr, 0, len, Helpers.ComparerFor<T, TOrder>());
 
-        static void ArraySort_OrdinalStringComparer(string[] arr, int len)
+        static void StringArraySort(string[] arr, int len)
             => Array.Sort(arr, 0, len, StringComparer.Ordinal);
 
         static readonly Action<T[], int> SystemArraySort =
             typeof(TOrder).IsGenericType && typeof(TOrder).GetGenericTypeDefinition() == typeof(ComparableOrdering<>)
-                ? ArraySort_OrderComparer
+                ? IComparableArraySort
                 : typeof(T).IsPrimitive
-                    ? ArraySort_Primitive
+                    ? PrimitiveArraySort
                     : typeof(T) == typeof(string)
-                        ? (Action<T[], int>)(Action<string[], int>)ArraySort_OrdinalStringComparer
-                        : ArraySort_OrderComparer;
+                        ? (Action<T[], int>)(Action<string[], int>)StringArraySort
+                        : IComparableArraySort;
 
         public SortAlgorithmBench(IEnumerable<Memory<T>> slices, int maximumTargetLength)
         {
