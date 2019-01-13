@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFrameworks>net472;netcoreapp2.2</TargetFrameworks>
-    <LangVersion>7.3</LangVersion>
-    <TieredCompilation>true</TieredCompilation>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFrameworks>net472;netcoreapp2.2</TargetFrameworks>
+        <LangVersion>7.3</LangVersion>
+        <TieredCompilation>false</TieredCompilation>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+    </PropertyGroup>
 
-  <ItemGroup>
-      <ProjectReference Include="..\Anoprsst\Anoprsst.csproj" />
-      <PackageReference Include="IncrementalMeanVarianceAccumulator" Version="1.0.0" />
-      <PackageReference Include="ExpressionToCodeLib" Version="3.1.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Anoprsst\Anoprsst.csproj" />
+        <PackageReference Include="IncrementalMeanVarianceAccumulator" Version="1.0.0" />
+        <PackageReference Include="ExpressionToCodeLib" Version="3.1.0" />
+    </ItemGroup>
 
 </Project>
