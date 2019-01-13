@@ -112,11 +112,11 @@ namespace AnoprsstBench
             }
 
             return new[] {
-                    BencherFor(default(Int32Order), Helpers.MapToInt32),
+                    BencherFor(default(Int32Ordering), Helpers.MapToInt32),
                     BencherFor(default(ComparableOrdering<int>), Helpers.MapToInt32),
-                    BencherFor(default(UInt32Order), Helpers.MapToUInt32),
+                    BencherFor(default(UInt32Ordering), Helpers.MapToUInt32),
                     BencherFor(default(ComparableOrdering<uint>), Helpers.MapToUInt32),
-                    BencherFor(default(UInt64Order), Helpers.MapToUInt64),
+                    BencherFor(default(UInt64Ordering), Helpers.MapToUInt64),
                     BencherFor(default(ComparableOrdering<ulong>), Helpers.MapToUInt64),
                     BencherFor(default(DoubleOrdering), Helpers.MapToDouble),
                     BencherFor(default(ComparableOrdering<double>), Helpers.MapToDouble),
@@ -271,27 +271,6 @@ namespace AnoprsstBench
                 $"{method.PadLeft(23)}: mean {Helpers.MSE(nsPerItem, nsStdErr).PadRight(11)} ns/item; median {medianNsPerItem:f1}; overhead: {100 * (1 - totalActualMilliseconds / swOverhead.Elapsed.TotalMilliseconds):f1}%");
             return (action.Method.Name.StartsWith("ArraySort_", StringComparison.Ordinal) ? "ArraySort" : method, typeof(T).ToCSharpFriendlyTypeName() + "/" + typeof(TOrder).ToCSharpFriendlyTypeName(), nsPerItem, nsStdErr);
         }
-    }
-
-    public struct UInt64Order : IOrdering<ulong>
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool LessThan(ulong a, ulong b)
-            => a < b;
-    }
-
-    public struct UInt32Order : IOrdering<uint>
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool LessThan(uint a, uint b)
-            => a < b;
-    }
-
-    public struct Int32Order : IOrdering<int>
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool LessThan(int a, int b)
-            => a < b;
     }
 
     public struct BigTupleOrder : IOrdering<(int, long, DateTime, string, Guid)>
