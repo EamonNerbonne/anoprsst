@@ -1,30 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup Label="Configuration">
-    <Version>1.1.0</Version>
-    <Authors>Eamon Nerbonne</Authors>
-    <Owners>Eamon Nerbonne</Owners>
-    <Title>Anoprsst</Title>
-    <Description>Sorts Span&lt;T&gt; (and arrays) more quickly than System.Array.Sort</Description>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Added special cases to simplify efficient sorting of all primitives; no longer use shared memory pool for merge sorts by default</PackageReleaseNotes>
-    <PackageTags>Span QuickSort MergeSort InsertionSort</PackageTags>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/EamonNerbonne/anoprsst</PackageProjectUrl>
-    <TargetFrameworks>net47;netcoreapp2.1</TargetFrameworks>
-    <RepositoryUrl>https://github.com/EamonNerbonne/anoprsst</RepositoryUrl>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>false<!--not yet, anyhow--></GenerateDocumentationFile>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <LangVersion>7.3</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputType>Library</OutputType>
-  </PropertyGroup>
+    <PropertyGroup Label="Configuration">
+        <Version>1.1.0</Version>
+        <Authors>Eamon Nerbonne</Authors>
+        <Owners>Eamon Nerbonne</Owners>
+        <Title>Anoprsst</Title>
+        <Description>Sorts Span&lt;T&gt; (and arrays) more quickly than System.Array.Sort</Description>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageReleaseNotes>Added special cases to simplify efficient sorting of all primitives; no longer use shared memory pool for merge sorts by default</PackageReleaseNotes>
+        <PackageTags>Span QuickSort MergeSort InsertionSort</PackageTags>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/EamonNerbonne/anoprsst</PackageProjectUrl>
+        <TargetFrameworks>net47;netcoreapp2.1</TargetFrameworks>
+        <RepositoryUrl>https://github.com/EamonNerbonne/anoprsst</RepositoryUrl>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>false<!--not yet, anyhow-->
+        </GenerateDocumentationFile>
+        <DebugType>full</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <LangVersion>7.3</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <OutputType>Library</OutputType>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <!-- Source link: -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Buffers" Version="4.5.0" />
-    <PackageReference Include="System.Memory" Version="4.5.2" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
+        <PackageReference Include="System.Buffers" Version="4.5.0" />
+        <PackageReference Include="System.Memory" Version="4.5.2" />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
+    </ItemGroup>
 
 </Project>
