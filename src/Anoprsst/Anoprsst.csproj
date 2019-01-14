@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup Label="Configuration">
-        <Version>1.1.0</Version>
+        <Version>1.1.1</Version>
         <Authors>Eamon Nerbonne</Authors>
         <Owners>Eamon Nerbonne</Owners>
         <Title>Anoprsst</Title>
         <Description>Sorts Span&lt;T&gt; (and arrays) more quickly than System.Array.Sort</Description>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <PackageReleaseNotes>Added special cases to simplify efficient sorting of all primitives; no longer use shared memory pool for merge sorts by default</PackageReleaseNotes>
+        <PackageReleaseNotes>Upgrade to snupkg debug symbols format</PackageReleaseNotes>
         <PackageTags>Span QuickSort MergeSort InsertionSort</PackageTags>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/EamonNerbonne/anoprsst</PackageProjectUrl>
