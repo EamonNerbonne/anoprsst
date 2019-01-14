@@ -1299,14 +1299,4 @@ SampleClass/SampleClassOrder: 70.4ns/item
 (int, long, DateTime, string, Guid)/BigTupleOrder: 179.5ns/item
 string/StringOrder: 159.6ns/item
 
-PrimitiveArraySort: 43.3ns/item
-ParallelQuickSort: 25.0ns/item
-QuickSort: 60.6ns/item
-TopDownMergeSort: 67.4ns/item
-BottomUpMergeSort: 72.1ns/item
-DualPivotQuickSort: 63.4ns/item
-AltTopDownMergeSort: 66.8ns/item
-IComparableArraySort: 112.8ns/item
-StringArraySort: 175.4ns/item
-
 OVERALL: 63.9ns/item
