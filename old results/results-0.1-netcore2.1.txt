@@ -1,4 +1,4 @@
-﻿8700k @5Ghz
+8700k @5Ghz
 
 type (int, long, DateTime, string, Guid): total size 48.5 bytes of which value 48.0 and heap size 0.5
 (int, long, DateTime, string, Guid): 11/16000/1000
