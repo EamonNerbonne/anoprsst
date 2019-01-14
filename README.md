@@ -1,5 +1,5 @@
 # anoprsst
-Sorts `Span<T>` and `T[]` more quickly than `Array.Sort`. It's around 45% faster in serial mode, and upto a core-count-based parallelisation speedup for large arrays, though [details matter](https://github.com/EamonNerbonne/anoprsst/blob/078a501558a72c1ee6936aec7a98719d437c1f44/results-1.0-netcore2.2.txt): it's no faster for strings, just 20% faster for integral builtins, but more than 100% faster for structs with custom orderings.
+Sorts `Span<T>` and `T[]` more quickly than `Array.Sort`. It's around 45% faster in serial mode, and upto a core-count-based parallelisation speedup for large arrays, though [details matter](https://github.com/EamonNerbonne/anoprsst/blob/078a501558a72c1ee6936aec7a98719d437c1f44/results-1.1-netcore2.2.txt): it's no faster for strings, just 20% faster for integral builtins, but more than 100% faster for structs with custom orderings.
 
 Usage:  
 
