@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup Label="Configuration">
         <Version>1.1.1</Version>
         <Authors>Eamon Nerbonne</Authors>
@@ -15,20 +15,21 @@
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <GenerateDocumentationFile>false<!--not yet, anyhow-->
         </GenerateDocumentationFile>
-        <DebugType>portable</DebugType>
-        <DebugSymbols>true</DebugSymbols>
         <LangVersion>7.3</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <OutputType>Library</OutputType>
     </PropertyGroup>
     
-    <PropertyGroup>
-        <!-- Source link: -->
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    </PropertyGroup>
+	<PropertyGroup>
+		<!-- Source link: -->
+		<DebugType>portable</DebugType>
+		<DebugSymbols>True</DebugSymbols>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
 
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
