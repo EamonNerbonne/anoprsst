@@ -23,7 +23,7 @@ namespace AnoprsstBench
         static void Main()
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
-            var targetSizes = new[] { 1 << 5, 1 << 7, 1 << 10, 1 << 13, 1 << 16, 1 << 19, 1 << 22 /**/ };
+            var targetSizes = new[] {1 << 5, 1 << 7, 1 << 10, 1 << 13, 1 << 16, 1 << 19, 1 << 22 /**/};
             Console.WriteLine("Benchmarking on "
                 + Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName
                 + "; "
@@ -44,6 +44,7 @@ namespace AnoprsstBench
             foreach (var byTypeAndMethod in all.GroupBy(o => o.type + " using " + o.method)) {
                 Console.WriteLine($"{byTypeAndMethod.Key}: {byTypeAndMethod.Average(o => o.nsPerArrayItem):f1}ns/item");
             }
+
             Console.WriteLine();
             foreach (var byType in all.GroupBy(o => o.type)) {
                 Console.WriteLine($"{byType.Key}: {byType.Average(o => o.nsPerArrayItem):f1}ns/item");
@@ -141,6 +142,7 @@ namespace AnoprsstBench
             }
         }
     }
+
 
     public sealed class SortAlgorithmBench<T, TOrder>
         where TOrder : struct, IOrdering<T>
