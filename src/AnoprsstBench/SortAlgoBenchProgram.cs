@@ -149,6 +149,11 @@ namespace AnoprsstBench
     {
         public IEnumerable<(string method, string type, double nsPerArrayItem, double nsStdErr)> BenchVariousAlgos()
         {
+            if (typeof(TOrder) == typeof(Int32Ordering)) {
+                yield return BenchSort((Action<T[], int>)(Action<int[], int>)SafeFromSO);
+                yield return BenchSort((Action<T[], int>)(Action<int[], int>)UnsafeFromSO);
+            }
+
             yield return BenchSort(SystemArraySort);
             yield return BenchSort(ParallelQuickSort);
             yield return BenchSort(QuickSort);
@@ -159,6 +164,12 @@ namespace AnoprsstBench
 
             Console.WriteLine();
         }
+
+        static void SafeFromSO(int[] arr, int len)
+            => FromStackOverflow3719719.QuickSort(arr, 0, len);
+
+        static void UnsafeFromSO(int[] arr, int len)
+            => FromStackOverflow3719719.UnsafeQuickSort(arr, 0, len);
 
         static void ParallelQuickSort(T[] arr, int len)
             => arr.AsSpan(0, len).WithOrder(default(TOrder)).ParallelQuickSort();
