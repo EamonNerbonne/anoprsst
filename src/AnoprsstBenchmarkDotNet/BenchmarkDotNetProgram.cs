@@ -19,7 +19,10 @@ namespace AnoprsstBenchmarkDotNet
 
         [ParamsSource(nameof(RunDefinitions))] public (int count, int length) RunDefinition;
 
-        public static (int count, int length)[] RunDefinitions => new[] {(1_000_000, 100), (32_000, 3_200), (1000, 100_000), (32, 3_200_000), (1, 100_000_000),};
+        public static (int count, int length)[] RunDefinitions => new[] {
+            //(1_000_000, 100), (32_000, 3_200), (1000, 100_000), (32, 3_200_000), 
+            (1, 100_000_000),
+        };
 
         [GlobalSetup]
         public void Setup()
