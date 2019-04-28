@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28822.285
@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "old results", "old results"
 		old results\results-1.0-netcore2.2.txt = old results\results-1.0-netcore2.2.txt
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnoprsstBenchmarkDotNet", "src\AnoprsstBenchmarkDotNet\AnoprsstBenchmarkDotNet.csproj", "{99659FC1-F8E7-4666-B08B-43DA1BCF48B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{C329C872-CC9D-49F8-B153-F8BA05955630}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C329C872-CC9D-49F8-B153-F8BA05955630}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C329C872-CC9D-49F8-B153-F8BA05955630}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99659FC1-F8E7-4666-B08B-43DA1BCF48B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99659FC1-F8E7-4666-B08B-43DA1BCF48B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99659FC1-F8E7-4666-B08B-43DA1BCF48B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99659FC1-F8E7-4666-B08B-43DA1BCF48B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
