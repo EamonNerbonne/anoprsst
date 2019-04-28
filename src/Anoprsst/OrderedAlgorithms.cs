@@ -23,7 +23,9 @@ namespace Anoprsst
         public T[] RentAtLeast(int size)
             => new T[size];
 
-        public void Return(T[] rentedArr, int size) { }
+        public void Return(T[] rentedArr, int size)
+        {
+        }
     }
 
     struct MemoryPoolAllocator<T> : IScratchAllocator<T>
@@ -118,44 +120,54 @@ namespace Anoprsst
                 var countdownEvent = new CountdownEvent(1);
                 ref var byteRef = ref Unsafe.As<T, byte>(ref array.GetPinnableReference());
                 fixed (byte* ptr = &byteRef) {
-                    new QuickSort_Inclusive_ParallelArgs {
+                    QuickSort_Inclusive_ParallelArgs.Impl(new QuickSort_Inclusive_ParallelArgs {
                         CountdownEvent = countdownEvent,
                         Ptr = ptr,
                         SplitAt = Math.Max(length >> ParallelismConstants.ParallelSplitScale, Thresholds.MinimalParallelQuickSortBatchSize),
                         LastIdx = length - 1,
                         Ordering = ordering,
-                    }.Impl();
+                    });
                     countdownEvent.Wait();
                 }
             }
 
-            sealed unsafe class QuickSort_Inclusive_ParallelArgs
+            unsafe struct QuickSort_Inclusive_ParallelArgs
             {
                 public CountdownEvent CountdownEvent;
                 public void* Ptr;
                 public int SplitAt;
                 public int LastIdx;
-                static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => ((QuickSort_Inclusive_ParallelArgs)o).Impl();
+
+#if NETCOREAPP2_1 || NET47
+                static readonly WaitCallback QuickSort_Inclusive_Par2_callback = o => Impl((QuickSort_Inclusive_ParallelArgs)o);
+#else
+                static readonly Action<QuickSort_Inclusive_ParallelArgs> QuickSort_Inclusive_Par2_callback = o => Impl(o);
+#endif
+
                 public TOrder Ordering;
 
-                public void Impl()
+                public static void Impl(in QuickSort_Inclusive_ParallelArgs o)
                 {
-                    ref var firstRef = ref Unsafe.AsRef<T>(Ptr);
-                    var lastIdx = LastIdx;
-                    var splitAt = SplitAt;
-                    var countdownEvent = CountdownEvent;
-                    var ordering = Ordering;
+                    ref var firstRef = ref Unsafe.AsRef<T>(o.Ptr);
+                    var lastIdx = o.LastIdx;
+                    var splitAt = o.SplitAt;
+                    var countdownEvent = o.CountdownEvent;
+                    var ordering = o.Ordering;
                     while (lastIdx >= splitAt) {
                         countdownEvent.AddCount(1);
                         var pivot = Partition_Unsafe(ordering, ref firstRef, lastIdx);
-                        ThreadPool.UnsafeQueueUserWorkItem(
-                            QuickSort_Inclusive_Par2_callback,
-                            new QuickSort_Inclusive_ParallelArgs {
-                                CountdownEvent = countdownEvent,
-                                Ptr = Unsafe.AsPointer(ref Unsafe.Add(ref firstRef, pivot + 1)),
-                                SplitAt = splitAt,
-                                LastIdx = lastIdx - (pivot + 1),
-                            });
+
+                        var childCallArgs = new QuickSort_Inclusive_ParallelArgs {
+                            CountdownEvent = countdownEvent,
+                            Ptr = Unsafe.AsPointer(ref Unsafe.Add(ref firstRef, pivot + 1)),
+                            SplitAt = splitAt,
+                            LastIdx = lastIdx - (pivot + 1),
+                        };
+#if NETCOREAPP2_1 || NET47
+                        ThreadPool.UnsafeQueueUserWorkItem(QuickSort_Inclusive_Par2_callback, childCallArgs);
+#else
+                        ThreadPool.UnsafeQueueUserWorkItem(QuickSort_Inclusive_Par2_callback, childCallArgs, true);
+#endif
                         lastIdx = pivot; //effectively QuickSort_Inclusive(array, firstIdx, pivot);
                     }
 
