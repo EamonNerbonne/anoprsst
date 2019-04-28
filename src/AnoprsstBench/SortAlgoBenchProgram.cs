@@ -38,7 +38,7 @@ namespace AnoprsstBench
             Console.WriteLine("With arrays lengths approximating: " + string.Join(", ", targetSizes));
             Console.WriteLine();
 
-            var all = targetSizes.SelectMany(targetSize => BenchSize(targetSize)).ToArray();
+            var all = targetSizes.SelectMany(BenchSize).ToArray();
 
             Console.WriteLine();
             foreach (var byTypeAndMethod in all.GroupBy(o => o.type + " using " + o.method)) {
