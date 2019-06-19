@@ -162,6 +162,7 @@ namespace Anoprsst
                             Ptr = Unsafe.AsPointer(ref Unsafe.Add(ref firstRef, pivot + 1)),
                             SplitAt = splitAt,
                             LastIdx = lastIdx - (pivot + 1),
+                            Ordering = ordering,
                         };
 #if NETCOREAPP2_1 || NET47
                         ThreadPool.UnsafeQueueUserWorkItem(QuickSort_Inclusive_Par2_callback, childCallArgs);
