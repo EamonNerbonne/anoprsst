@@ -48,6 +48,9 @@ namespace AnoprsstBench
         public static int MapToInt32(ulong data)
             => (int)(data >> 32);
 
+        public static Func<ulong, int> MapToInt32_xor(int xorConstant)
+            => data => xorConstant ^ (int)(data >> 32);
+
         public static ulong MapToUInt64(ulong data)
             => data;
 
@@ -65,20 +68,19 @@ namespace AnoprsstBench
 
         public static float MapToFloat(ulong data)
             => (long)data / (float)(1L << 31);
+    }
 
-        public static IComparer<T> ComparerFor<T, TOrder>()
-            where TOrder : IOrdering<T>
-            => OrderComparer<T, TOrder>.Instance;
+    public struct OrderComparer<T, TOrder> : IComparer<T>
+        where TOrder : IOrdering<T>
+    {
+        readonly TOrder underlying;
 
-        sealed class OrderComparer<T, TOrder> : IComparer<T>
-            where TOrder : IOrdering<T>
-        {
-            public static readonly IComparer<T> Instance = new OrderComparer<T, TOrder>();
+        public OrderComparer(TOrder underlying)
+            => this.underlying = underlying;
 
-            public int Compare(T x, T y)
-                => default(TOrder).LessThan(x, y) ? -1
-                    : default(TOrder).LessThan(y, x) ? 1
-                    : 0;
-        }
+        public int Compare(T x, T y)
+            => underlying.LessThan(x, y) ? -1
+                : underlying.LessThan(y, x) ? 1
+                : 0;
     }
 }

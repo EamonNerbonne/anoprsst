@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup Label="Configuration">
-        <Version>1.1.1</Version>
+        <Version>1.1.2</Version>
         <Authors>Eamon Nerbonne</Authors>
         <Owners>Eamon Nerbonne</Owners>
         <Title>Anoprsst</Title>
         <Description>Sorts Span&lt;T&gt; (and arrays) more quickly than System.Array.Sort</Description>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <PackageReleaseNotes>Upgrade to snupkg debug symbols format</PackageReleaseNotes>
+        <PackageReleaseNotes>Fix https://github.com/EamonNerbonne/anoprsst/issues/8 (thanks to BillSobel!)</PackageReleaseNotes>
         <PackageTags>Span QuickSort MergeSort InsertionSort</PackageTags>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/EamonNerbonne/anoprsst</PackageProjectUrl>
