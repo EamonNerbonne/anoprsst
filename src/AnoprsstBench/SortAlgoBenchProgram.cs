@@ -109,7 +109,7 @@ namespace AnoprsstBench
                 Console.WriteLine($"Per-sort working set on average {perSortMB:f1}MB (max upto twice that), overall benchmark ~{benchmarkMB:f1}MB; mergesort scratch needs an extra {mergeSortScratchMB:f1}MB.");
 
                 // ReSharper disable once PossibleMultipleEnumeration
-                return new SortAlgorithmBench<T, TOrder>(slices, maximumTargetLength).BenchVariousAlgos().ToArray();
+                return new SortAlgorithmBench<T, TOrder>(slices, maximumTargetLength, order).BenchVariousAlgos().ToArray();
             }
 
             return new[] {
@@ -165,56 +165,54 @@ namespace AnoprsstBench
             Console.WriteLine();
         }
 
-        static void SafeFromSO(int[] arr, int len)
+        void SafeFromSO(int[] arr, int len)
             => FromStackOverflow3719719.QuickSort(arr, 0, len);
 
-        static void UnsafeFromSO(int[] arr, int len)
+        void UnsafeFromSO(int[] arr, int len)
             => FromStackOverflow3719719.UnsafeQuickSort(arr, 0, len);
 
-        static void ParallelQuickSort(T[] arr, int len)
-            => arr.AsSpan(0, len).WithOrder(default(TOrder)).ParallelQuickSort();
+        void ParallelQuickSort(T[] arr, int len)
+            => arr.AsSpan(0, len).WithOrder(order).ParallelQuickSort();
 
-        static void AltTopDownMergeSort(T[] arr, int len)
-            => arr.AsSpan(0, len).WithOrder(default(TOrder)).AltTopDownMergeSort();
+        void AltTopDownMergeSort(T[] arr, int len)
+            => arr.AsSpan(0, len).WithOrder(order).AltTopDownMergeSort();
 
-        static void TopDownMergeSort(T[] arr, int len)
-            => arr.AsSpan(0, len).WithOrder(default(TOrder)).MergeSort();
+        void TopDownMergeSort(T[] arr, int len)
+            => arr.AsSpan(0, len).WithOrder(order).MergeSort();
 
-        static void DualPivotQuickSort(T[] arr, int len)
-            => arr.AsSpan(0, len).WithOrder(default(TOrder)).DualPivotQuickSort();
+        void DualPivotQuickSort(T[] arr, int len)
+            => arr.AsSpan(0, len).WithOrder(order).DualPivotQuickSort();
 
-        static void BottomUpMergeSort(T[] arr, int len)
-            => arr.AsSpan(0, len).WithOrder(default(TOrder)).BottomUpMergeSort();
+        void BottomUpMergeSort(T[] arr, int len)
+            => arr.AsSpan(0, len).WithOrder(order).BottomUpMergeSort();
 
-        static void QuickSort(T[] arr, int len)
-            => arr.AsSpan(0, len).WithOrder(default(TOrder)).QuickSort();
+        void QuickSort(T[] arr, int len)
+            => arr.AsSpan(0, len).WithOrder(order).QuickSort();
 
         static void PrimitiveArraySort(T[] arr, int len)
             => Array.Sort(arr, 0, len);
 
-        static void IComparableArraySort(T[] arr, int len)
-            => Array.Sort(arr, 0, len, Helpers.ComparerFor<T, TOrder>());
+        void IComparableArraySort(T[] arr, int len)
+            => Array.Sort(arr, 0, len, new OrderComparer<T, TOrder>(order));
 
         static void StringArraySort(string[] arr, int len)
             => Array.Sort(arr, 0, len, StringComparer.Ordinal);
 
-        static readonly Action<T[], int> SystemArraySort =
-            typeof(TOrder).IsGenericType && typeof(TOrder).GetGenericTypeDefinition() == typeof(ComparableOrdering<>)
-                ? IComparableArraySort
-                : typeof(T).IsPrimitive
-                    ? PrimitiveArraySort
-                    : typeof(T) == typeof(string)
-                        ? (Action<T[], int>)(Action<string[], int>)StringArraySort
-                        : IComparableArraySort;
+        Action<T[], int> SystemArraySort
+            => typeof(T) == typeof(string) && typeof(TOrder) == typeof(StringOrder) ? (Action<T[], int>)(Action<string[], int>)StringArraySort
+                : typeof(T).IsPrimitive && typeof(TOrder).Namespace == typeof(Int32Ordering).Namespace && !typeof(TOrder).IsGenericType ? PrimitiveArraySort
+                : (Action<T[], int>)IComparableArraySort;
 
-        public SortAlgorithmBench(IEnumerable<Memory<T>> slices, int maximumTargetLength)
+        public SortAlgorithmBench(IEnumerable<Memory<T>> slices, int maximumTargetLength, TOrder order)
         {
             workspace = new T[maximumTargetLength];
             Slices = slices;
+            this.order = order;
         }
 
         readonly T[] workspace;
         readonly IEnumerable<Memory<T>> Slices;
+        readonly TOrder order;
 
         public (string method, string type, double nsPerArrayItem, double nsStdErr) BenchSort(Action<T[], int> action)
         {
@@ -239,7 +237,7 @@ namespace AnoprsstBench
                 if (len > 50) {
                     var sorted = true;
                     for (var j = 1; j < len; j++)
-                        if (!default(TOrder).LessThan(workspace[j], workspace[j - 1]))
+                        if (!order.LessThan(workspace[j], workspace[j - 1]))
                             sorted = false;
                     if (sorted) {
                         Console.WriteLine("Already sorted??");
@@ -266,7 +264,7 @@ namespace AnoprsstBench
                 }
 
                 for (var j = 1; j < len; j++) {
-                    if (default(TOrder).LessThan(workspace[j], workspace[j - 1])) {
+                    if (order.LessThan(workspace[j], workspace[j - 1])) {
                         Console.WriteLine(method + " did not sort.");
                         break;
                     }
