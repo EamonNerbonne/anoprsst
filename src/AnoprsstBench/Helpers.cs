@@ -48,6 +48,9 @@ namespace AnoprsstBench
         public static int MapToInt32(ulong data)
             => (int)(data >> 32);
 
+        public static Func<ulong, int> MapToInt32_xor(int xorConstant)
+            => data => xorConstant ^ (int)(data >> 32);
+
         public static ulong MapToUInt64(ulong data)
             => data;
 

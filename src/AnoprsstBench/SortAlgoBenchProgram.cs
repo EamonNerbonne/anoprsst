@@ -114,6 +114,7 @@ namespace AnoprsstBench
 
             return new[] {
                     BencherFor(default(Int32Ordering), Helpers.MapToInt32),
+                    BencherFor(new StatefulInt32Ordering(-1_337_337_042), Helpers.MapToInt32_xor(-1_337_337_042)),
                     BencherFor(default(ComparableOrdering<int>), Helpers.MapToInt32),
                     BencherFor(default(UInt32Ordering), Helpers.MapToUInt32),
                     BencherFor(default(ComparableOrdering<uint>), Helpers.MapToUInt32),
@@ -281,6 +282,18 @@ namespace AnoprsstBench
                 $"{method.PadLeft(23)}: mean {Helpers.MSE(nsPerItem, nsStdErr).PadRight(11)} ns/item; median {medianNsPerItem:f1}; overhead: {100 * (1 - totalActualMilliseconds / swOverhead.Elapsed.TotalMilliseconds):f1}%");
             return (action.Method.Name.StartsWith("ArraySort_", StringComparison.Ordinal) ? "ArraySort" : method, typeof(T).ToCSharpFriendlyTypeName() + "/" + typeof(TOrder).ToCSharpFriendlyTypeName(), nsPerItem, nsStdErr);
         }
+    }
+
+    public readonly struct StatefulInt32Ordering : IOrdering<int>
+    {
+        readonly int bitscambler;
+
+        public StatefulInt32Ordering(int bitscambler)
+            => this.bitscambler = bitscambler;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool LessThan(int a, int b)
+            => (a ^ bitscambler) < (b ^ bitscambler);
     }
 
     public struct BigTupleOrder : IOrdering<(int, long, DateTime, string, Guid)>
