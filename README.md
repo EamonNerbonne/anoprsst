@@ -9,7 +9,7 @@ with a struct, which defines a `LessThan` method to compare to elements.
  - Call `someSpan.WithOrder(new MyOrdering()).Sort()`, which uses an insertion sort for small arrays, quicksort for medium size arrays, and parallel quick sort for large arrays.
  - If you're sorting arrays, the same methods are available there too, but it's worth pointing out the [`someArray.AsSpan(start, length)`](https://docs.microsoft.com/en-gb/dotnet/api/system.memoryextensions.asspan) extension method in System.Memory that makes
    slicing really easy.
- - If the element type is an IComparable *struct*, you can instead use `someSpan.WithIComparableOrder().Sort()`, which is often no slower, and thereby avoid implementing `IOrdering<T>`
+ - If the element type is an IComparable *struct*, you can instead use `someSpan.WithIComparableOrder().Sort()`, which is often no slower, and thereby avoid implementing `IOrdering<T>`.  This uses efficient special-cased orderings for common types like `double` or `int`.
  - If you have specific needs concerning the sorting algorithm, numerous alternatives to `.Sort()` are implemented as extension 
    methods in the `Anoprsst.Uncommon` namespace, include a merge sort (stable, without implausible O(N<sup>2</sup>) behavior) and a serial quick sort.
  - Bug reports, pull requests, chatter: all welcome, just give a shout in the issues here on github.
