@@ -8,7 +8,7 @@ using BenchmarkDotNet.Running;
 namespace AnoprsstBenchmarkDotNet
 {
     //[ClrJob]
-    [CoreJob]
+    [SimpleJob]
     [RankColumn]
     //[HardwareCounters(HardwareCounter.BranchMispredictions, HardwareCounter.BranchInstructions, HardwareCounter.LlcMisses)]
     //[MemoryDiagnoser]
