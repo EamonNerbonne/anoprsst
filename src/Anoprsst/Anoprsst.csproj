@@ -15,7 +15,7 @@
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <GenerateDocumentationFile>false<!--not yet, anyhow-->
         </GenerateDocumentationFile>
-        <LangVersion>7.3</LangVersion>
+        <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <OutputType>Library</OutputType>
     </PropertyGroup>
