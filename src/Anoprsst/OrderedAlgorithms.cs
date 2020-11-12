@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -12,44 +11,8 @@ namespace Anoprsst
         bool LessThan(T a, T b);
     }
 
-    public interface IScratchAllocator<T>
-    {
-        T[] RentAtLeast(int size);
-        void Return(T[] rentedArr, int size);
-    }
-
-    struct PlainGcAllocator<T> : IScratchAllocator<T>
-    {
-        public T[] RentAtLeast(int size)
-            => new T[size];
-
-        public void Return(T[] rentedArr, int size)
-        {
-        }
-    }
-
-    struct MemoryPoolAllocator<T> : IScratchAllocator<T>
-    {
-        static readonly ArrayPool<T> memPool = ArrayPool<T>.Shared;
-
-        public T[] RentAtLeast(int size)
-            => memPool.Rent(size);
-
-        public void Return(T[] rentedArr, int size)
-        {
-            Array.Clear(rentedArr, 0, size);
-            memPool.Return(rentedArr);
-        }
-    }
-
     public static class OrderingsFor<T>
     {
-        static readonly AlgorithmChoiceThresholds<T> Thresholds;
-        static readonly PlainGcAllocator<T> memPool = new PlainGcAllocator<T>();
-
-        static OrderingsFor()
-            => Thresholds = AlgorithmChoiceThresholds<T>.Defaults;
-
         public static class WithOrder<TOrder>
             where TOrder : struct, IOrdering<T>
         {
@@ -59,26 +22,22 @@ namespace Anoprsst
                 if (array.Length > 1) {
                     ref var firstItemsPtr = ref array[0];
                     ref var lastItemsPtr = ref Unsafe.Add(ref firstItemsPtr, endIdx - 1);
-                    if (endIdx <= Thresholds.TopDownInsertionSortBatchSize) {
+                    if (endIdx <= AlgorithmChoiceThresholds<T>.Defaults.TopDownInsertionSortBatchSize) {
                         InsertionSort_InPlace_Unsafe_Inclusive(ordering, ref firstItemsPtr, ref lastItemsPtr);
                         return;
                     }
 
-                    var scratch = memPool.RentAtLeast(endIdx);
+                    var scratch = new T[endIdx];
                     ref var firstScratchPtr = ref scratch[0];
                     ref var lastScratchPtr = ref Unsafe.Add(ref firstScratchPtr, endIdx - 1);
                     TopDownSplitMerge_toItems(ordering, ref firstItemsPtr, ref lastItemsPtr, ref firstScratchPtr, ref lastScratchPtr, endIdx);
-                    memPool.Return(scratch, endIdx);
                 }
             }
 
             public static void BottomUpMergeSort(TOrder ordering, Span<T> array)
             {
                 if (array.Length > 1) {
-                    var scratch = memPool.RentAtLeast(array.Length);
-
                     BottomUpMergeSort(ordering, array, new T[array.Length]);
-                    memPool.Return(scratch, array.Length);
                 }
             }
 
@@ -109,7 +68,7 @@ namespace Anoprsst
             public static unsafe void ParallelQuickSort(TOrder ordering, Span<T> array)
             {
                 var length = array.Length;
-                if (length < Thresholds.MinimalParallelQuickSortBatchSize << 1) {
+                if (length < AlgorithmChoiceThresholds<T>.Defaults.MinimalParallelQuickSortBatchSize << 1) {
                     if (length > 1) {
                         QuickSort_Inclusive_Unsafe(ordering, ref array[0], array.Length - 1);
                     }
@@ -123,7 +82,7 @@ namespace Anoprsst
                     QuickSort_Inclusive_ParallelArgs.Impl(new QuickSort_Inclusive_ParallelArgs {
                         CountdownEvent = countdownEvent,
                         Ptr = ptr,
-                        SplitAt = Math.Max(length >> ParallelismConstants.ParallelSplitScale, Thresholds.MinimalParallelQuickSortBatchSize),
+                        SplitAt = Math.Max(length >> ParallelismConstants.ParallelSplitScale, AlgorithmChoiceThresholds<T>.Defaults.MinimalParallelQuickSortBatchSize),
                         LastIdx = length - 1,
                         Ordering = ordering,
                     });
@@ -183,7 +142,7 @@ namespace Anoprsst
             [MethodImpl(MethodImplOptions.NoInlining)]
             static void QuickSort_Inclusive_Unsafe(TOrder ordering, ref T firstPtr, int lastOffset)
             {
-                while (lastOffset >= Thresholds.TopDownInsertionSortBatchSize) {
+                while (lastOffset >= AlgorithmChoiceThresholds<T>.Defaults.TopDownInsertionSortBatchSize) {
                     //invariant: lastOffset >= 1
                     var pivotIdx = Partition_Unsafe(ordering, ref firstPtr, lastOffset);
                     //invariant: pivotIdx in [0, lastOffset-1]
@@ -196,7 +155,7 @@ namespace Anoprsst
 
             /// <summary>
             ///     Precondition: memory in range [firstPtr, firstPtr+lastOffset] can be mutated, and lastOffset >= 1
-            ///     Postcondition: returnvalue in range [0, lastOffset-1]
+            ///     Postcondition: return value in range [0, lastOffset-1]
             /// </summary>
             static int Partition_Unsafe(TOrder ordering, ref T firstPtr, int lastOffset)
             {
@@ -204,7 +163,7 @@ namespace Anoprsst
                 //so midpoint != lastOffset
                 T pivotValue;
                 ref var lastPtr = ref firstPtr;
-                if (lastOffset < Thresholds.QuickSortFastMedianThreshold) {
+                if (lastOffset < AlgorithmChoiceThresholds<T>.Defaults.QuickSortFastMedianThreshold) {
                     SortThreeIndexes(ordering, ref firstPtr, ref Unsafe.Add(ref firstPtr, lastOffset >> 1), ref Unsafe.Add(ref firstPtr, lastOffset));
                     pivotValue = Unsafe.Add(ref firstPtr, lastOffset >> 1);
                     lastOffset--;
@@ -229,7 +188,7 @@ namespace Anoprsst
 
                 //return PartitionWithGivenValue(ordering, ref firstPtr, lastOffset, pivotValue, ref lastPtr);
                 while (true) {
-                    //on the first iteration,  the following loop bails at the lastest when it reaches the midpoint, so ref firstPtr < ref lastPtr
+                    //on the first iteration,  the following loop bails at the latest when it reaches the midpoint, so ref firstPtr < ref lastPtr
                     while (ordering.LessThan(firstPtr, pivotValue)) {
                         firstPtr = ref Unsafe.Add(ref firstPtr, 1);
                     }
@@ -530,22 +489,21 @@ namespace Anoprsst
                 }
 
                 var n = items.Length;
-                if (n < Thresholds.TopDownInsertionSortBatchSize) {
+                if (n < AlgorithmChoiceThresholds<T>.Defaults.TopDownInsertionSortBatchSize) {
                     InsertionSort_InPlace_Unsafe_Inclusive(ordering, ref items[0], ref items[n - 1]);
                     return;
                 }
 
                 var mergeCount = 2; //It would be possible to do odd merge counts in a more balanced fashion by doing one extra copy, but that doesn't appear faster.
-                for (var s = (uint)Thresholds.TopDownInsertionSortBatchSize << 2; s < (uint)n; s <<= 2) {
+                for (var s = (uint)AlgorithmChoiceThresholds<T>.Defaults.TopDownInsertionSortBatchSize << 2; s < (uint)n; s <<= 2) {
                     mergeCount += 2;
                 }
 
                 ref var itemsPtr = ref items[0];
-                var scratch = memPool.RentAtLeast(n);
+                var scratch = new T[n];
                 ref var scratchPtr = ref scratch[0];
 
                 AltTopDownSplitMerge_Unsafe(ordering, ref itemsPtr, ref Unsafe.Add(ref itemsPtr, n - 1), ref scratchPtr, ref Unsafe.Add(ref scratchPtr, n - 1), n, mergeCount);
-                memPool.Return(scratch, n);
             }
 
             static void AltTopDownSplitMerge_Unsafe(
@@ -601,7 +559,7 @@ namespace Anoprsst
 
             static void TopDownSplitMerge_toScratch(TOrder ordering, ref T firstItemsPtr, ref T lastItemsPtr, ref T firstScratchPtr, ref T lastScratchPtr, int length)
             {
-                if (length <= Thresholds.TopDownInsertionSortBatchSize) {
+                if (length <= AlgorithmChoiceThresholds<T>.Defaults.TopDownInsertionSortBatchSize) {
                     InsertionSort_InPlace_Unsafe_Inclusive(ordering, ref firstItemsPtr, ref lastItemsPtr);
                     CopyInclusiveRefRange_Unsafe(ref firstItemsPtr, ref lastItemsPtr, out firstScratchPtr);
                     return;
@@ -612,7 +570,7 @@ namespace Anoprsst
                 ref var middleItemsPtr = ref Unsafe.Add(ref firstItemsPtr, firstHalfLength);
                 ref var middleScratchPtr = ref Unsafe.Add(ref firstScratchPtr, firstHalfLength);
 
-                if (firstHalfLength < Thresholds.TopDownInsertionSortBatchSize) {
+                if (firstHalfLength < AlgorithmChoiceThresholds<T>.Defaults.TopDownInsertionSortBatchSize) {
                     InsertionSort_InPlace_Unsafe_Inclusive(ordering, ref firstItemsPtr, ref Unsafe.Subtract(ref middleItemsPtr, 1));
                     InsertionSort_InPlace_Unsafe_Inclusive(ordering, ref middleItemsPtr, ref lastItemsPtr);
                 } else {
@@ -678,7 +636,7 @@ namespace Anoprsst
                 ref var scratchPtr = ref scratchArr[0];
 
                 var mergeCount = 0;
-                var defaultBatchSize = Thresholds.BottomUpInsertionSortBatchSize & ~1;
+                var defaultBatchSize = AlgorithmChoiceThresholds<T>.Defaults.BottomUpInsertionSortBatchSize & ~1;
                 for (var s = defaultBatchSize; s < n; s <<= 1) {
                     mergeCount++;
                 }
