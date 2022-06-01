@@ -14,7 +14,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Anoprsst\Anoprsst.csproj" />
         <PackageReference Include="IncrementalMeanVarianceAccumulator" Version="1.0.0" />
-        <PackageReference Include="ExpressionToCodeLib" Version="3.4.0" />
+        <PackageReference Include="ExpressionToCodeLib" Version="3.4.1" />
     </ItemGroup>
 
 </Project>
