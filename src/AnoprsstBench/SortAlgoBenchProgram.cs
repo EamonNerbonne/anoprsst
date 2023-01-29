@@ -83,7 +83,7 @@ namespace AnoprsstBench
                 }
 
                 var afterMap = GC.GetTotalMemory(true);
-                GC.KeepAlive(map); //so mem mesurement on previous line isn't disturbed by freeing this object.
+                GC.KeepAlive(map); //so mem measurement on previous line isn't disturbed by freeing this object.
 
                 var maximumTargetLength = mappedData.Length >> 3;
                 var estimatedPerObjectCost = (afterMap - beforeMap - 24) / (double)mappedData.Length;
@@ -95,11 +95,11 @@ namespace AnoprsstBench
                 var meanLen = slices.Average(o => o.Length);
                 var typeName = typeof(T).ToCSharpFriendlyTypeName();
                 var orderName = typeof(TOrder).ToCSharpFriendlyTypeName();
-                var algorithmThesholds = AlgorithmChoiceThresholds<T>.Defaults;
+                var algorithmThresholds = AlgorithmChoiceThresholds<T>.Defaults;
                 Console.WriteLine($"Sorting arrays of {typeName} with {meanLen:f1} elements by {orderName} (average over {iterations} benchmarked arrays).");
-                Console.WriteLine($"Insertion sorts below {algorithmThesholds.TopDownInsertionSortBatchSize};"
-                    + $" faster quicksort median below {algorithmThesholds.QuickSortFastMedianThreshold};"
-                    + $" no parallelism below {algorithmThesholds.MinimalParallelQuickSortBatchSize} items.");
+                Console.WriteLine($"Insertion sorts below {algorithmThresholds.TopDownInsertionSortBatchSize};"
+                    + $" faster quicksort median below {algorithmThresholds.QuickSortFastMedianThreshold};"
+                    + $" no parallelism below {algorithmThresholds.MinimalParallelQuickSortBatchSize} items.");
 
                 Console.WriteLine($"type {typeName}: total size {estimatedPerObjectCost:f1} bytes of which value {estimatedSizeInArray:f1} and heap size {estimatedSizeInHeap:f1}.  ");
 
