@@ -10,7 +10,7 @@
         <PackageTags>Span QuickSort MergeSort InsertionSort</PackageTags>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/EamonNerbonne/anoprsst</PackageProjectUrl>
-        <TargetFrameworks>netcoreapp3.0;netcoreapp2.1;net47</TargetFrameworks>
+        <TargetFrameworks>netcoreapp3.1;net47</TargetFrameworks>
         <RepositoryUrl>https://github.com/EamonNerbonne/anoprsst</RepositoryUrl>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <GenerateDocumentationFile>false<!--not yet, anyhow-->
